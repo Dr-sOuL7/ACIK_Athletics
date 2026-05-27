@@ -1,33 +1,12 @@
 import Navbar from "../components/Navbar";
 
-export default function MainLayout({
-
-  children,
-
-}) {
-
+export default function MainLayout({ children }) {
   return (
-
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#0f172a",
-        color: "white",
-      }}
-    >
-
+    <div className="min-h-screen bg-background text-text-main flex flex-col">
       <Navbar />
-
-      <div
-        style={{
-          padding: "24px",
-        }}
-      >
-
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
-
-      </div>
-
+      </main>
     </div>
   );
 }
