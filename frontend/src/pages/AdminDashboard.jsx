@@ -1,7 +1,6 @@
-import AddResultForm from "../forms/AddResultForm";
 import AddAnnouncementForm from "../forms/AddAnnouncementForm";
 import { Card, CardHeader, CardTitle } from "../components/ui/Card";
-import { Activity, Trophy, Calendar } from "lucide-react";
+import { Activity, Megaphone } from "lucide-react";
 
 export default function AdminDashboard() {
   return (
@@ -11,19 +10,12 @@ export default function AdminDashboard() {
         <p className="text-text-muted">Manage platform data and results.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="bg-surface border-white/5 flex items-center p-4">
-          <Trophy className="w-8 h-8 text-primary mr-4" />
+          <Megaphone className="w-8 h-8 text-primary mr-4" />
           <div>
             <div className="text-sm text-text-muted">Quick Action</div>
-            <div className="font-bold text-white">Add Result</div>
-          </div>
-        </Card>
-        <Card className="bg-surface border-white/5 flex items-center p-4">
-          <Calendar className="w-8 h-8 text-secondary mr-4" />
-          <div>
-            <div className="text-sm text-text-muted">Quick Action</div>
-            <div className="font-bold text-white">Manage Events</div>
+            <div className="font-bold text-white">Add Announcement</div>
           </div>
         </Card>
         <Card className="bg-surface border-white/5 flex items-center p-4">
@@ -35,14 +27,7 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card className="border-white/5">
-          <CardHeader>
-            <CardTitle>Add New Result</CardTitle>
-          </CardHeader>
-          <AddResultForm />
-        </Card>
-        
+      <div className="grid grid-cols-1 gap-8">
         <Card className="border-white/5">
           <CardHeader>
             <CardTitle>Add Announcement</CardTitle>

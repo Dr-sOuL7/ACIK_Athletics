@@ -16,10 +16,6 @@ import AdminRoute from "./components/AdminRoute";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
-import Results from "./pages/Results";
-import BestAthletes from "./pages/BestAthletes";
-import Events from "./pages/Events";
-import Rankings from "./pages/Rankings";
 import AllTimeRecords from "./pages/AllTimeRecords";
 import Announcements from "./pages/Announcements";
 import Gallery from "./pages/Gallery";
@@ -27,8 +23,6 @@ import Gallery from "./pages/Gallery";
 import AdminDashboard from "./pages/AdminDashboard";
 import EditHomepage from "./pages/EditHomepage";
 import ManageRecords from "./pages/ManageRecords";
-import ManageRankings from "./pages/ManageRankings";
-import ManageEvents from "./pages/ManageEvents";
 import ManageGallery from "./pages/ManageGallery";
 
 export default function App() {
@@ -54,42 +48,6 @@ export default function App() {
           element={
             <MainLayout>
               <AllTimeRecords />
-            </MainLayout>
-          }
-        />
-
-        <Route
-          path="/results"
-          element={
-            <MainLayout>
-              <Results />
-            </MainLayout>
-          }
-        />
-
-        <Route
-          path="/best-athletes"
-          element={
-            <MainLayout>
-              <BestAthletes />
-            </MainLayout>
-          }
-        />
-
-        <Route
-          path="/events"
-          element={
-            <MainLayout>
-              <Events />
-            </MainLayout>
-          }
-        />
-
-        <Route
-          path="/rankings"
-          element={
-            <MainLayout>
-              <Rankings />
             </MainLayout>
           }
         />
@@ -131,39 +89,6 @@ export default function App() {
             <AdminRoute>
               <AdminLayout>
                 <EditHomepage />
-              </AdminLayout>
-            </AdminRoute>
-          }
-        />
-
-        <Route
-          path="/admin/results"
-          element={
-            <AdminRoute>
-              <AdminLayout>
-                <Results />
-              </AdminLayout>
-            </AdminRoute>
-          }
-        />
-
-        <Route
-          path="/admin/events"
-          element={
-            <AdminRoute>
-              <AdminLayout>
-                <ManageEvents />
-              </AdminLayout>
-            </AdminRoute>
-          }
-        />
-
-        <Route
-          path="/admin/rankings"
-          element={
-            <AdminRoute>
-              <AdminLayout>
-                <ManageRankings />
               </AdminLayout>
             </AdminRoute>
           }

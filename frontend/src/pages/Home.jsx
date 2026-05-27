@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, ChevronRight, Trophy, Megaphone } from "lucide-react";
+import { ChevronRight, Trophy, Megaphone, Image as ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import API from "../api/axios";
 import { Card, CardHeader, CardTitle } from "../components/ui/Card";
@@ -87,14 +87,14 @@ export default function Home() {
               </p>
               
               <div className="flex flex-wrap gap-4">
-                <Link to="/results">
+                <Link to="/gallery">
                   <Button size="lg" className="gap-2 shadow-[0_0_20px_rgba(6,182,212,0.4)]">
-                    View Results <Trophy className="w-5 h-5" />
+                    View Gallery <ImageIcon className="w-5 h-5" />
                   </Button>
                 </Link>
-                <Link to="/events">
+                <Link to="/records">
                   <Button variant="surface" size="lg" className="gap-2">
-                    Upcoming Events <Calendar className="w-5 h-5" />
+                    All-Time Records <Trophy className="w-5 h-5" />
                   </Button>
                 </Link>
               </div>

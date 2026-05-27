@@ -23,10 +23,9 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/events" className="text-text-muted hover:text-primary transition-colors">Upcoming Events</Link></li>
-              <li><Link to="/results" className="text-text-muted hover:text-primary transition-colors">Latest Results</Link></li>
               <li><Link to="/records" className="text-text-muted hover:text-primary transition-colors">All-Time Records</Link></li>
-              <li><Link to="/rankings" className="text-text-muted hover:text-primary transition-colors">Athlete Rankings</Link></li>
+              <li><Link to="/announcements" className="text-text-muted hover:text-primary transition-colors">Announcements</Link></li>
+              <li><Link to="/gallery" className="text-text-muted hover:text-primary transition-colors">Gallery</Link></li>
             </ul>
           </div>
           
