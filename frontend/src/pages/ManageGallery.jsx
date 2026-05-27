@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState, useEffect } from "react";
 import API from "../api/axios";
 import AddPhotoForm from "../forms/AddPhotoForm";

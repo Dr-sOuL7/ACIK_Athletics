@@ -1,4 +1,4 @@
-import { Trophy, Medal, Star, Trash2 } from "lucide-react";
+import { Medal, Star, Trash2 } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "./ui/Card";
 import { Button } from "./ui/Button";
 

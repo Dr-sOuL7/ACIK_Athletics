@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Mail } from "lucide-react";
 import AuthLayout from "../layouts/AuthLayout";
 import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
 import { supabase } from "../api/supabase";
 
 export default function ForgotPassword() {

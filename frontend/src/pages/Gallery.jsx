@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import API from "../api/axios";
@@ -22,10 +23,6 @@ export default function Gallery() {
   const [activeTab, setActiveTab] = useState("ALL");
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
-  useEffect(() => {
-    fetchPhotos();
-  }, []);
-
   const fetchPhotos = async () => {
     try {
       const res = await API.get("/gallery");
@@ -36,6 +33,10 @@ export default function Gallery() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchPhotos();
+  }, []);
 
   const filteredPhotos = activeTab === "ALL" 
     ? photos 

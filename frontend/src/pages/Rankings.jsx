@@ -106,7 +106,7 @@ export default function Rankings() {
               animate="visible"
               className="bg-surface divide-y divide-surface-elevated"
             >
-              {filteredRankings.map((item, index) => (
+              {filteredRankings.map((item) => (
                 <motion.tr 
                   key={item.id} 
                   variants={itemVariants}

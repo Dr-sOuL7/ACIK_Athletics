@@ -8,6 +8,19 @@ export default function AuthProvider({ children }) {
   const [role, setRole] = useState("student");
   const [loading, setLoading] = useState(true);
 
+  const fetchRole = async (userId) => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single();
+    
+    if (data) {
+      setRole(data.role);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -32,18 +45,6 @@ export default function AuthProvider({ children }) {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const fetchRole = async (userId) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userId)
-      .single();
-    if (data) {
-      setRole(data.role);
-    }
-    setLoading(false);
-  };
 
   const login = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });

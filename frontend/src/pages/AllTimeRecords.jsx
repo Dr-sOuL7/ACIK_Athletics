@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Search, Calendar, MapPin, Medal, Loader2, ArrowRight } from "lucide-react";
+import { Trophy, Medal, Search, Calendar, MapPin, Loader2 } from "lucide-react";
 import API from "../api/axios";
 
 export default function AllTimeRecords() {

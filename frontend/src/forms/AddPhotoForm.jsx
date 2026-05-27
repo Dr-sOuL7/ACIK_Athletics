@@ -37,7 +37,7 @@ export default function AddPhotoForm({ refresh }) {
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
       const filePath = `${category}/${fileName}`;
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from("gallery_images")
         .upload(filePath, file);
 

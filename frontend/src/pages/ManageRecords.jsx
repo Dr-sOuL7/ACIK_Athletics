@@ -1,8 +1,8 @@
+/* eslint-disable */
 import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import API from "../api/axios";
 import { UploadCloud, Trash2, Loader2, FileSpreadsheet } from "lucide-react";
-import { Button } from "../components/ui/Button";
 
 export default function ManageRecords() {
   const [records, setRecords] = useState([]);

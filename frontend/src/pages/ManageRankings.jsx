@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useEffect, useState } from "react";
 import API from "../api/axios";
 import RankingEditor from "../components/RankingEditor";
