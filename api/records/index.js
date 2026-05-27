@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { supabaseAdmin, authenticateAdmin } from '../../utils/supabase.js';
+import { supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
 
 const recordSchema = z.object({
   name: z.string().min(1),

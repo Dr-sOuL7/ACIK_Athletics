@@ -1,4 +1,4 @@
-import { supabaseAdmin, authenticateAdmin } from '../../utils/supabase.js';
+import { supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
 
 export default async function handler(req, res) {
   const { id } = req.query;

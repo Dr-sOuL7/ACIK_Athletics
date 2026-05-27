@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { supabaseAdmin, authenticateAdmin } from '../../utils/supabase.js';
+import { supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
 
 const rankingSchema = z.object({
   gold_medals: z.coerce.number().int().nonnegative().optional().default(0),

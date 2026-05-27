@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { supabaseAdmin, authenticateAdmin } from '../../utils/supabase.js';
+import { supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
 
 const eventSchema = z.object({
   title: z.string().min(1),
