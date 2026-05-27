@@ -52,16 +52,21 @@ export default function AllTimeRecords() {
   ];
 
   const PREDEFINED_GENDERS = ["Male", "Female"];
+  const PREDEFINED_YEARS = ["27", "26", "25", "24", "23"];
 
   const uniqueTournaments = useMemo(() => {
     return [...new Set(records.map(r => r.tournament).filter(Boolean))].sort();
   }, [records]);
 
-  const uniqueYears = useMemo(() => {
-    return [...new Set(records.map(r => r.year).filter(Boolean))].sort((a, b) => b - a);
-  }, [records]);
-
   const otherTournaments = uniqueTournaments.filter(t => !PREDEFINED_TOURNAMENTS.includes(t));
+
+  const formatYear = (y) => {
+    if (!y) return "";
+    const s = String(y).trim();
+    if (s.length === 4) return s.slice(2);
+    if (s.includes("-")) return s.split("-")[0].slice(2);
+    return s;
+  };
 
   // Apply filters
   const filteredRecords = useMemo(() => {
@@ -69,7 +74,7 @@ export default function AllTimeRecords() {
       const matchEvent = selectedEvent === "" || record.event === selectedEvent;
       const matchTournament = selectedTournament === "" || record.tournament === selectedTournament;
       const matchGender = selectedGender === "" || record.gender === selectedGender;
-      const matchYear = selectedYear === "" || record.year?.toString() === selectedYear;
+      const matchYear = selectedYear === "" || formatYear(record.year) === selectedYear;
       
       const query = searchQuery.toLowerCase();
       const matchSearch = query === "" || 
@@ -185,7 +190,7 @@ export default function AllTimeRecords() {
                 onChange={(e) => setSelectedYear(e.target.value)}
               >
                 <option value="">All Years</option>
-                {uniqueYears.map(y => <option key={y} value={y}>{y}</option>)}
+                {PREDEFINED_YEARS.map(y => <option key={y} value={y}>'{y}</option>)}
               </select>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
                 ▼
@@ -286,7 +291,7 @@ export default function AllTimeRecords() {
                           <Calendar className="w-4 h-4" /> Year
                         </div>
                         <div className="font-medium text-white/90">
-                          {record.year || "Unknown"}
+                          {record.year ? `'${formatYear(record.year)}` : "Unknown"}
                         </div>
                       </div>
                     </div>
