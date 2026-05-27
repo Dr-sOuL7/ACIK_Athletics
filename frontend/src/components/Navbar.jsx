@@ -2,9 +2,9 @@ import { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, LogOut, LayoutDashboard, Shield, Trophy, Megaphone, Calendar } from "lucide-react";
-import { cn } from "../../utils/cn";
+import { cn } from "../utils/cn";
 import { Button } from "./ui/Button";
-import { AuthContext } from "../../context/auth";
+import { AuthContext } from "../context/auth";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
