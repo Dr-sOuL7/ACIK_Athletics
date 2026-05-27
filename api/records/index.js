@@ -2,13 +2,13 @@ import { z } from 'zod';
 import { supabase, supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
 
 const recordSchema = z.object({
-  name: z.string().min(1).optional(),
-  roll_number: z.string().min(1).optional(),
+  name: z.string().optional(),
+  roll_number: z.string().optional(),
   batch: z.string().optional(),
   place: z.string().optional(),
   date: z.string().optional(),
   tournament: z.string().optional(),
-  event: z.string().min(1).optional(),
+  event: z.string().optional(),
   gender: z.string().optional(),
   record: z.string().optional(),
   iism_record: z.string().optional(),

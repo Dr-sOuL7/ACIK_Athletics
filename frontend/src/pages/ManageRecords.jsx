@@ -15,7 +15,7 @@ export default function ManageRecords() {
   const EVENT_CATEGORIES = {
     "Track": ["100 m", "200 m", "400 m", "800 m", "1500 m", "3k m", "5k m", "10k m"],
     "Field": ["Long Jump", "Triple Jump", "Discus Throw", "Javelin Throw", "Shotput Throw"],
-    "Relay": ["4 x 100 m", "4 x 400 m", "Medley", "Mixed Relay"]
+    "Relay": ["4 x 100 m", "4 x 400 m", "Medley", "Mixed Relay 4 x 100 m", "Mixed Relay 4 x 400 m"]
   };
 
   const PREDEFINED_TOURNAMENTS = [
@@ -65,7 +65,16 @@ export default function ManageRecords() {
 
   const handleManualSubmit = async () => {
     const validRecords = manualRecords
-      .filter(row => row.name.trim() !== "" || row.roll_number.trim() !== "")
+      .filter(row => 
+        row.name.trim() !== "" || 
+        row.roll_number.trim() !== "" ||
+        row.batch.trim() !== "" ||
+        row.place.trim() !== "" ||
+        row.date.trim() !== "" ||
+        row.record.trim() !== "" ||
+        row.iism_record.trim() !== "" ||
+        (row.tournament_select === "Other" && row.tournament_other.trim() !== "")
+      )
       .map(row => {
         const { tournament_select, tournament_other, ...rest } = row;
         return {
@@ -75,7 +84,7 @@ export default function ManageRecords() {
       });
 
     if (validRecords.length === 0) {
-      setError("Please fill in at least one record (Name or Roll Number required).");
+      setError("Please fill in at least one field in a row to save.");
       return;
     }
 

@@ -152,6 +152,19 @@ export default function Home() {
         </motion.div>
       )}
 
+      {/* About Us Section */}
+      <section className="w-full">
+        <div className="glass p-8 md:p-12 rounded-3xl border border-white/5 space-y-6">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-6">About Us</h2>
+          <div className="space-y-4 text-lg text-text-muted leading-relaxed">
+            <p>The ACIK – Athletics Club of IISER Kolkata is the official track and field club of the Indian Institute of Science Education and Research Kolkata, established in 2006. The club brings together students with a shared passion for athletics, fostering both competitive excellence and a culture of fitness and discipline.</p>
+            <p>ACIK actively engages in a wide range of track and field events, including sprints (100m, 200m, 400m), middle and long-distance races (800m to 10000m), as well as field events such as shot put, discus throw, javelin throw, long jump, triple jump, and relays. The club provides a platform for athletes of all levels—from beginners to experienced competitors—to train, improve, and perform.</p>
+            <p>We proudly represent IISER Kolkata in major competitions such as <strong className="text-white">Pratap (Inter-College Athletics Meet)</strong>, <strong className="text-white">Open Athletics Meets</strong>, and <strong className="text-white">IISM (Inter IISER-NISER-CEBS Sports Meet)</strong>. Alongside these, we organize internal competitions like <strong className="text-white">Inter-Batch Meets</strong>, encouraging participation and healthy competition within the campus.</p>
+            <p>Beyond competition, ACIK is committed to building a strong athletic community—promoting teamwork, resilience, and the spirit of pushing limits. Whether aiming for podium finishes or personal fitness goals, the club welcomes everyone to be a part of the journey.</p>
+          </div>
+        </div>
+      </section>
+
       {/* Latest Updates Grid */}
       <section className="w-full">
         <div className="flex justify-between items-end mb-8">
