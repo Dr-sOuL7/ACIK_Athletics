@@ -54,7 +54,7 @@ export default async function handler(req, res) {
         
         const { data, error } = await supabaseAdmin
           .from('all_time_records')
-          .upsert(records, { onConflict: 'roll_number,event' });
+          .insert(records);
 
         if (error) return res.status(500).json({ error: error.message });
         return res.status(201).json({ msg: 'Bulk records added successfully', data });
@@ -67,7 +67,7 @@ export default async function handler(req, res) {
         const validatedData = recordSchema.parse(req.body);
         const { data, error } = await supabaseAdmin
           .from('all_time_records')
-          .upsert([validatedData], { onConflict: 'roll_number,event' });
+          .insert([validatedData]);
 
         if (error) return res.status(500).json({ error: error.message });
         return res.status(201).json({ msg: 'Record added successfully', data });

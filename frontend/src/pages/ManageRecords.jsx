@@ -132,7 +132,7 @@ export default function ManageRecords() {
       }));
 
       await API.post("/records?action=bulk", parsedData);
-      alert("Records uploaded successfully (overwriting duplicates).");
+      alert("Records uploaded successfully.");
       fetchRecords();
     } catch (err) {
       console.error(err);
@@ -285,9 +285,8 @@ export default function ManageRecords() {
           <FileSpreadsheet className="w-6 h-6 text-secondary" />
           Bulk Upload via CSV
         </h2>
-        <p className="text-text-muted text-sm">
+        <p className="text-text-muted text-sm mt-2">
           Upload a CSV or Excel (.xlsx) file. Expected columns: <b>Name, Roll Number, Batch, Place, Date, Tournament, Event, Gender, Record, IISM record</b>.
-          If a record with the same Roll Number and Event exists, it will be overwritten.
         </p>
         <div className="flex items-center justify-center w-full">
           <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-40 border-2 border-white/10 border-dashed rounded-xl cursor-pointer bg-surface-elevated hover:bg-surface-hover transition-colors">
