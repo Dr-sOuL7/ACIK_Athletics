@@ -9,6 +9,7 @@ const recordSchema = z.object({
   date: z.string().optional(),
   tournament: z.string().optional(),
   event: z.string().min(1).optional(),
+  gender: z.string().optional(),
   record: z.string().optional(),
   iism_record: z.string().optional(),
 });

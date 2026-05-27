@@ -10,6 +10,7 @@ export default function AllTimeRecords() {
   // Filters
   const [selectedEvent, setSelectedEvent] = useState("");
   const [selectedTournament, setSelectedTournament] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -35,20 +36,25 @@ export default function AllTimeRecords() {
     return [...new Set(records.map(r => r.tournament).filter(Boolean))].sort();
   }, [records]);
 
+  const uniqueGenders = useMemo(() => {
+    return [...new Set(records.map(r => r.gender).filter(Boolean))].sort();
+  }, [records]);
+
   // Apply filters
   const filteredRecords = useMemo(() => {
     return records.filter(record => {
       const matchEvent = selectedEvent === "" || record.event === selectedEvent;
       const matchTournament = selectedTournament === "" || record.tournament === selectedTournament;
+      const matchGender = selectedGender === "" || record.gender === selectedGender;
       
       const query = searchQuery.toLowerCase();
       const matchSearch = query === "" || 
         (record.name || "").toLowerCase().includes(query) || 
         (record.roll_number || "").toLowerCase().includes(query);
 
-      return matchEvent && matchTournament && matchSearch;
+      return matchEvent && matchTournament && matchGender && matchSearch;
     });
-  }, [records, selectedEvent, selectedTournament, searchQuery]);
+  }, [records, selectedEvent, selectedTournament, selectedGender, searchQuery]);
 
   if (loading) {
     return (
@@ -63,10 +69,10 @@ export default function AllTimeRecords() {
       {/* Header */}
       <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <h1 className="text-5xl md:text-7xl font-heading font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-          All-Time Records
+          Records Database
         </h1>
         <p className="text-lg md:text-xl text-text-muted max-w-2xl mx-auto">
-          Explore the historical achievements, legendary performances, and unbroken records of our finest athletes.
+          Explore the comprehensive database of historical achievements, legendary performances, and event records of our athletes.
         </p>
       </div>
 
@@ -76,7 +82,7 @@ export default function AllTimeRecords() {
           <Search className="w-5 h-5 text-primary" /> Find a Record
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Event Filter */}
           <div className="space-y-2">
             <label className="text-sm text-text-muted font-medium ml-1">Event Category</label>
@@ -106,6 +112,24 @@ export default function AllTimeRecords() {
               >
                 <option value="">All Tournaments</option>
                 {uniqueTournaments.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                ▼
+              </div>
+            </div>
+          </div>
+
+          {/* Gender Filter */}
+          <div className="space-y-2">
+            <label className="text-sm text-text-muted font-medium ml-1">Gender</label>
+            <div className="relative">
+              <select 
+                className="w-full appearance-none bg-surface-elevated border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all cursor-pointer"
+                value={selectedGender}
+                onChange={(e) => setSelectedGender(e.target.value)}
+              >
+                <option value="">All Genders</option>
+                {uniqueGenders.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
                 ▼
@@ -171,8 +195,15 @@ export default function AllTimeRecords() {
 
                   <div className="relative z-10 space-y-4">
                     <div>
-                      <div className="text-primary font-bold tracking-widest uppercase text-xs mb-1">
-                        {record.event}
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-primary font-bold tracking-widest uppercase text-xs">
+                          {record.event}
+                        </span>
+                        {record.gender && (
+                          <span className="bg-white/10 text-white/80 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full">
+                            {record.gender}
+                          </span>
+                        )}
                       </div>
                       <h3 className="text-2xl font-heading font-bold text-white mb-1">
                         {record.name}

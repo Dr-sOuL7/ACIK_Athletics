@@ -49,6 +49,7 @@ export default function ManageRecords() {
         date: row["Date"]?.toString().trim() || "",
         tournament: row["Tournament"]?.toString().trim() || "",
         event: row["Event"]?.toString().trim() || "",
+        gender: row["Gender"]?.toString().trim() || "",
         record: row["Record"]?.toString().trim() || "",
         iism_record: row["IISM record"]?.toString().trim() || row["IISM record (if any)"]?.toString().trim() || ""
       }));
@@ -105,7 +106,7 @@ export default function ManageRecords() {
           Bulk Upload via CSV
         </h2>
         <p className="text-text-muted text-sm">
-          Upload a CSV or Excel (.xlsx) file. Expected columns: <b>Name, Roll Number, Batch, Place, Date, Tournament, Event, Record, IISM record</b>.
+          Upload a CSV or Excel (.xlsx) file. Expected columns: <b>Name, Roll Number, Batch, Place, Date, Tournament, Event, Gender, Record, IISM record</b>.
           If a record with the same Roll Number and Event exists, it will be overwritten.
         </p>
         <div className="flex items-center justify-center w-full">
@@ -139,6 +140,7 @@ export default function ManageRecords() {
                 <tr className="border-b border-white/10 text-text-muted text-sm uppercase tracking-wider">
                   <th className="p-3">Name (Roll)</th>
                   <th className="p-3">Event</th>
+                  <th className="p-3">Gender</th>
                   <th className="p-3">Tournament</th>
                   <th className="p-3">Record</th>
                   <th className="p-3">Actions</th>
@@ -157,6 +159,7 @@ export default function ManageRecords() {
                         <div className="text-xs text-text-muted">{r.roll_number} - {r.batch}</div>
                       </td>
                       <td className="p-3 font-medium text-primary">{r.event}</td>
+                      <td className="p-3 text-sm">{r.gender}</td>
                       <td className="p-3 text-sm">{r.tournament}</td>
                       <td className="p-3 font-mono text-secondary">{r.record}</td>
                       <td className="p-3">
