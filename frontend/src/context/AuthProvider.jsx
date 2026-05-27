@@ -48,7 +48,18 @@ export default function AuthProvider({ children }) {
   const login = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-    return data;
+    
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .single();
+      
+    if (profile) {
+      setRole(profile.role);
+    }
+    
+    return { data, role: profile?.role || "student" };
   };
 
   const logout = async () => {

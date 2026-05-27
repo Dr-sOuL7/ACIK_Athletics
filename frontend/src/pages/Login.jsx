@@ -7,7 +7,7 @@ import { Button } from "../components/ui/Button";
 import { AuthContext } from "../context/auth";
 
 export default function Login() {
-  const { login } = useContext(AuthContext);
+  const { login, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +20,12 @@ export default function Login() {
     setLoading(true);
     setError(null);
     try {
-      await login(email, password);
+      const response = await login(email, password);
+      if (response.role !== "admin") {
+        await logout();
+        setError("Unauthorized: This portal is for administrators only.");
+        return;
+      }
       navigate("/admin");
     } catch (err) {
       console.log(err);

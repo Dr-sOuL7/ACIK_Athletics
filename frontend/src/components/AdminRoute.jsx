@@ -1,32 +1,20 @@
+import { useContext } from "react";
 import { Navigate } from "react-router-dom";
+import { AuthContext } from "../context/auth";
 
-import { jwtDecode } from "jwt-decode";
+export default function AdminRoute({ children }) {
+  const { token, role, loading } = useContext(AuthContext);
 
-export default function AdminRoute({
-  children,
-}) {
-
-  const token =
-    localStorage.getItem("token");
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center bg-background text-primary">Loading...</div>;
+  }
 
   if (!token) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
-  let decoded;
-
-  try {
-
-    decoded = jwtDecode(token);
-
-  } catch {
-
-    return <Navigate to="/login" />;
-  }
-
-  if (decoded.role !== "admin") {
-
-    return <Navigate to="/" />;
+  if (role !== "admin") {
+    return <Navigate to="/" replace />;
   }
 
   return children;
