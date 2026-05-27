@@ -20,7 +20,21 @@ export default async function handler(req, res) {
 
     try {
       if (!Array.isArray(req.body)) return res.status(400).json({ error: 'Expected an array of records' });
-      const records = req.body.map(r => recordSchema.parse(r));
+      
+      const records = [];
+      const errors = [];
+      req.body.forEach((r, idx) => {
+        const result = recordSchema.safeParse(r);
+        if (!result.success) {
+          errors.push(`Row ${idx + 1}: ${result.error.errors.map(e => `${e.path.join('.') || 'field'} - ${e.message}`).join(', ')}`);
+        } else {
+          records.push(result.data);
+        }
+      });
+
+      if (errors.length > 0) {
+        return res.status(400).json({ error: `Validation failed:\n${errors.join('\n')}` });
+      }
       
       const { data, error } = await supabaseAdmin
         .from('all_time_records')
@@ -29,9 +43,7 @@ export default async function handler(req, res) {
       if (error) return res.status(500).json({ error: error.message });
       return res.status(201).json({ msg: 'Bulk records added successfully', data });
     } catch (e) {
-      if (e instanceof z.ZodError) {
-        return res.status(400).json({ error: e.errors });
-      }
+      console.error(e);
       return res.status(500).json({ error: 'Server error' });
     }
   }

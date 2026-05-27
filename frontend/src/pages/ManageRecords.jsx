@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Papa from "papaparse";
+import * as XLSX from "xlsx";
 import API from "../api/axios";
 import { UploadCloud, Trash2, Loader2, FileSpreadsheet } from "lucide-react";
 import { Button } from "../components/ui/Button";
@@ -27,45 +27,47 @@ export default function ManageRecords() {
     fetchRecords();
   }, []);
 
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setUploading(true);
     setError(null);
 
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: async (results) => {
-        try {
-          const parsedData = results.data.map(row => ({
-            name: row["Name"] || "",
-            roll_number: row["Roll Number"] || "",
-            batch: row["Batch"] || "",
-            place: row["Place"] || "",
-            date: row["Date"] || "",
-            tournament: row["Tournament"] || "",
-            event: row["Event"] || "",
-            record: row["Record"] || "",
-            iism_record: row["IISM record"] || row["IISM record (if any)"] || ""
-          }));
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const results = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-          await API.post("/records/bulk", parsedData);
-          alert("Records uploaded successfully (overwriting duplicates).");
-          fetchRecords();
-        } catch (err) {
-          console.error(err);
-          setError("Failed to upload bulk records.");
-        } finally {
-          setUploading(false);
-        }
-      },
-      error: (err) => {
-        setError("Error parsing CSV file.");
-        setUploading(false);
+      const parsedData = results.map(row => ({
+        name: row["Name"]?.toString().trim() || "",
+        roll_number: row["Roll Number"]?.toString().trim() || "",
+        batch: row["Batch"]?.toString().trim() || "",
+        place: row["Place"]?.toString().trim() || "",
+        date: row["Date"]?.toString().trim() || "",
+        tournament: row["Tournament"]?.toString().trim() || "",
+        event: row["Event"]?.toString().trim() || "",
+        record: row["Record"]?.toString().trim() || "",
+        iism_record: row["IISM record"]?.toString().trim() || row["IISM record (if any)"]?.toString().trim() || ""
+      }));
+
+      await API.post("/records/bulk", parsedData);
+      alert("Records uploaded successfully (overwriting duplicates).");
+      fetchRecords();
+    } catch (err) {
+      console.error(err);
+      const serverError = err.response?.data?.error;
+      if (serverError) {
+        setError(serverError);
+      } else {
+        setError(err.message || "Failed to upload bulk records.");
       }
-    });
+    } finally {
+      setUploading(false);
+      e.target.value = null;
+    }
   };
 
   const handleDelete = async (id) => {
@@ -91,7 +93,7 @@ export default function ManageRecords() {
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-4 rounded-lg">
+        <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-4 rounded-lg whitespace-pre-wrap font-mono text-sm">
           {error}
         </div>
       )}
@@ -103,7 +105,7 @@ export default function ManageRecords() {
           Bulk Upload via CSV
         </h2>
         <p className="text-text-muted text-sm">
-          Upload a CSV file. Expected columns: <b>Name, Roll Number, Batch, Place, Date, Tournament, Event, Record, IISM record</b>.
+          Upload a CSV or Excel (.xlsx) file. Expected columns: <b>Name, Roll Number, Batch, Place, Date, Tournament, Event, Record, IISM record</b>.
           If a record with the same Roll Number and Event exists, it will be overwritten.
         </p>
         <div className="flex items-center justify-center w-full">
@@ -113,9 +115,9 @@ export default function ManageRecords() {
               <p className="mb-2 text-sm text-text-muted">
                 <span className="font-semibold text-text-main">Click to upload</span> or drag and drop
               </p>
-              <p className="text-xs text-text-muted">CSV files only</p>
+              <p className="text-xs text-text-muted">CSV or Excel files (.xlsx)</p>
             </div>
-            <input id="dropzone-file" type="file" accept=".csv" className="hidden" onChange={handleFileUpload} disabled={uploading} />
+            <input id="dropzone-file" type="file" accept=".csv, .xlsx, .xls" className="hidden" onChange={handleFileUpload} disabled={uploading} />
           </label>
         </div>
         {uploading && (
