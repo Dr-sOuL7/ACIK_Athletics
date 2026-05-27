@@ -1,0 +1,57 @@
+import { z } from 'zod';
+import { supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
+
+const photoUpdateSchema = z.object({
+  category: z.string().min(1).optional(),
+  caption: z.string().optional(),
+});
+
+export default async function handler(req, res) {
+  const { id } = req.query;
+  if (!id) return res.status(400).json({ error: 'Missing id' });
+
+  if (req.method === 'PUT') {
+    const auth = await authenticateAdmin(req);
+    if (auth.error) return res.status(auth.status).json({ error: auth.error });
+
+    try {
+      const validatedData = photoUpdateSchema.parse(req.body);
+      const { data, error } = await supabaseAdmin
+        .from('gallery')
+        .update(validatedData)
+        .eq('id', id)
+        .select();
+
+      if (error) return res.status(500).json({ error: error.message });
+      if (!data || data.length === 0) return res.status(404).json({ error: 'Photo not found' });
+      return res.status(200).json({ msg: 'Photo updated', data: data[0] });
+    } catch (e) {
+      if (e instanceof z.ZodError) {
+        return res.status(400).json({ error: e.errors });
+      }
+      return res.status(500).json({ error: 'Server error' });
+    }
+  }
+
+  if (req.method === 'DELETE') {
+    const auth = await authenticateAdmin(req);
+    if (auth.error) return res.status(auth.status).json({ error: auth.error });
+
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('gallery')
+        .delete()
+        .eq('id', id)
+        .select();
+
+      if (error) return res.status(500).json({ error: error.message });
+      if (!data || data.length === 0) return res.status(404).json({ error: 'Photo not found' });
+      return res.status(200).json({ msg: 'Photo deleted' });
+    } catch (e) {
+      return res.status(500).json({ error: 'Server error' });
+    }
+  }
+
+  res.setHeader('Allow', ['PUT', 'DELETE']);
+  res.status(405).end(`Method ${req.method} Not Allowed`);
+}

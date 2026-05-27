@@ -22,12 +22,14 @@ import Events from "./pages/Events";
 import Rankings from "./pages/Rankings";
 import AllTimeRecords from "./pages/AllTimeRecords";
 import Announcements from "./pages/Announcements";
+import Gallery from "./pages/Gallery";
 
 import AdminDashboard from "./pages/AdminDashboard";
 import EditHomepage from "./pages/EditHomepage";
 import ManageRecords from "./pages/ManageRecords";
 import ManageRankings from "./pages/ManageRankings";
 import ManageEvents from "./pages/ManageEvents";
+import ManageGallery from "./pages/ManageGallery";
 
 export default function App() {
   return (
@@ -97,6 +99,15 @@ export default function App() {
           element={
             <MainLayout>
               <Announcements />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/gallery"
+          element={
+            <MainLayout>
+              <Gallery />
             </MainLayout>
           }
         />
@@ -175,6 +186,17 @@ export default function App() {
             <AdminRoute>
               <AdminLayout>
                 <Announcements />
+              </AdminLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/gallery"
+          element={
+            <AdminRoute>
+              <AdminLayout>
+                <ManageGallery />
               </AdminLayout>
             </AdminRoute>
           }

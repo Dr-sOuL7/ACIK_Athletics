@@ -76,6 +76,7 @@ export default function AdminLayout({
           <Link to="/admin/records" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Records</Link>
           <Link to="/admin/rankings" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Rankings</Link>
           <Link to="/admin/announcements" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Announcements</Link>
+          <Link to="/admin/gallery" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Gallery</Link>
 
         </nav>
 
