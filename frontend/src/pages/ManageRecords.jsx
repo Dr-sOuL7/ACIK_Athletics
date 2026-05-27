@@ -27,7 +27,7 @@ export default function ManageRecords() {
     "INTER BATCH"
   ];
 
-  const emptyRow = { name: "", roll_number: "", batch: "", place: "", date: "", tournament_select: "PRATAP", tournament_other: "", event: "100 m", gender: "Male", record: "", iism_record: "" };
+  const emptyRow = { name: "", roll_number: "", batch: "", place: "", year: "", tournament_select: "PRATAP", tournament_other: "", event: "100 m", gender: "Male", record: "", iism_record: "" };
   const [manualRecords, setManualRecords] = useState([{ ...emptyRow }]);
   const [submittingManual, setSubmittingManual] = useState(false);
 
@@ -70,7 +70,7 @@ export default function ManageRecords() {
         row.roll_number.trim() !== "" ||
         row.batch.trim() !== "" ||
         row.place.trim() !== "" ||
-        row.date.trim() !== "" ||
+        row.year.trim() !== "" ||
         row.record.trim() !== "" ||
         row.iism_record.trim() !== "" ||
         (row.tournament_select === "Other" && row.tournament_other.trim() !== "")
@@ -123,7 +123,7 @@ export default function ManageRecords() {
         roll_number: row["Roll Number"]?.toString().trim() || "",
         batch: row["Batch"]?.toString().trim() || "",
         place: row["Place"]?.toString().trim() || "",
-        date: row["Date"]?.toString().trim() || "",
+        year: row["Year"]?.toString().trim() || row["Date"]?.toString().trim() || "",
         tournament: row["Tournament"]?.toString().trim() || "",
         event: row["Event"]?.toString().trim() || "",
         gender: row["Gender"]?.toString().trim() || "",
@@ -198,7 +198,7 @@ export default function ManageRecords() {
                 <th className="p-2 w-[12%]">Tournament</th>
                 <th className="p-2 w-[10%]">Record</th>
                 <th className="p-2 w-[10%]">Place</th>
-                <th className="p-2 w-[8%]">Date</th>
+                <th className="p-2 w-[8%]">Year</th>
                 <th className="p-2 w-[5%]"></th>
               </tr>
             </thead>
@@ -251,7 +251,7 @@ export default function ManageRecords() {
                   </td>
                   <td className="p-1"><Input value={row.record} onChange={(e) => handleRowChange(index, "record", e.target.value)} placeholder="10.5s" className="h-8 text-sm" /></td>
                   <td className="p-1"><Input value={row.place} onChange={(e) => handleRowChange(index, "place", e.target.value)} placeholder="1st" className="h-8 text-sm" /></td>
-                  <td className="p-1"><Input type="date" value={row.date} onChange={(e) => handleRowChange(index, "date", e.target.value)} className="h-8 text-sm" /></td>
+                  <td className="p-1"><Input type="text" value={row.year} onChange={(e) => handleRowChange(index, "year", e.target.value)} placeholder="24" maxLength={2} className="h-8 text-sm w-12 text-center" /></td>
                   <td className="p-1 text-center">
                     <button 
                       onClick={() => handleRemoveRow(index)}
@@ -286,7 +286,7 @@ export default function ManageRecords() {
           Bulk Upload via CSV
         </h2>
         <p className="text-text-muted text-sm mt-2">
-          Upload a CSV or Excel (.xlsx) file. Expected columns: <b>Name, Roll Number, Batch, Place, Date, Tournament, Event, Gender, Record, IISM record</b>.
+          Upload a CSV or Excel (.xlsx) file. Expected columns: <b>Name, Roll Number, Batch, Place, Year, Tournament, Event, Gender, Record, IISM record</b>.
         </p>
         <div className="flex items-center justify-center w-full">
           <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-40 border-2 border-white/10 border-dashed rounded-xl cursor-pointer bg-surface-elevated hover:bg-surface-hover transition-colors">

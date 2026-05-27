@@ -11,6 +11,7 @@ export default function AllTimeRecords() {
   const [selectedEvent, setSelectedEvent] = useState("");
   const [selectedTournament, setSelectedTournament] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -56,6 +57,10 @@ export default function AllTimeRecords() {
     return [...new Set(records.map(r => r.tournament).filter(Boolean))].sort();
   }, [records]);
 
+  const uniqueYears = useMemo(() => {
+    return [...new Set(records.map(r => r.year).filter(Boolean))].sort((a, b) => b - a);
+  }, [records]);
+
   const otherTournaments = uniqueTournaments.filter(t => !PREDEFINED_TOURNAMENTS.includes(t));
 
   // Apply filters
@@ -64,15 +69,16 @@ export default function AllTimeRecords() {
       const matchEvent = selectedEvent === "" || record.event === selectedEvent;
       const matchTournament = selectedTournament === "" || record.tournament === selectedTournament;
       const matchGender = selectedGender === "" || record.gender === selectedGender;
+      const matchYear = selectedYear === "" || record.year?.toString() === selectedYear;
       
       const query = searchQuery.toLowerCase();
       const matchSearch = query === "" || 
         (record.name || "").toLowerCase().includes(query) || 
         (record.roll_number || "").toLowerCase().includes(query);
 
-      return matchEvent && matchTournament && matchGender && matchSearch;
+      return matchEvent && matchTournament && matchGender && matchYear && matchSearch;
     });
-  }, [records, selectedEvent, selectedTournament, selectedGender, searchQuery]);
+  }, [records, selectedEvent, selectedTournament, selectedGender, selectedYear, searchQuery]);
 
   if (loading) {
     return (
@@ -169,6 +175,24 @@ export default function AllTimeRecords() {
             </div>
           </div>
 
+          {/* Year Filter */}
+          <div className="space-y-2">
+            <label className="text-sm text-text-muted font-medium ml-1">Year</label>
+            <div className="relative">
+              <select 
+                className="w-full appearance-none bg-surface-elevated border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all cursor-pointer"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+              >
+                <option value="">All Years</option>
+                {uniqueYears.map(y => <option key={y} value={y}>{y}</option>)}
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                ▼
+              </div>
+            </div>
+          </div>
+
           {/* Search by Name/Roll */}
           <div className="space-y-2">
             <label className="text-sm text-text-muted font-medium ml-1">Search Athlete</label>
@@ -196,7 +220,7 @@ export default function AllTimeRecords() {
             <h3 className="text-2xl font-bold mb-2">No Records Found</h3>
             <p className="text-text-muted">Try adjusting your filters to see more results.</p>
             <button 
-              onClick={() => { setSelectedEvent(""); setSelectedTournament(""); setSearchQuery(""); }}
+              onClick={() => { setSelectedEvent(""); setSelectedTournament(""); setSelectedGender(""); setSelectedYear(""); setSearchQuery(""); }}
               className="mt-6 text-primary hover:text-primary-hover font-medium underline-offset-4 hover:underline"
             >
               Clear all filters
@@ -259,10 +283,10 @@ export default function AllTimeRecords() {
                       
                       <div>
                         <div className="text-text-muted flex items-center gap-1 mb-1">
-                          <Calendar className="w-4 h-4" /> Date
+                          <Calendar className="w-4 h-4" /> Year
                         </div>
                         <div className="font-medium text-white/90">
-                          {record.date || "Unknown"}
+                          {record.year || "Unknown"}
                         </div>
                       </div>
                     </div>

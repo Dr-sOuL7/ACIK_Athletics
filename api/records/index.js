@@ -6,7 +6,7 @@ const recordSchema = z.object({
   roll_number: z.string().optional(),
   batch: z.string().optional(),
   place: z.string().optional(),
-  date: z.string().optional(),
+  year: z.string().optional(),
   tournament: z.string().optional(),
   event: z.string().optional(),
   gender: z.string().optional(),
