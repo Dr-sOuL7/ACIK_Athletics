@@ -25,7 +25,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link to="/events" className="text-text-muted hover:text-primary transition-colors">Upcoming Events</Link></li>
               <li><Link to="/results" className="text-text-muted hover:text-primary transition-colors">Latest Results</Link></li>
-              <li><Link to="/all-time-records" className="text-text-muted hover:text-primary transition-colors">All-Time Records</Link></li>
+              <li><Link to="/records" className="text-text-muted hover:text-primary transition-colors">All-Time Records</Link></li>
               <li><Link to="/rankings" className="text-text-muted hover:text-primary transition-colors">Athlete Rankings</Link></li>
             </ul>
           </div>
@@ -43,7 +43,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary shrink-0" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
-                <a href="#" aria-label="Visit our Instagram Profile" className="hover:text-white transition-colors">@iiserk_sports</a>
+                <a href="https://www.instagram.com/athletics.iiserk?igsh=YTYwa3ZzZWI2bWdk" target="_blank" rel="noopener noreferrer" aria-label="Visit our Instagram Profile" className="hover:text-white transition-colors">athletics.iiserk</a>
               </li>
             </ul>
           </div>
