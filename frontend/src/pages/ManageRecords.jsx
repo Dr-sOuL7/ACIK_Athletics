@@ -12,7 +12,13 @@ export default function ManageRecords() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
 
-  const emptyRow = { name: "", roll_number: "", batch: "", place: "", date: "", tournament: "", event: "", gender: "Male", record: "", iism_record: "" };
+  const EVENT_CATEGORIES = {
+    "Track": ["100 m", "200 m", "400 m", "800 m", "1500 m", "3k m", "5k m", "10k m"],
+    "Field": ["Long Jump", "Triple Jump", "Discus Throw", "Javelin Throw", "Shotput Throw"],
+    "Relay": ["4 x 100 m", "4 x 400 m", "Medley", "Mixed Relay"]
+  };
+
+  const emptyRow = { name: "", roll_number: "", batch: "", place: "", date: "", tournament: "", event: "100 m", gender: "Male", record: "", iism_record: "" };
   const [manualRecords, setManualRecords] = useState([{ ...emptyRow }]);
   const [submittingManual, setSubmittingManual] = useState(false);
 
@@ -175,7 +181,19 @@ export default function ManageRecords() {
                   <td className="p-1"><Input value={row.name} onChange={(e) => handleRowChange(index, "name", e.target.value)} placeholder="Name" className="h-8 text-sm" /></td>
                   <td className="p-1"><Input value={row.roll_number} onChange={(e) => handleRowChange(index, "roll_number", e.target.value)} placeholder="Roll" className="h-8 text-sm" /></td>
                   <td className="p-1"><Input value={row.batch} onChange={(e) => handleRowChange(index, "batch", e.target.value)} placeholder="Batch" className="h-8 text-sm" /></td>
-                  <td className="p-1"><Input value={row.event} onChange={(e) => handleRowChange(index, "event", e.target.value)} placeholder="Event" className="h-8 text-sm" /></td>
+                  <td className="p-1">
+                    <select 
+                      value={row.event} 
+                      onChange={(e) => handleRowChange(index, "event", e.target.value)}
+                      className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    >
+                      {Object.entries(EVENT_CATEGORIES).map(([category, events]) => (
+                        <optgroup key={category} label={category} className="bg-surface text-text-muted">
+                          {events.map(ev => <option key={ev} value={ev} className="text-white">{ev}</option>)}
+                        </optgroup>
+                      ))}
+                    </select>
+                  </td>
                   <td className="p-1">
                     <select 
                       value={row.gender} 

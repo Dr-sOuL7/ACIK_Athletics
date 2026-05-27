@@ -27,10 +27,19 @@ export default function AllTimeRecords() {
     loadRecords();
   }, []);
 
+  const EVENT_CATEGORIES = {
+    "Track": ["100 m", "200 m", "400 m", "800 m", "1500 m", "3k m", "5k m", "10k m"],
+    "Field": ["Long Jump", "Triple Jump", "Discus Throw", "Javelin Throw", "Shotput Throw"],
+    "Relay": ["4 x 100 m", "4 x 400 m", "Medley", "Mixed Relay"]
+  };
+  const PREDEFINED_EVENTS = Object.values(EVENT_CATEGORIES).flat();
+
   // Extract unique events and tournaments for dropdowns
   const uniqueEvents = useMemo(() => {
     return [...new Set(records.map(r => r.event).filter(Boolean))].sort();
   }, [records]);
+
+  const otherEvents = uniqueEvents.filter(ev => !PREDEFINED_EVENTS.includes(ev));
 
   const uniqueTournaments = useMemo(() => {
     return [...new Set(records.map(r => r.tournament).filter(Boolean))].sort();
@@ -93,7 +102,16 @@ export default function AllTimeRecords() {
                 onChange={(e) => setSelectedEvent(e.target.value)}
               >
                 <option value="">All Events</option>
-                {uniqueEvents.map(ev => <option key={ev} value={ev}>{ev}</option>)}
+                {Object.entries(EVENT_CATEGORIES).map(([category, events]) => (
+                  <optgroup key={category} label={category} className="bg-surface text-text-muted">
+                    {events.map(ev => <option key={ev} value={ev} className="text-white">{ev}</option>)}
+                  </optgroup>
+                ))}
+                {otherEvents.length > 0 && (
+                  <optgroup label="Other Events" className="bg-surface text-text-muted">
+                    {otherEvents.map(ev => <option key={ev} value={ev} className="text-white">{ev}</option>)}
+                  </optgroup>
+                )}
               </select>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
                 ▼
