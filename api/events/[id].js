@@ -1,0 +1,49 @@
+import { z } from 'zod';
+import { supabaseAdmin, authenticateAdmin } from '../../utils/supabase.js';
+
+const eventSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().optional(),
+  location: z.string().optional(),
+  event_date: z.string().optional(),
+  event_time: z.string().optional(),
+  category: z.string().optional(),
+});
+
+export default async function handler(req, res) {
+  const { id } = req.query;
+
+  const auth = await authenticateAdmin(req);
+  if (auth.error) return res.status(auth.status).json({ error: auth.error });
+
+  if (req.method === 'PUT') {
+    try {
+      const validatedData = eventSchema.parse(req.body);
+      const { data, error } = await supabaseAdmin
+        .from('events')
+        .update(validatedData)
+        .eq('id', id);
+
+      if (error) return res.status(500).json({ error: error.message });
+      return res.status(200).json({ msg: 'Event updated', data });
+    } catch (e) {
+      if (e instanceof z.ZodError) {
+        return res.status(400).json({ error: e.errors });
+      }
+      return res.status(500).json({ error: 'Server error' });
+    }
+  }
+
+  if (req.method === 'DELETE') {
+    const { error } = await supabaseAdmin
+      .from('events')
+      .delete()
+      .eq('id', id);
+
+    if (error) return res.status(500).json({ error: error.message });
+    return res.status(200).json({ msg: 'Event deleted' });
+  }
+
+  res.setHeader('Allow', ['PUT', 'DELETE']);
+  res.status(405).end(`Method ${req.method} Not Allowed`);
+}

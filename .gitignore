@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+
+# environment variables
+.env
+
+# build folders
+dist/
+build/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# uploads cache (optional)
+*.tmp
