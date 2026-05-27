@@ -13,7 +13,7 @@ export default function ManageAdmins() {
 
       const res =
         await API.get(
-          "/results/users"
+          "/admin/users"
         );
 
       setUsers(res.data);
@@ -32,7 +32,7 @@ export default function ManageAdmins() {
 
       const res =
         await API.get(
-          "/results/users"
+          "/admin/users"
         );
 
       setUsers(res.data);
@@ -52,7 +52,7 @@ export default function ManageAdmins() {
     try {
 
       await API.put(
-        `/results/make-admin/${id}`
+        `/admin/make-admin/${id}`
       );
 
       fetchUsers();
@@ -68,7 +68,7 @@ export default function ManageAdmins() {
     try {
 
       await API.put(
-        `/results/remove-admin/${id}`
+        `/admin/remove-admin/${id}`
       );
 
       fetchUsers();

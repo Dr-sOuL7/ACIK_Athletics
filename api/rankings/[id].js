@@ -2,11 +2,11 @@ import { z } from 'zod';
 import { supabaseAdmin, authenticateAdmin } from '../../utils/supabase.js';
 
 const rankingSchema = z.object({
-  gold_medals: z.number().int().nonnegative().optional(),
-  silver_medals: z.number().int().nonnegative().optional(),
-  bronze_medals: z.number().int().nonnegative().optional(),
-  total_points: z.number().int().nonnegative().optional(),
-  ranking_position: z.number().int().min(1).optional(),
+  gold_medals: z.coerce.number().int().nonnegative().optional().default(0),
+  silver_medals: z.coerce.number().int().nonnegative().optional().default(0),
+  bronze_medals: z.coerce.number().int().nonnegative().optional().default(0),
+  total_points: z.coerce.number().int().nonnegative().optional().default(0),
+  ranking_position: z.coerce.number().int().min(1).optional(),
 });
 
 export default async function handler(req, res) {

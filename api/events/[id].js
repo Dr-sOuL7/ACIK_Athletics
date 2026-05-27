@@ -5,8 +5,8 @@ const eventSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
   location: z.string().optional(),
-  event_date: z.string().optional(),
-  event_time: z.string().optional(),
+  event_date: z.string().optional().transform(v => v === '' ? null : v).nullable(),
+  event_time: z.string().optional().transform(v => v === '' ? null : v).nullable(),
   category: z.string().optional(),
 });
 
