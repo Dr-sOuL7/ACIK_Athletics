@@ -11,6 +11,7 @@ import AdminRoute from "./components/AdminRoute";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
 import Results from "./pages/Results";
 import BestAthletes from "./pages/BestAthletes";
 import Events from "./pages/Events";
@@ -21,19 +22,13 @@ import AdminDashboard from "./pages/AdminDashboard";
 import EditHomepage from "./pages/EditHomepage";
 import ManageAdmins from "./pages/ManageAdmins";
 import ManageRankings from "./pages/ManageRankings";
-import ManageEvents
-from "./pages/ManageEvents";
+import ManageEvents from "./pages/ManageEvents";
 
 export default function App() {
-
   return (
-
     <BrowserRouter>
-
       <Routes>
-
         {/* ================= PUBLIC ROUTES ================= */}
-
         <Route
           path="/"
           element={
@@ -43,14 +38,8 @@ export default function App() {
           }
         />
 
-        <Route
-          path="/login"
-          element={
-            <MainLayout>
-              <Login />
-            </MainLayout>
-          }
-        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         <Route
           path="/results"
