@@ -27,7 +27,7 @@ export default function ManageGallery() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this photo?")) return;
     try {
-      await API.delete(`/gallery/${id}`);
+      await API.delete(`/gallery?id=${id}`);
       fetchPhotos();
     } catch (err) {
       console.error(err);

@@ -13,9 +13,7 @@ const photoUpdateSchema = z.object({
 });
 
 export default async function handler(req, res) {
-  const { slug } = req.query;
-  const slugArray = Array.isArray(slug) ? slug : (slug ? [slug] : []);
-  const id = slugArray.length > 0 ? slugArray[0] : null;
+  const { id } = req.query;
 
   if (req.method === 'GET') {
     const { data, error } = await supabaseAdmin

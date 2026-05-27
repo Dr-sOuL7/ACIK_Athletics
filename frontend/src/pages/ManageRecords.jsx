@@ -53,7 +53,7 @@ export default function ManageRecords() {
         iism_record: row["IISM record"]?.toString().trim() || row["IISM record (if any)"]?.toString().trim() || ""
       }));
 
-      await API.post("/records/bulk", parsedData);
+      await API.post("/records?action=bulk", parsedData);
       alert("Records uploaded successfully (overwriting duplicates).");
       fetchRecords();
     } catch (err) {
@@ -73,7 +73,7 @@ export default function ManageRecords() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this record?")) return;
     try {
-      await API.delete(`/records/${id}`);
+      await API.delete(`/records?id=${id}`);
       fetchRecords();
     } catch (err) {
       console.error(err);

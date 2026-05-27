@@ -23,7 +23,7 @@ export default function EventEditor({ event, refresh }) {
     e.preventDefault();
     setLoading(true);
     try {
-      await API.put(`/events/${event.id}`, formData);
+      await API.put(`/events?id=${event.id}`, formData);
       alert("Event updated");
       refresh();
     } catch (err) {
@@ -37,7 +37,7 @@ export default function EventEditor({ event, refresh }) {
   const deleteEvent = async () => {
     if (!window.confirm("Delete this event?")) return;
     try {
-      await API.delete(`/events/${event.id}`);
+      await API.delete(`/events?id=${event.id}`);
       alert("Event deleted");
       refresh();
     } catch (err) {
