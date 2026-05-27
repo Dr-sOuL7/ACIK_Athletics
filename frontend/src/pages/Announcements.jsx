@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Megaphone, Calendar } from "lucide-react";
+import { Megaphone, Calendar, FileDown } from "lucide-react";
 import API from "../api/axios";
 import { Card, CardHeader, CardTitle } from "../components/ui/Card";
 import { Skeleton } from "../components/ui/Skeleton";
@@ -82,6 +82,19 @@ export default function Announcements() {
                 <p className="text-text-main text-lg mb-6 whitespace-pre-wrap">
                   {item.message}
                 </p>
+                {item.file_url && (
+                  <div className="mb-6">
+                    <a 
+                      href={item.file_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated hover:bg-surface-hover border border-white/10 rounded-xl text-primary transition-colors font-medium text-sm group-hover:border-primary/30"
+                    >
+                      <FileDown className="w-4 h-4" />
+                      {item.file_name || "Download Attachment"}
+                    </a>
+                  </div>
+                )}
                 <div className="flex items-center gap-2 text-sm text-text-muted bg-surface-elevated w-fit px-3 py-1.5 rounded-lg">
                   <Calendar className="w-4 h-4" />
                   {new Date(item.created_at).toLocaleString(undefined, {

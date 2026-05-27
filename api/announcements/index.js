@@ -4,6 +4,8 @@ import { supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
 const announcementSchema = z.object({
   title: z.string().min(1),
   message: z.string().min(1),
+  file_url: z.string().url().optional(),
+  file_name: z.string().optional(),
 });
 
 export default async function handler(req, res) {

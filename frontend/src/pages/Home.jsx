@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronRight, Trophy, Megaphone, Image as ImageIcon } from "lucide-react";
+import { ChevronRight, Trophy, Megaphone, Image as ImageIcon, FileDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import API from "../api/axios";
 import { Card, CardHeader, CardTitle } from "../components/ui/Card";
@@ -123,9 +123,20 @@ export default function Home() {
                 </span>
                 <h2 className="text-2xl font-bold font-heading text-secondary">Bulletin</h2>
               </div>
-              <p className="text-xl text-text-main leading-relaxed">
+              <p className="text-xl text-text-main leading-relaxed mb-4">
                 {content.announcement}
               </p>
+              {content.file_url && (
+                <a 
+                  href={content.file_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/10 hover:bg-secondary/20 border border-secondary/20 rounded-xl text-secondary transition-colors font-medium text-sm w-fit"
+                >
+                  <FileDown className="w-4 h-4" />
+                  {content.file_name || "Download Attachment"}
+                </a>
+              )}
             </div>
           </div>
         </motion.div>
@@ -167,9 +178,23 @@ export default function Home() {
                       {item.title}
                     </CardTitle>
                   </CardHeader>
-                  <p className="text-text-muted mb-6 flex-grow line-clamp-3">
+                  <p className="text-text-muted mb-4 flex-grow line-clamp-3">
                     {item.message}
                   </p>
+                  {item.file_url && (
+                    <div className="mb-4">
+                      <a 
+                        href={item.file_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-primary hover:text-primary-hover font-medium text-sm transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <FileDown className="w-4 h-4" />
+                        {item.file_name || "Attachment"}
+                      </a>
+                    </div>
+                  )}
                   <div className="text-xs font-medium text-surface-hover bg-surface-elevated w-fit px-3 py-1 rounded-full mt-auto">
                     {new Date(item.created_at).toLocaleDateString(undefined, {
                       year: 'numeric', month: 'short', day: 'numeric'
