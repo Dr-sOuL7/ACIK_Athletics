@@ -39,6 +39,27 @@ export default async function handler(req, res) {
     }
   }
 
-  res.setHeader('Allow', ['GET', 'POST']);
+  if (req.method === 'DELETE') {
+    const { id } = req.query;
+    if (!id) return res.status(400).json({ error: 'Missing id' });
+    const auth = await authenticateAdmin(req);
+    if (auth.error) return res.status(auth.status).json({ error: auth.error });
+
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('announcements')
+        .delete()
+        .eq('id', id)
+        .select();
+
+      if (error) return res.status(500).json({ error: error.message });
+      if (!data || data.length === 0) return res.status(404).json({ error: 'Announcement not found' });
+      return res.status(200).json({ msg: 'Announcement deleted' });
+    } catch (e) {
+      return res.status(500).json({ error: 'Server error' });
+    }
+  }
+
+  res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
   res.status(405).end(`Method ${req.method} Not Allowed`);
 }

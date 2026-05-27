@@ -127,15 +127,25 @@ export default function Home() {
                 {content.announcement}
               </p>
               {content.file_url && (
-                <a 
-                  href={content.file_url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/10 hover:bg-secondary/20 border border-secondary/20 rounded-xl text-secondary transition-colors font-medium text-sm w-fit"
-                >
-                  <FileDown className="w-4 h-4" />
-                  {content.file_name || "Download Attachment"}
-                </a>
+                <div className="mt-4">
+                  {content.file_name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || content.file_url?.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+                    <img 
+                      src={content.file_url} 
+                      alt={content.file_name || "Attachment"} 
+                      className="max-h-64 rounded-xl object-contain border border-white/10"
+                    />
+                  ) : (
+                    <a 
+                      href={content.file_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/10 hover:bg-secondary/20 border border-secondary/20 rounded-xl text-secondary transition-colors font-medium text-sm w-fit"
+                    >
+                      <FileDown className="w-4 h-4" />
+                      {content.file_name || "Download Attachment"}
+                    </a>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -183,16 +193,26 @@ export default function Home() {
                   </p>
                   {item.file_url && (
                     <div className="mb-4">
-                      <a 
-                        href={item.file_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-primary hover:text-primary-hover font-medium text-sm transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <FileDown className="w-4 h-4" />
-                        {item.file_name || "Attachment"}
-                      </a>
+                      {item.file_name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || item.file_url?.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+                        <a href={item.file_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                          <img 
+                            src={item.file_url} 
+                            alt={item.file_name || "Attachment"} 
+                            className="w-full h-32 object-cover rounded-lg border border-white/5 hover:opacity-90 transition-opacity"
+                          />
+                        </a>
+                      ) : (
+                        <a 
+                          href={item.file_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-primary hover:text-primary-hover font-medium text-sm transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <FileDown className="w-4 h-4" />
+                          {item.file_name || "Attachment"}
+                        </a>
+                      )}
                     </div>
                   )}
                   <div className="text-xs font-medium text-surface-hover bg-surface-elevated w-fit px-3 py-1 rounded-full mt-auto">

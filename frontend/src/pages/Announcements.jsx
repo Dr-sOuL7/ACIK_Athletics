@@ -84,15 +84,25 @@ export default function Announcements() {
                 </p>
                 {item.file_url && (
                   <div className="mb-6">
-                    <a 
-                      href={item.file_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated hover:bg-surface-hover border border-white/10 rounded-xl text-primary transition-colors font-medium text-sm group-hover:border-primary/30"
-                    >
-                      <FileDown className="w-4 h-4" />
-                      {item.file_name || "Download Attachment"}
-                    </a>
+                    {item.file_name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || item.file_url?.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+                      <a href={item.file_url} target="_blank" rel="noopener noreferrer">
+                        <img 
+                          src={item.file_url} 
+                          alt={item.file_name || "Attachment"} 
+                          className="w-full max-h-96 object-contain rounded-xl border border-white/10 bg-surface/50 hover:opacity-90 transition-opacity"
+                        />
+                      </a>
+                    ) : (
+                      <a 
+                        href={item.file_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated hover:bg-surface-hover border border-white/10 rounded-xl text-primary transition-colors font-medium text-sm group-hover:border-primary/30"
+                      >
+                        <FileDown className="w-4 h-4" />
+                        {item.file_name || "Download Attachment"}
+                      </a>
+                    )}
                   </div>
                 )}
                 <div className="flex items-center gap-2 text-sm text-text-muted bg-surface-elevated w-fit px-3 py-1.5 rounded-lg">
