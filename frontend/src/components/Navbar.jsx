@@ -1,30 +1,23 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { useState, useContext } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, LogOut, LayoutDashboard, Shield, Trophy, Megaphone, Calendar } from "lucide-react";
-import { cn } from "../utils/cn";
+import { cn } from "../../utils/cn";
 import { Button } from "./ui/Button";
+import { AuthContext } from "../../context/auth";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const token = localStorage.getItem("token");
-  let isAdmin = false;
+  const navigate = useNavigate();
+  const { token, role, logout } = useContext(AuthContext);
+  
+  const isAdmin = role === "admin";
 
-  if (token) {
-    try {
-      const decoded = jwtDecode(token);
-      isAdmin = decoded.role === "admin";
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  function logout() {
-    localStorage.removeItem("token");
-    window.location.href = "/";
-  }
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
 
   const links = [
     { name: "Home", path: "/", icon: LayoutDashboard },
@@ -101,7 +94,7 @@ export default function Navbar() {
                   </Button>
                 </Link>
               )}
-              <Button variant="danger" onClick={logout} className="gap-2">
+              <Button variant="danger" onClick={handleLogout} className="gap-2">
                 <LogOut className="w-4 h-4" />
               </Button>
             </>
@@ -153,7 +146,7 @@ export default function Navbar() {
                       </Button>
                     </Link>
                   )}
-                  <Button variant="danger" onClick={logout} className="w-full gap-2 justify-center">
+                  <Button variant="danger" onClick={handleLogout} className="w-full gap-2 justify-center">
                     <LogOut className="w-4 h-4" />
                     Logout
                   </Button>

@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import AuthLayout from "../layouts/AuthLayout";
 import { Input } from "../components/ui/Input";
@@ -8,6 +8,7 @@ import { AuthContext } from "../context/auth";
 
 export default function Login() {
   const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -20,6 +21,7 @@ export default function Login() {
     setError(null);
     try {
       await login(email, password);
+      navigate("/admin");
     } catch (err) {
       console.log(err);
       setError(err.message || "Invalid credentials. Please try again.");
@@ -30,8 +32,8 @@ export default function Login() {
 
   return (
     <AuthLayout 
-      title="Welcome Back" 
-      subtitle="Sign in to your athlete portal to continue."
+      title="Admin Portal" 
+      subtitle="Sign in to your administrator account to manage platform data."
     >
       <form onSubmit={submit} className="flex flex-col gap-5">
         
