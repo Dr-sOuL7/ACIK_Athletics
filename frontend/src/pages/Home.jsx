@@ -79,6 +79,7 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }} 
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
+              <img src="/acik-logo.png" alt="ACIK Logo" className="h-28 md:h-40 mb-6 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:scale-105 transition-transform duration-500" style={{ mixBlendMode: 'plus-lighter' }} />
               <h1 className="text-5xl md:text-7xl font-extrabold text-white font-heading tracking-tight mb-6 leading-tight drop-shadow-lg">
                 {content?.title || "ACIK Athletics"}
               </h1>
@@ -154,22 +155,13 @@ export default function Home() {
 
       {/* About Us Section */}
       <section className="w-full">
-        <div className="glass p-8 md:p-12 rounded-3xl border border-white/5">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
-            <div className="lg:col-span-2 space-y-6">
-              <h2 className="text-3xl md:text-4xl font-heading font-bold text-white">About Us</h2>
-              <div className="space-y-4 text-lg text-text-muted leading-relaxed">
-                <p>The ACIK – Athletics Club of IISER Kolkata is the official track and field club of the Indian Institute of Science Education and Research Kolkata, established in 2006. The club brings together students with a shared passion for athletics, fostering both competitive excellence and a culture of fitness and discipline.</p>
-                <p>ACIK actively engages in a wide range of track and field events, including sprints (100m, 200m, 400m), middle and long-distance races (800m to 10000m), as well as field events such as shot put, discus throw, javelin throw, long jump, triple jump, and relays. The club provides a platform for athletes of all levels—from beginners to experienced competitors—to train, improve, and perform.</p>
-                <p>We proudly represent IISER Kolkata in major competitions such as <strong className="text-white">Pratap (Inter-College Athletics Meet)</strong>, <strong className="text-white">Open Athletics Meets</strong>, and <strong className="text-white">IISM (Inter IISER-NISER-CEBS Sports Meet)</strong>. Alongside these, we organize internal competitions like <strong className="text-white">Inter-Batch Meets</strong>, encouraging participation and healthy competition within the campus.</p>
-                <p>Beyond competition, ACIK is committed to building a strong athletic community—promoting teamwork, resilience, and the spirit of pushing limits. Whether aiming for podium finishes or personal fitness goals, the club welcomes everyone to be a part of the journey.</p>
-              </div>
-            </div>
-            
-            <div className="lg:col-span-1 flex flex-col sm:flex-row lg:flex-col items-center justify-center gap-12 bg-white/5 p-8 rounded-2xl border border-white/10 h-full">
-              <img src="/acik-logo.png" alt="ACIK Logo" className="w-48 md:w-64 lg:w-48 h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500" />
-              <img src="/iiser-logo.png" alt="IISER Kolkata Logo" className="w-48 md:w-64 lg:w-48 h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500" />
-            </div>
+        <div className="glass p-8 md:p-12 rounded-3xl border border-white/5 space-y-6">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-6">About Us</h2>
+          <div className="space-y-4 text-lg text-text-muted leading-relaxed">
+            <p>The ACIK – Athletics Club of IISER Kolkata is the official track and field club of the Indian Institute of Science Education and Research Kolkata, established in 2006. The club brings together students with a shared passion for athletics, fostering both competitive excellence and a culture of fitness and discipline.</p>
+            <p>ACIK actively engages in a wide range of track and field events, including sprints (100m, 200m, 400m), middle and long-distance races (800m to 10000m), as well as field events such as shot put, discus throw, javelin throw, long jump, triple jump, and relays. The club provides a platform for athletes of all levels—from beginners to experienced competitors—to train, improve, and perform.</p>
+            <p>We proudly represent IISER Kolkata in major competitions such as <strong className="text-white">Pratap (Inter-College Athletics Meet)</strong>, <strong className="text-white">Open Athletics Meets</strong>, and <strong className="text-white">IISM (Inter IISER-NISER-CEBS Sports Meet)</strong>. Alongside these, we organize internal competitions like <strong className="text-white">Inter-Batch Meets</strong>, encouraging participation and healthy competition within the campus.</p>
+            <p>Beyond competition, ACIK is committed to building a strong athletic community—promoting teamwork, resilience, and the spirit of pushing limits. Whether aiming for podium finishes or personal fitness goals, the club welcomes everyone to be a part of the journey.</p>
           </div>
         </div>
       </section>

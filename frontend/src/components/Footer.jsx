@@ -50,7 +50,10 @@ export default function Footer() {
         </div>
         
         <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-text-muted">
-          <p>© {new Date().getFullYear()} Athletics Club of IISER Kolkata. All rights reserved.</p>
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <img src="/iiser-logo.png" alt="IISER Kolkata Logo" className="h-10 md:h-12 object-contain opacity-80 hover:opacity-100 transition-opacity drop-shadow-lg" />
+            <p>© {new Date().getFullYear()} Athletics Club of IISER Kolkata. All rights reserved.</p>
+          </div>
           <div className="flex items-center gap-4">
             <Link to="/login" className="hover:text-white transition-colors">Admin Login</Link>
           </div>
