@@ -169,6 +169,17 @@ export default function App() {
           }
         />
 
+        <Route
+          path="/admin/announcements"
+          element={
+            <AdminRoute>
+              <AdminLayout>
+                <Announcements />
+              </AdminLayout>
+            </AdminRoute>
+          }
+        />
+
         <Route path="*" element={
           <MainLayout>
             <div className="py-20 max-w-2xl mx-auto">

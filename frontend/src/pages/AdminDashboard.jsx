@@ -1,4 +1,5 @@
 import AddResultForm from "../forms/AddResultForm";
+import AddAnnouncementForm from "../forms/AddAnnouncementForm";
 import { Card, CardHeader, CardTitle } from "../components/ui/Card";
 import { Activity, Trophy, Calendar } from "lucide-react";
 
@@ -34,12 +35,21 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      <Card className="border-white/5">
-        <CardHeader>
-          <CardTitle>Add New Result</CardTitle>
-        </CardHeader>
-        <AddResultForm />
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <Card className="border-white/5">
+          <CardHeader>
+            <CardTitle>Add New Result</CardTitle>
+          </CardHeader>
+          <AddResultForm />
+        </Card>
+        
+        <Card className="border-white/5">
+          <CardHeader>
+            <CardTitle>Add Announcement</CardTitle>
+          </CardHeader>
+          <AddAnnouncementForm />
+        </Card>
+      </div>
     </div>
   );
 }

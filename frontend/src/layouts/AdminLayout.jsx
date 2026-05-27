@@ -70,10 +70,12 @@ export default function AdminLayout({
         <nav className="flex flex-col gap-4">
 
           <Link to="/admin" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Dashboard</Link>
-          <Link to="/admin/homepage" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Homepage</Link>
+          <Link to="/admin/homepage" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Home</Link>
+          <Link to="/admin/results" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Results</Link>
           <Link to="/admin/events" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Events</Link>
+          <Link to="/admin/records" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Records</Link>
           <Link to="/admin/rankings" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Rankings</Link>
-          <Link to="/admin/records" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">All-Time Records</Link>
+          <Link to="/admin/announcements" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Announcements</Link>
 
         </nav>
 
