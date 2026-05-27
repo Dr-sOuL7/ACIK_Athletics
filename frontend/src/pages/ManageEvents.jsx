@@ -20,7 +20,7 @@ export default function ManageEvents() {
 
       const res =
         await API.get(
-          "/results/events"
+          "/events"
         );
 
       setEvents(res.data);

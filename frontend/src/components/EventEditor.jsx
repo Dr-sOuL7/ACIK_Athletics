@@ -52,7 +52,7 @@ export default function EventEditor({
 
         await API.put(
 
-          `/results/events/${event.id}`,
+          `/events/${event.id}`,
 
           formData
         );
@@ -88,7 +88,7 @@ export default function EventEditor({
 
       await API.delete(
 
-        `/results/events/${event.id}`
+        `/events/${event.id}`
 
       );
 

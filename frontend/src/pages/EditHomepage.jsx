@@ -18,7 +18,7 @@ export default function EditHomepage() {
 
       const res =
         await API.get(
-          "/results/homepage"
+          "/homepage"
         );
 
       setFormData(res.data);
@@ -47,7 +47,7 @@ export default function EditHomepage() {
       try {
 
         await API.put(
-          "/results/homepage",
+          "/homepage",
           formData
         );
 

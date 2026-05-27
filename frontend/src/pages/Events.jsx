@@ -30,7 +30,7 @@ export default function Events() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const res = await API.get("/results/events");
+        const res = await API.get("/events");
         setData(res.data);
       } catch (err) {
         console.log(err);

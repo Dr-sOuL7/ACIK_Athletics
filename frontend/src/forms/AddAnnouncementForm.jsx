@@ -31,7 +31,7 @@ export default function AddAnnouncementForm() {
       try {
 
         await API.post(
-          "/results/announcements",
+          "/announcements",
           formData
         );
 

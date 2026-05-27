@@ -16,10 +16,8 @@ export default function BestAthletes() {
 
       try {
 
-        const res =
-          await API.get("/results/best");
-
-        setAthletes(res.data);
+        const res = await API.get("/results");
+        setAthletes(res.data.filter(r => r.is_best === true));
 
       } catch (err) {
 

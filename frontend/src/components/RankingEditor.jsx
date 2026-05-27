@@ -50,7 +50,7 @@ export default function RankingEditor({
 
         await API.put(
 
-          `/results/rankings/${item.id}`,
+          `/rankings/${item.id}`,
 
           formData
         );

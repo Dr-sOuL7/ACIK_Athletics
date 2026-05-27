@@ -35,7 +35,7 @@ export default function AddEventForm() {
       try {
 
         await API.post(
-          "/results/events",
+          "/events",
           formData
         );
 

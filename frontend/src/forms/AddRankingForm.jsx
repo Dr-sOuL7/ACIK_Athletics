@@ -36,7 +36,7 @@ export default function AddRankingForm() {
       try {
 
         await API.post(
-          "/results/rankings",
+          "/rankings",
           formData
         );
 

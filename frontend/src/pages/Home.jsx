@@ -36,8 +36,8 @@ export default function Home() {
     async function fetchData() {
       try {
         const [homepageRes, announcementRes] = await Promise.all([
-          API.get("/results/homepage").catch(() => ({ data: { title: "ACIK Athletics", subtitle: "Athletics Club of IISER Kolkata", announcement: "Welcome" }})),
-          API.get("/results/announcements").catch(() => ({ data: [] }))
+          API.get("/homepage").catch(() => ({ data: { title: "ACIK Athletics", subtitle: "Athletics Club of IISER Kolkata", announcement: "Welcome" }})),
+          API.get("/announcements").catch(() => ({ data: [] }))
         ]);
         
         setContent(homepageRes.data);

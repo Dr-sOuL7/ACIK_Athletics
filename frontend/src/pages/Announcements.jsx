@@ -30,7 +30,7 @@ export default function Announcements() {
   useEffect(() => {
     async function fetchAnnouncements() {
       try {
-        const res = await API.get("/results/announcements");
+        const res = await API.get("/announcements");
         setData(res.data);
       } catch (err) {
         console.log(err);

@@ -31,7 +31,7 @@ export default function Rankings() {
   useEffect(() => {
     async function fetchRankings() {
       try {
-        const res = await API.get("/results/rankings");
+        const res = await API.get("/rankings");
         setRankings(res.data);
       } catch (err) {
         console.log(err);

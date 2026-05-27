@@ -24,7 +24,7 @@ export default function ManageRankings() {
 
       const res =
         await API.get(
-          "/results/rankings"
+          "/rankings"
         );
 
       setRankings(res.data);
@@ -51,7 +51,7 @@ useEffect(() => {
     try {
 
       await API.delete(
-        `/results/rankings/${id}`
+        `/rankings/${id}`
       );
 
       fetchRankings();
