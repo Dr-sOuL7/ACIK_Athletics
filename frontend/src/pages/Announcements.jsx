@@ -33,7 +33,7 @@ export default function Announcements() {
         const res = await API.get("/announcements");
         setData(res.data);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       } finally {
         setLoading(false);
       }

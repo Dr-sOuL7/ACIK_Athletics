@@ -28,7 +28,7 @@ export default function Login() {
       }
       navigate("/admin");
     } catch (err) {
-      console.log(err);
+      console.error(err);
       setError(err.message || "Invalid credentials. Please try again.");
     } finally {
       setLoading(false);

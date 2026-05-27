@@ -18,24 +18,20 @@ export default function AdminLayout({
     <div className="min-h-screen flex">
 
       <button
-        onClick={() =>
-          setOpen(!open)
-        }
-
-        className="
-          md:hidden
-          fixed
-          top-4
-          left-4
-          z-50
-          bg-yellow-400
-          text-black
-          p-2
-          rounded-lg
-        "
+        onClick={() => setOpen(!open)}
+        className="md:hidden fixed top-4 left-4 z-50 bg-surface-elevated text-white p-2 rounded-lg border border-white/10 hover:bg-surface-hover transition-colors"
+        aria-label="Toggle admin menu"
       >
         ☰
       </button>
+
+      {/* Mobile Backdrop */}
+      {open && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/60 z-30 backdrop-blur-sm"
+          onClick={() => setOpen(false)}
+        />
+      )}
 
       <aside
         className={`
@@ -49,14 +45,10 @@ export default function AdminLayout({
           left-0
 
           h-full
-
           w-64
-
-          bg-slate-900
-
+          bg-surface
           border-r
-          border-slate-700
-
+          border-white/5
           p-6
 
           transform
@@ -71,52 +63,23 @@ export default function AdminLayout({
         `}
       >
 
-        <h2
-          className="
-            text-2xl
-            text-yellow-400
-            font-bold
-            mb-8
-          "
-        >
+        <h2 className="text-2xl text-white font-heading font-bold mb-8">
           Admin Panel
         </h2>
 
         <nav className="flex flex-col gap-4">
 
-          <Link to="/admin">
-            Dashboard
-          </Link>
-
-          <Link to="/admin/homepage">
-            Homepage
-          </Link>
-
-          <Link to="/admin/events">
-            Events
-          </Link>
-
-          <Link to="/admin/rankings">
-            Rankings
-          </Link>
-
-          <Link to="/admin/records">
-            All-Time Records
-          </Link>
+          <Link to="/admin" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Dashboard</Link>
+          <Link to="/admin/homepage" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Homepage</Link>
+          <Link to="/admin/events" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Events</Link>
+          <Link to="/admin/rankings" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Rankings</Link>
+          <Link to="/admin/records" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">All-Time Records</Link>
 
         </nav>
 
       </aside>
 
-      <main
-        className="
-          flex-1
-          p-6
-          md:ml-0
-          bg-slate-950
-          text-white
-        "
-      >
+      <main className="flex-1 p-6 md:p-10 md:ml-0 bg-background text-text-main min-h-screen">
 
         {children}
 

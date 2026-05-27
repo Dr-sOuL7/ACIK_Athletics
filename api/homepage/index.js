@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
+import { supabase, supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
 
 const homepageSchema = z.object({
   title: z.string().optional(),
@@ -9,7 +9,8 @@ const homepageSchema = z.object({
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { data, error } = await supabaseAdmin
+    if (!supabase) return res.status(500).json({ error: 'Supabase client not initialized' });
+    const { data, error } = await supabase
       .from('homepage_content')
       .select('*')
       .eq('id', 1)

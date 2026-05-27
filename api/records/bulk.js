@@ -19,6 +19,7 @@ export default async function handler(req, res) {
     if (auth.error) return res.status(auth.status).json({ error: auth.error });
 
     try {
+      if (!Array.isArray(req.body)) return res.status(400).json({ error: 'Expected an array of records' });
       const records = req.body.map(r => recordSchema.parse(r));
       
       const { data, error } = await supabaseAdmin

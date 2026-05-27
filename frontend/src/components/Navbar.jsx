@@ -45,6 +45,8 @@ export default function Navbar() {
         {/* Mobile Menu Toggle */}
         <button
           onClick={() => setOpen(!open)}
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
           className="md:hidden text-text-main p-2 rounded-lg hover:bg-surface-hover transition-colors"
         >
           {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -95,8 +97,8 @@ export default function Navbar() {
                   </Button>
                 </Link>
               )}
-              <Button variant="danger" onClick={handleLogout} className="gap-2">
-                <LogOut className="w-4 h-4" />
+              <Button variant="danger" onClick={handleLogout} className="gap-2" aria-label="Logout">
+                <LogOut className="w-4 h-4" aria-hidden="true" />
               </Button>
             </>
           )}

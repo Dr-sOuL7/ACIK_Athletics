@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { Trophy } from "lucide-react";
+import { AuthContext } from "../context/auth";
 import API from "../api/axios";
 import ResultCard from "../components/ResultCard";
 import { Skeleton } from "../components/ui/Skeleton";
@@ -27,6 +28,7 @@ const itemVariants = {
 export default function Results() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { role } = useContext(AuthContext) || {};
 
   useEffect(() => {
     async function fetchResults() {
@@ -34,7 +36,7 @@ export default function Results() {
         const res = await API.get("/results");
         setResults(res.data);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -47,7 +49,7 @@ export default function Results() {
       await API.delete(`/results/${id}`);
       setResults(results.filter((item) => item.id !== id));
     } catch (err) {
-      console.log(err);
+      console.error(err);
       alert("Delete failed");
     }
   };
@@ -88,7 +90,7 @@ export default function Results() {
             <motion.div key={item.id} variants={itemVariants}>
               <ResultCard
                 item={item}
-                showDelete={true}
+                showDelete={role === 'admin'}
                 onDelete={deleteResult}
               />
             </motion.div>

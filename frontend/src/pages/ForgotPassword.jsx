@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Mail } from "lucide-react";
 import AuthLayout from "../layouts/AuthLayout";
-import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
+import { supabase } from "../api/supabase";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -12,10 +12,17 @@ export default function ForgotPassword() {
   const submit = async (e) => {
     e.preventDefault();
     setStatus("loading");
-    // Mocking API call
-    setTimeout(() => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/reset-password',
+      });
+      if (error) throw error;
       setStatus("success");
-    }, 1500);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to send reset link: " + error.message);
+      setStatus("idle");
+    }
   };
 
   return (

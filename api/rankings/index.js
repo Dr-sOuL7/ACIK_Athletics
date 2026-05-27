@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
+import { supabase, supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
 
 const rankingSchema = z.object({
   athlete_name: z.string().min(1),
@@ -13,7 +13,8 @@ const rankingSchema = z.object({
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { data, error } = await supabaseAdmin
+    if (!supabase) return res.status(500).json({ error: 'Supabase client not initialized' });
+    const { data, error } = await supabase
       .from('rankings')
       .select('*')
       .order('ranking_position', { ascending: true });

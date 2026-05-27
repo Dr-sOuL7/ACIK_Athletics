@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
+import { supabase, supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
 
 const eventSchema = z.object({
   title: z.string().min(1),
@@ -12,7 +12,8 @@ const eventSchema = z.object({
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { data, error } = await supabaseAdmin
+    if (!supabase) return res.status(500).json({ error: 'Supabase client not initialized' });
+    const { data, error } = await supabase
       .from('events')
       .select('*')
       .order('event_date', { ascending: true });

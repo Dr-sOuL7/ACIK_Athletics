@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
+import { supabase, supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
 
 const recordSchema = z.object({
   name: z.string().min(1),
@@ -15,7 +15,8 @@ const recordSchema = z.object({
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { data, error } = await supabaseAdmin
+    if (!supabase) return res.status(500).json({ error: 'Supabase client not initialized' });
+    const { data, error } = await supabase
       .from('all_time_records')
       .select('*')
       .order('created_at', { ascending: false });

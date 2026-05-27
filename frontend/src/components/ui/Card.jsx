@@ -15,3 +15,8 @@ export const CardHeader = ({ className, ...props }) => (
 export const CardTitle = ({ className, ...props }) => (
   <h3 className={cn("text-2xl font-semibold leading-none tracking-tight text-white", className)} {...props} />
 );
+
+export const CardContent = forwardRef(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("", className)} {...props} />
+));
+CardContent.displayName = "CardContent";

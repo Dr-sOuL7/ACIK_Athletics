@@ -43,7 +43,7 @@ export default function Home() {
         setContent(homepageRes.data);
         setAnnouncements(announcementRes.data.slice(0, 3));
       } catch (err) {
-        console.log(err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -80,10 +80,10 @@ export default function Home() {
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
               <h1 className="text-5xl md:text-7xl font-extrabold text-white font-heading tracking-tight mb-6 leading-tight drop-shadow-lg">
-                {content?.title}
+                {content?.title || "ACIK Athletics"}
               </h1>
               <p className="text-xl md:text-3xl text-text-muted max-w-2xl font-light mb-10 leading-relaxed">
-                {content?.subtitle}
+                {content?.subtitle || "Athletics Club of IISER Kolkata"}
               </p>
               
               <div className="flex flex-wrap gap-4">

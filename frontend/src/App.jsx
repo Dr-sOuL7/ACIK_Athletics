@@ -3,9 +3,13 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
+import { MotionConfig } from "framer-motion";
 
 import MainLayout from "./layouts/MainLayout";
 import AdminLayout from "./layouts/AdminLayout";
+
+import { EmptyState } from "./components/ui/EmptyState";
+import { AlertCircle } from "lucide-react";
 
 import AdminRoute from "./components/AdminRoute";
 
@@ -27,6 +31,7 @@ import ManageEvents from "./pages/ManageEvents";
 
 export default function App() {
   return (
+    <MotionConfig reducedMotion="user">
     <BrowserRouter>
       <Routes>
         {/* ================= PUBLIC ROUTES ================= */}
@@ -164,8 +169,16 @@ export default function App() {
           }
         />
 
+        <Route path="*" element={
+          <MainLayout>
+            <div className="py-20 max-w-2xl mx-auto">
+              <EmptyState icon={AlertCircle} title="Page Not Found" description="The page you are looking for does not exist or has been moved." />
+            </div>
+          </MainLayout>
+        } />
       </Routes>
 
     </BrowserRouter>
+    </MotionConfig>
   );
 }
