@@ -209,7 +209,7 @@ export default function ManageRecords() {
                 <tr key={index} className="border-b border-white/5">
                   <td className="p-1"><Input value={row.name} onChange={(e) => handleRowChange(index, "name", e.target.value)} placeholder="Name" className="h-8 text-sm" /></td>
                   <td className="p-1"><Input value={row.roll_number} onChange={(e) => handleRowChange(index, "roll_number", e.target.value)} placeholder="Roll" className="h-8 text-sm" /></td>
-                  <td className="p-1"><Input value={row.batch} onChange={(e) => handleRowChange(index, "batch", e.target.value)} placeholder="Batch" className="h-8 text-sm" /></td>
+                  <td className="p-1"><Input type="text" value={row.batch} onChange={(e) => handleRowChange(index, "batch", e.target.value)} placeholder="24MS" maxLength={4} className="h-8 text-sm w-16 text-center" /></td>
                   <td className="p-1">
                     <select 
                       value={row.event} 
