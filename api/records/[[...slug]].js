@@ -15,7 +15,8 @@ const recordSchema = z.object({
 
 export default async function handler(req, res) {
   const { slug } = req.query;
-  const path = slug && slug.length > 0 ? slug[0] : null;
+  const slugArray = Array.isArray(slug) ? slug : (slug ? [slug] : []);
+  const path = slugArray.length > 0 ? slugArray[0] : null;
 
   if (req.method === 'GET') {
     if (!supabase) return res.status(500).json({ error: 'Supabase client not initialized' });

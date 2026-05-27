@@ -39,7 +39,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-primary shrink-0" aria-hidden="true" />
-                <a href="mailto:athletics.activity@iiserkol.ac.in" aria-label="Email athletics.activity@iiserkol.ac.in" className="hover:text-white transition-colors">athletics.activity@iiserkol.ac.in</a>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=athletics.activity@iiserkol.ac.in" target="_blank" rel="noopener noreferrer" aria-label="Email athletics.activity@iiserkol.ac.in via Gmail" className="hover:text-white transition-colors">athletics.activity@iiserkol.ac.in</a>
               </li>
               <li className="flex items-center gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary shrink-0" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
