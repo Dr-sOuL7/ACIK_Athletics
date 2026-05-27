@@ -41,13 +41,22 @@ export default function AllTimeRecords() {
 
   const otherEvents = uniqueEvents.filter(ev => !PREDEFINED_EVENTS.includes(ev));
 
+  const PREDEFINED_TOURNAMENTS = [
+    "PRATAP",
+    "IISM",
+    "GANRAJYAM PRIDE RUN",
+    "FREEDOM RUN",
+    "FRESHERS",
+    "INTER BATCH"
+  ];
+
+  const PREDEFINED_GENDERS = ["Male", "Female"];
+
   const uniqueTournaments = useMemo(() => {
     return [...new Set(records.map(r => r.tournament).filter(Boolean))].sort();
   }, [records]);
 
-  const uniqueGenders = useMemo(() => {
-    return [...new Set(records.map(r => r.gender).filter(Boolean))].sort();
-  }, [records]);
+  const otherTournaments = uniqueTournaments.filter(t => !PREDEFINED_TOURNAMENTS.includes(t));
 
   // Apply filters
   const filteredRecords = useMemo(() => {
@@ -129,7 +138,12 @@ export default function AllTimeRecords() {
                 onChange={(e) => setSelectedTournament(e.target.value)}
               >
                 <option value="">All Tournaments</option>
-                {uniqueTournaments.map(t => <option key={t} value={t}>{t}</option>)}
+                {PREDEFINED_TOURNAMENTS.map(t => <option key={t} value={t}>{t}</option>)}
+                {otherTournaments.length > 0 && (
+                  <optgroup label="Other Tournaments" className="bg-surface text-text-muted">
+                    {otherTournaments.map(t => <option key={t} value={t} className="text-white">{t}</option>)}
+                  </optgroup>
+                )}
               </select>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
                 ▼
@@ -147,7 +161,7 @@ export default function AllTimeRecords() {
                 onChange={(e) => setSelectedGender(e.target.value)}
               >
                 <option value="">All Genders</option>
-                {uniqueGenders.map(g => <option key={g} value={g}>{g}</option>)}
+                {PREDEFINED_GENDERS.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
                 ▼

@@ -18,7 +18,16 @@ export default function ManageRecords() {
     "Relay": ["4 x 100 m", "4 x 400 m", "Medley", "Mixed Relay"]
   };
 
-  const emptyRow = { name: "", roll_number: "", batch: "", place: "", date: "", tournament: "", event: "100 m", gender: "Male", record: "", iism_record: "" };
+  const PREDEFINED_TOURNAMENTS = [
+    "PRATAP",
+    "IISM",
+    "GANRAJYAM PRIDE RUN",
+    "FREEDOM RUN",
+    "FRESHERS",
+    "INTER BATCH"
+  ];
+
+  const emptyRow = { name: "", roll_number: "", batch: "", place: "", date: "", tournament_select: "PRATAP", tournament_other: "", event: "100 m", gender: "Male", record: "", iism_record: "" };
   const [manualRecords, setManualRecords] = useState([{ ...emptyRow }]);
   const [submittingManual, setSubmittingManual] = useState(false);
 
@@ -55,7 +64,16 @@ export default function ManageRecords() {
   };
 
   const handleManualSubmit = async () => {
-    const validRecords = manualRecords.filter(row => row.name.trim() !== "" || row.roll_number.trim() !== "");
+    const validRecords = manualRecords
+      .filter(row => row.name.trim() !== "" || row.roll_number.trim() !== "")
+      .map(row => {
+        const { tournament_select, tournament_other, ...rest } = row;
+        return {
+          ...rest,
+          tournament: tournament_select === "Other" ? tournament_other.trim() : tournament_select
+        };
+      });
+
     if (validRecords.length === 0) {
       setError("Please fill in at least one record (Name or Roll Number required).");
       return;
@@ -204,7 +222,24 @@ export default function ManageRecords() {
                       <option value="Female">Female</option>
                     </select>
                   </td>
-                  <td className="p-1"><Input value={row.tournament} onChange={(e) => handleRowChange(index, "tournament", e.target.value)} placeholder="Tournament" className="h-8 text-sm" /></td>
+                  <td className="p-1">
+                    <select 
+                      value={row.tournament_select} 
+                      onChange={(e) => handleRowChange(index, "tournament_select", e.target.value)}
+                      className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    >
+                      {PREDEFINED_TOURNAMENTS.map(t => <option key={t} value={t}>{t}</option>)}
+                      <option value="Other">Other...</option>
+                    </select>
+                    {row.tournament_select === "Other" && (
+                      <Input 
+                        value={row.tournament_other} 
+                        onChange={(e) => handleRowChange(index, "tournament_other", e.target.value)} 
+                        placeholder="Specify tournament" 
+                        className="h-8 text-sm mt-1" 
+                      />
+                    )}
+                  </td>
                   <td className="p-1"><Input value={row.record} onChange={(e) => handleRowChange(index, "record", e.target.value)} placeholder="10.5s" className="h-8 text-sm" /></td>
                   <td className="p-1"><Input value={row.place} onChange={(e) => handleRowChange(index, "place", e.target.value)} placeholder="1st" className="h-8 text-sm" /></td>
                   <td className="p-1"><Input type="date" value={row.date} onChange={(e) => handleRowChange(index, "date", e.target.value)} className="h-8 text-sm" /></td>
