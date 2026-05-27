@@ -35,13 +35,17 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'DELETE') {
-    const { error } = await supabaseAdmin
-      .from('events')
-      .delete()
-      .eq('id', id);
+    try {
+      const { error } = await supabaseAdmin
+        .from('events')
+        .delete()
+        .eq('id', id);
 
-    if (error) return res.status(500).json({ error: error.message });
-    return res.status(200).json({ msg: 'Event deleted' });
+      if (error) return res.status(500).json({ error: error.message });
+      return res.status(200).json({ msg: 'Event deleted' });
+    } catch (e) {
+      return res.status(500).json({ error: 'Server error' });
+    }
   }
 
   res.setHeader('Allow', ['PUT', 'DELETE']);

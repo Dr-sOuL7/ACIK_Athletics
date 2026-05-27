@@ -100,8 +100,8 @@ export default function AdminLayout({
             Rankings
           </Link>
 
-          <Link to="/admin/admins">
-            Admins
+          <Link to="/admin/records">
+            All-Time Records
           </Link>
 
         </nav>

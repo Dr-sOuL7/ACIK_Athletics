@@ -1,12 +1,16 @@
 import { z } from 'zod';
 import { supabaseAdmin, authenticateAdmin } from '../../utils/supabase.js';
 
-const rankingSchema = z.object({
-  gold_medals: z.coerce.number().int().nonnegative().optional().default(0),
-  silver_medals: z.coerce.number().int().nonnegative().optional().default(0),
-  bronze_medals: z.coerce.number().int().nonnegative().optional().default(0),
-  total_points: z.coerce.number().int().nonnegative().optional().default(0),
-  ranking_position: z.coerce.number().int().min(1).optional(),
+const recordSchema = z.object({
+  name: z.string().min(1).optional(),
+  roll_number: z.string().min(1).optional(),
+  batch: z.string().optional(),
+  place: z.string().optional(),
+  date: z.string().optional(),
+  tournament: z.string().optional(),
+  event: z.string().min(1).optional(),
+  record: z.string().optional(),
+  iism_record: z.string().optional(),
 });
 
 export default async function handler(req, res) {
@@ -17,14 +21,14 @@ export default async function handler(req, res) {
 
   if (req.method === 'PUT') {
     try {
-      const validatedData = rankingSchema.parse(req.body);
+      const validatedData = recordSchema.parse(req.body);
       const { data, error } = await supabaseAdmin
-        .from('rankings')
+        .from('all_time_records')
         .update(validatedData)
         .eq('id', id);
 
       if (error) return res.status(500).json({ error: error.message });
-      return res.status(200).json({ msg: 'Ranking updated', data });
+      return res.status(200).json({ msg: 'Record updated', data });
     } catch (e) {
       if (e instanceof z.ZodError) {
         return res.status(400).json({ error: e.errors });
@@ -36,12 +40,12 @@ export default async function handler(req, res) {
   if (req.method === 'DELETE') {
     try {
       const { error } = await supabaseAdmin
-        .from('rankings')
+        .from('all_time_records')
         .delete()
         .eq('id', id);
 
       if (error) return res.status(500).json({ error: error.message });
-      return res.status(200).json({ msg: 'Ranking deleted' });
+      return res.status(200).json({ msg: 'Record deleted' });
     } catch (e) {
       return res.status(500).json({ error: 'Server error' });
     }

@@ -16,11 +16,12 @@ import Results from "./pages/Results";
 import BestAthletes from "./pages/BestAthletes";
 import Events from "./pages/Events";
 import Rankings from "./pages/Rankings";
+import AllTimeRecords from "./pages/AllTimeRecords";
 import Announcements from "./pages/Announcements";
 
 import AdminDashboard from "./pages/AdminDashboard";
 import EditHomepage from "./pages/EditHomepage";
-import ManageAdmins from "./pages/ManageAdmins";
+import ManageRecords from "./pages/ManageRecords";
 import ManageRankings from "./pages/ManageRankings";
 import ManageEvents from "./pages/ManageEvents";
 
@@ -40,6 +41,15 @@ export default function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+
+        <Route
+          path="/records"
+          element={
+            <MainLayout>
+              <AllTimeRecords />
+            </MainLayout>
+          }
+        />
 
         <Route
           path="/results"
@@ -144,11 +154,11 @@ export default function App() {
         />
 
         <Route
-          path="/admin/admins"
+          path="/admin/records"
           element={
             <AdminRoute>
               <AdminLayout>
-                <ManageAdmins />
+                <ManageRecords />
               </AdminLayout>
             </AdminRoute>
           }

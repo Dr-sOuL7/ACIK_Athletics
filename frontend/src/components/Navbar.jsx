@@ -23,6 +23,7 @@ export default function Navbar() {
     { name: "Home", path: "/", icon: LayoutDashboard },
     { name: "Results", path: "/results", icon: Trophy },
     { name: "Events", path: "/events", icon: Calendar },
+    { name: "Records", path: "/records", icon: Trophy },
     { name: "Rankings", path: "/rankings", icon: Trophy },
     { name: "Announcements", path: "/announcements", icon: Megaphone },
   ];
