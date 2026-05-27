@@ -2,13 +2,19 @@
 import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import API from "../api/axios";
-import { UploadCloud, Trash2, Loader2, FileSpreadsheet } from "lucide-react";
+import { UploadCloud, Trash2, Loader2, FileSpreadsheet, Plus, Save, Table as TableIcon } from "lucide-react";
+import { Input } from "../components/ui/Input";
+import { Button } from "../components/ui/Button";
 
 export default function ManageRecords() {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
+
+  const emptyRow = { name: "", roll_number: "", batch: "", place: "", date: "", tournament: "", event: "", gender: "Male", record: "", iism_record: "" };
+  const [manualRecords, setManualRecords] = useState([{ ...emptyRow }]);
+  const [submittingManual, setSubmittingManual] = useState(false);
 
   const fetchRecords = async () => {
     setLoading(true);
@@ -26,6 +32,44 @@ export default function ManageRecords() {
   useEffect(() => {
     fetchRecords();
   }, []);
+
+  const handleAddRow = () => {
+    setManualRecords([...manualRecords, { ...emptyRow }]);
+  };
+
+  const handleRemoveRow = (index) => {
+    if (manualRecords.length === 1) return;
+    setManualRecords(manualRecords.filter((_, i) => i !== index));
+  };
+
+  const handleRowChange = (index, field, value) => {
+    const updated = [...manualRecords];
+    updated[index][field] = value;
+    setManualRecords(updated);
+  };
+
+  const handleManualSubmit = async () => {
+    const validRecords = manualRecords.filter(row => row.name.trim() !== "" || row.roll_number.trim() !== "");
+    if (validRecords.length === 0) {
+      setError("Please fill in at least one record (Name or Roll Number required).");
+      return;
+    }
+
+    setSubmittingManual(true);
+    setError(null);
+    try {
+      await API.post("/records?action=bulk", validRecords);
+      alert("Manual records saved successfully.");
+      setManualRecords([{ ...emptyRow }]);
+      fetchRecords();
+    } catch (err) {
+      console.error(err);
+      const serverError = err.response?.data?.error;
+      setError(serverError || err.message || "Failed to save records.");
+    } finally {
+      setSubmittingManual(false);
+    }
+  };
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -98,6 +142,80 @@ export default function ManageRecords() {
           {error}
         </div>
       )}
+
+      {/* MANUAL BULK ENTRY SECTION */}
+      <div className="glass p-8 rounded-2xl border border-white/5 space-y-6">
+        <h2 className="text-2xl font-bold flex items-center gap-2">
+          <TableIcon className="w-6 h-6 text-primary" />
+          Manual Bulk Entry
+        </h2>
+        <p className="text-text-muted text-sm">
+          Quickly enter multiple records directly here. You can add as many rows as you need before saving.
+        </p>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[1200px]">
+            <thead>
+              <tr className="border-b border-white/10 text-text-muted text-xs uppercase tracking-wider">
+                <th className="p-2 w-[15%]">Name</th>
+                <th className="p-2 w-[10%]">Roll No.</th>
+                <th className="p-2 w-[8%]">Batch</th>
+                <th className="p-2 w-[12%]">Event</th>
+                <th className="p-2 w-[10%]">Gender</th>
+                <th className="p-2 w-[12%]">Tournament</th>
+                <th className="p-2 w-[10%]">Record</th>
+                <th className="p-2 w-[10%]">Place</th>
+                <th className="p-2 w-[8%]">Date</th>
+                <th className="p-2 w-[5%]"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {manualRecords.map((row, index) => (
+                <tr key={index} className="border-b border-white/5">
+                  <td className="p-1"><Input value={row.name} onChange={(e) => handleRowChange(index, "name", e.target.value)} placeholder="Name" className="h-8 text-sm" /></td>
+                  <td className="p-1"><Input value={row.roll_number} onChange={(e) => handleRowChange(index, "roll_number", e.target.value)} placeholder="Roll" className="h-8 text-sm" /></td>
+                  <td className="p-1"><Input value={row.batch} onChange={(e) => handleRowChange(index, "batch", e.target.value)} placeholder="Batch" className="h-8 text-sm" /></td>
+                  <td className="p-1"><Input value={row.event} onChange={(e) => handleRowChange(index, "event", e.target.value)} placeholder="Event" className="h-8 text-sm" /></td>
+                  <td className="p-1">
+                    <select 
+                      value={row.gender} 
+                      onChange={(e) => handleRowChange(index, "gender", e.target.value)}
+                      className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </select>
+                  </td>
+                  <td className="p-1"><Input value={row.tournament} onChange={(e) => handleRowChange(index, "tournament", e.target.value)} placeholder="Tournament" className="h-8 text-sm" /></td>
+                  <td className="p-1"><Input value={row.record} onChange={(e) => handleRowChange(index, "record", e.target.value)} placeholder="10.5s" className="h-8 text-sm" /></td>
+                  <td className="p-1"><Input value={row.place} onChange={(e) => handleRowChange(index, "place", e.target.value)} placeholder="1st" className="h-8 text-sm" /></td>
+                  <td className="p-1"><Input type="date" value={row.date} onChange={(e) => handleRowChange(index, "date", e.target.value)} className="h-8 text-sm" /></td>
+                  <td className="p-1 text-center">
+                    <button 
+                      onClick={() => handleRemoveRow(index)}
+                      disabled={manualRecords.length === 1}
+                      className="text-red-500 hover:text-red-400 p-1.5 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      title="Remove row"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        <div className="flex items-center justify-between mt-4">
+          <Button type="button" variant="outline" onClick={handleAddRow} className="flex items-center gap-2">
+            <Plus className="w-4 h-4" /> Add Row
+          </Button>
+          <Button type="button" onClick={handleManualSubmit} disabled={submittingManual} className="flex items-center gap-2">
+            {submittingManual ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {submittingManual ? "Saving..." : "Save All Records"}
+          </Button>
+        </div>
+      </div>
 
       {/* CSV UPLOAD SECTION */}
       <div className="glass p-8 rounded-2xl border border-white/5 space-y-6">
