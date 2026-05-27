@@ -27,7 +27,9 @@ export default function ManageRecords() {
     "INTER BATCH"
   ];
 
-  const emptyRow = { name: "", roll_number: "", batch: "", place: "", year: "", tournament_select: "PRATAP", tournament_other: "", event: "100 m", gender: "Male", record: "", iism_record: "" };
+  const PREDEFINED_YEARS = ["27", "26", "25", "24", "23"];
+
+  const emptyRow = { name: "", roll_number: "", batch: "", place: "", year: "24", tournament_select: "PRATAP", tournament_other: "", event: "100 m", gender: "Male", record: "", iism_record: "" };
   const [manualRecords, setManualRecords] = useState([{ ...emptyRow }]);
   const [submittingManual, setSubmittingManual] = useState(false);
 
@@ -251,7 +253,16 @@ export default function ManageRecords() {
                   </td>
                   <td className="p-1"><Input value={row.record} onChange={(e) => handleRowChange(index, "record", e.target.value)} placeholder="10.5s" className="h-8 text-sm" /></td>
                   <td className="p-1"><Input value={row.place} onChange={(e) => handleRowChange(index, "place", e.target.value)} placeholder="1st" className="h-8 text-sm" /></td>
-                  <td className="p-1"><Input type="text" value={row.year} onChange={(e) => handleRowChange(index, "year", e.target.value)} placeholder="24" maxLength={2} className="h-8 text-sm w-12 text-center" /></td>
+                  <td className="p-1">
+                    <select 
+                      value={row.year} 
+                      onChange={(e) => handleRowChange(index, "year", e.target.value)}
+                      className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    >
+                      <option value="">YY</option>
+                      {PREDEFINED_YEARS.map(y => <option key={y} value={y}>'{y}</option>)}
+                    </select>
+                  </td>
                   <td className="p-1 text-center">
                     <button 
                       onClick={() => handleRemoveRow(index)}

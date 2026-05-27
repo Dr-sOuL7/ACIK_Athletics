@@ -111,7 +111,48 @@ export default function AllTimeRecords() {
           <Search className="w-5 h-5 text-primary" /> Find a Record
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
+          {/* Tournament Filter */}
+          <div className="space-y-2">
+            <label className="text-sm text-text-muted font-medium ml-1">Tournament</label>
+            <div className="relative">
+              <select 
+                className="w-full appearance-none bg-surface-elevated border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all cursor-pointer"
+                value={selectedTournament}
+                onChange={(e) => setSelectedTournament(e.target.value)}
+              >
+                <option value="">All Tournaments</option>
+                {PREDEFINED_TOURNAMENTS.map(t => <option key={t} value={t}>{t}</option>)}
+                {otherTournaments.length > 0 && (
+                  <optgroup label="Other Tournaments" className="bg-surface text-text-muted">
+                    {otherTournaments.map(t => <option key={t} value={t} className="text-white">{t}</option>)}
+                  </optgroup>
+                )}
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                ▼
+              </div>
+            </div>
+          </div>
+
+          {/* Year Filter */}
+          <div className="space-y-2">
+            <label className="text-sm text-text-muted font-medium ml-1">Year</label>
+            <div className="relative">
+              <select 
+                className="w-full appearance-none bg-surface-elevated border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all cursor-pointer"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+              >
+                <option value="">All Years</option>
+                {PREDEFINED_YEARS.map(y => <option key={y} value={y}>'{y}</option>)}
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                ▼
+              </div>
+            </div>
+          </div>
+
           {/* Event Filter */}
           <div className="space-y-2">
             <label className="text-sm text-text-muted font-medium ml-1">Event Category</label>
@@ -139,28 +180,6 @@ export default function AllTimeRecords() {
             </div>
           </div>
 
-          {/* Tournament Filter */}
-          <div className="space-y-2">
-            <label className="text-sm text-text-muted font-medium ml-1">Tournament</label>
-            <div className="relative">
-              <select 
-                className="w-full appearance-none bg-surface-elevated border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all cursor-pointer"
-                value={selectedTournament}
-                onChange={(e) => setSelectedTournament(e.target.value)}
-              >
-                <option value="">All Tournaments</option>
-                {PREDEFINED_TOURNAMENTS.map(t => <option key={t} value={t}>{t}</option>)}
-                {otherTournaments.length > 0 && (
-                  <optgroup label="Other Tournaments" className="bg-surface text-text-muted">
-                    {otherTournaments.map(t => <option key={t} value={t} className="text-white">{t}</option>)}
-                  </optgroup>
-                )}
-              </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
-                ▼
-              </div>
-            </div>
-          </div>
 
           {/* Gender Filter */}
           <div className="space-y-2">
@@ -180,23 +199,7 @@ export default function AllTimeRecords() {
             </div>
           </div>
 
-          {/* Year Filter */}
-          <div className="space-y-2">
-            <label className="text-sm text-text-muted font-medium ml-1">Year</label>
-            <div className="relative">
-              <select 
-                className="w-full appearance-none bg-surface-elevated border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all cursor-pointer"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-              >
-                <option value="">All Years</option>
-                {PREDEFINED_YEARS.map(y => <option key={y} value={y}>'{y}</option>)}
-              </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
-                ▼
-              </div>
-            </div>
-          </div>
+
 
           {/* Search by Name/Roll */}
           <div className="space-y-2">
