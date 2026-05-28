@@ -3,6 +3,130 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Medal, Search, Calendar, MapPin, Loader2 } from "lucide-react";
 import API from "../api/axios";
 
+// Helper to parse time strings into milliseconds for sorting
+const parseTime = (timeStr) => {
+  if (!timeStr) return Infinity;
+  const cleanStr = timeStr.replace(/[^\d:.,]/g, "").replace(",", ".");
+  if (!cleanStr) return Infinity;
+  
+  const parts = cleanStr.split(":");
+  let hours = 0, minutes = 0, seconds = 0;
+  
+  if (parts.length === 3) {
+    hours = parseFloat(parts[0]) || 0;
+    minutes = parseFloat(parts[1]) || 0;
+    seconds = parseFloat(parts[2]) || 0;
+  } else if (parts.length === 2) {
+    minutes = parseFloat(parts[0]) || 0;
+    seconds = parseFloat(parts[1]) || 0;
+  } else if (parts.length === 1) {
+    seconds = parseFloat(parts[0]) || 0;
+  }
+  
+  return (hours * 3600000) + (minutes * 60000) + (seconds * 1000);
+};
+
+// Helper to parse distance strings into numbers for sorting
+const parseDistance = (distStr) => {
+  if (!distStr) return -Infinity;
+  const match = distStr.match(/[\d.]+/);
+  if (!match) return -Infinity;
+  return parseFloat(match[0]) || -Infinity;
+};
+
+// Reusable component to render the cards for a specific event
+const EventSection = ({ eventName, records }) => {
+  if (!records || records.length === 0) return null;
+  
+  const formatYear = (y) => {
+    if (!y) return "";
+    const s = String(y).trim();
+    if (s.length === 4) return s.slice(2);
+    if (s.includes("-")) return s.split("-")[0].slice(2);
+    return s;
+  };
+
+  return (
+    <div className="mb-10">
+      <h3 className="text-xl font-bold font-heading text-primary mb-4 border-b border-primary/20 pb-2">
+        {eventName}
+      </h3>
+      <div className="space-y-4">
+        <AnimatePresence>
+          {records.map(record => (
+            <motion.div
+              layout
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              key={record.id}
+              className="group relative glass p-5 rounded-2xl border border-white/5 overflow-hidden hover:border-primary/30 transition-colors"
+            >
+              <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              
+              {record.iism_record && record.iism_record !== "null" && record.iism_record !== "" && (
+                <div className="absolute top-4 right-4 bg-secondary/10 border border-secondary/20 text-secondary text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <Medal className="w-3 h-3" /> IISM
+                </div>
+              )}
+
+              <div className="relative z-10 space-y-3">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    {record.gender && (
+                      <span className="bg-white/10 text-white/80 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full">
+                        {record.gender}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-xl font-heading font-bold text-white mb-1">
+                    {record.name}
+                  </h3>
+                  <p className="text-xs text-text-muted font-mono bg-white/5 inline-block px-2 py-0.5 rounded">
+                    {record.roll_number} • Batch {record.batch}
+                  </p>
+                </div>
+
+                <div className="h-px w-full bg-white/10 my-2" />
+
+                <div className="grid grid-cols-2 gap-y-3 text-sm">
+                  <div>
+                    <div className="text-text-muted flex items-center gap-1 mb-1 text-xs">
+                      <Trophy className="w-3 h-3" /> Record
+                    </div>
+                    <div className="font-bold text-base text-white">
+                      {record.record || "N/A"}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="text-text-muted flex items-center gap-1 mb-1 text-xs">
+                      <Calendar className="w-3 h-3" /> Year
+                    </div>
+                    <div className="font-medium text-white/90">
+                      {record.year ? `'${formatYear(record.year)}` : "Unknown"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-1">
+                  <div className="text-text-muted flex items-center gap-1 text-[10px] mb-0.5 uppercase tracking-wider">
+                    <MapPin className="w-3 h-3" /> {record.tournament || "Tournament"}
+                  </div>
+                  <div className="text-white/80 font-medium text-sm">
+                    {record.place || "Unknown Venue"}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
+
 export default function AllTimeRecords() {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -84,6 +208,45 @@ export default function AllTimeRecords() {
       return matchEvent && matchTournament && matchGender && matchYear && matchSearch;
     });
   }, [records, selectedEvent, selectedTournament, selectedGender, selectedYear, searchQuery]);
+
+  // Group records into columns
+  const groupedRecords = useMemo(() => {
+    const groups = {
+      Track: {},
+      Field: {},
+      Relay: {},
+      Other: {}
+    };
+
+    filteredRecords.forEach(record => {
+      let category = "Other";
+      if (EVENT_CATEGORIES.Track.includes(record.event)) category = "Track";
+      else if (EVENT_CATEGORIES.Field.includes(record.event)) category = "Field";
+      else if (EVENT_CATEGORIES.Relay.includes(record.event)) category = "Relay";
+
+      if (!groups[category][record.event]) {
+        groups[category][record.event] = [];
+      }
+      groups[category][record.event].push(record);
+    });
+
+    // Sort records inside each event group
+    Object.keys(groups).forEach(category => {
+      Object.keys(groups[category]).forEach(event => {
+        groups[category][event].sort((a, b) => {
+          if (category === "Field") {
+            // Descending order for distances (highest distance first)
+            return parseDistance(b.record) - parseDistance(a.record);
+          } else {
+            // Ascending order for times (lowest time first)
+            return parseTime(a.record) - parseTime(b.record);
+          }
+        });
+      });
+    });
+
+    return groups;
+  }, [filteredRecords]);
 
   if (loading) {
     return (
@@ -235,83 +398,47 @@ export default function AllTimeRecords() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <AnimatePresence>
-              {filteredRecords.map((record) => (
-                <motion.div
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
-                  key={record.id}
-                  className="group relative glass p-6 rounded-2xl border border-white/5 overflow-hidden hover:border-primary/30 transition-colors"
-                >
-                  {/* Decorative Gradient Blob */}
-                  <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
-                  {/* IISM Badge */}
-                  {record.iism_record && record.iism_record !== "null" && record.iism_record !== "" && (
-                    <div className="absolute top-4 right-4 bg-secondary/10 border border-secondary/20 text-secondary text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                      <Medal className="w-3 h-3" /> IISM Record
-                    </div>
-                  )}
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Column 1: Track */}
+              <div>
+                <h2 className="text-2xl font-black font-heading text-white/20 mb-8 tracking-widest uppercase text-center border-b border-white/5 pb-4">Track Events</h2>
+                {EVENT_CATEGORIES.Track.map(eventName => (
+                  <EventSection key={eventName} eventName={eventName} records={groupedRecords.Track[eventName]} />
+                ))}
+              </div>
 
-                  <div className="relative z-10 space-y-4">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-primary font-bold tracking-widest uppercase text-xs">
-                          {record.event}
-                        </span>
-                        {record.gender && (
-                          <span className="bg-white/10 text-white/80 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full">
-                            {record.gender}
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="text-2xl font-heading font-bold text-white mb-1">
-                        {record.name}
-                      </h3>
-                      <p className="text-sm text-text-muted font-mono bg-white/5 inline-block px-2 py-0.5 rounded">
-                        {record.roll_number} • Batch {record.batch}
-                      </p>
-                    </div>
+              {/* Column 2: Field */}
+              <div>
+                <h2 className="text-2xl font-black font-heading text-white/20 mb-8 tracking-widest uppercase text-center border-b border-white/5 pb-4">Field Events</h2>
+                {EVENT_CATEGORIES.Field.map(eventName => (
+                  <EventSection key={eventName} eventName={eventName} records={groupedRecords.Field[eventName]} />
+                ))}
+              </div>
 
-                    <div className="h-px w-full bg-white/10 my-4" />
+              {/* Column 3: Relay */}
+              <div>
+                <h2 className="text-2xl font-black font-heading text-white/20 mb-8 tracking-widest uppercase text-center border-b border-white/5 pb-4">Relay Events</h2>
+                {EVENT_CATEGORIES.Relay.map(eventName => (
+                  <EventSection key={eventName} eventName={eventName} records={groupedRecords.Relay[eventName]} />
+                ))}
+              </div>
+            </div>
 
-                    <div className="grid grid-cols-2 gap-y-4 text-sm">
-                      <div>
-                        <div className="text-text-muted flex items-center gap-1 mb-1">
-                          <Trophy className="w-4 h-4" /> Record
-                        </div>
-                        <div className="font-bold text-lg text-white">
-                          {record.record || "N/A"}
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <div className="text-text-muted flex items-center gap-1 mb-1">
-                          <Calendar className="w-4 h-4" /> Year
-                        </div>
-                        <div className="font-medium text-white/90">
-                          {record.year ? `'${formatYear(record.year)}` : "Unknown"}
-                        </div>
-                      </div>
+            {/* Other Events */}
+            {Object.keys(groupedRecords.Other).length > 0 && (
+              <div className="mt-16 pt-16 border-t border-white/5">
+                <h2 className="text-2xl font-black font-heading text-white/20 mb-8 tracking-widest uppercase text-center">Other Events</h2>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  {Object.entries(groupedRecords.Other).map(([eventName, records]) => (
+                    <div key={eventName}>
+                      <EventSection eventName={eventName} records={records} />
                     </div>
-
-                    <div className="pt-2">
-                      <div className="text-text-muted flex items-center gap-1 text-xs mb-1 uppercase tracking-wider">
-                        <MapPin className="w-3 h-3" /> {record.tournament || "Tournament"}
-                      </div>
-                      <div className="text-white/80 font-medium">
-                        {record.place || "Unknown Venue"}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
