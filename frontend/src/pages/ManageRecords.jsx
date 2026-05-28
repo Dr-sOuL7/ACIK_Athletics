@@ -33,7 +33,7 @@ export default function ManageRecords() {
 
   const PREDEFINED_YEARS = ["27", "26", "25", "24", "23"];
 
-  const emptyRow = { name: "", roll_number: "", batch: "", place: "", year: "24", tournament_select: "PRATAP", tournament_other: "", event: "100 m", gender: "Male", record: "", iism_record: "" };
+  const emptyRow = { name: "", roll_number: "", batch: "", gender: "Male", event: "100 m", tournament_select: "PRATAP", tournament_other: "", record: "", place: "", year: "24" };
   const [manualRecords, setManualRecords] = useState([{ ...emptyRow }]);
   const [submittingManual, setSubmittingManual] = useState(false);
 
@@ -77,8 +77,8 @@ export default function ManageRecords() {
         row.batch.trim() !== "" ||
         row.place.trim() !== "" ||
         row.year.trim() !== "" ||
+        row.year.trim() !== "" ||
         row.record.trim() !== "" ||
-        row.iism_record.trim() !== "" ||
         (row.tournament_select === "Other" && row.tournament_other.trim() !== "")
       )
       .map(row => {
@@ -148,8 +148,8 @@ export default function ManageRecords() {
           tournament: lowerRow["tournament"]?.toString().trim() || lowerRow["event name"]?.toString().trim() || "",
           event: lowerRow["event"]?.toString().trim() || lowerRow["category"]?.toString().trim() || "",
           gender: lowerRow["gender"]?.toString().trim() || lowerRow["sex"]?.toString().trim() || "",
-          record: lowerRow["record"]?.toString().trim() || lowerRow["timing/distance"]?.toString().trim() || lowerRow["time"]?.toString().trim() || "",
-          iism_record: lowerRow["iism record"]?.toString().trim() || lowerRow["iism record (if any)"]?.toString().trim() || lowerRow["iism_record"]?.toString().trim() || ""
+          gender: lowerRow["gender"]?.toString().trim() || lowerRow["sex"]?.toString().trim() || "",
+          record: lowerRow["record"]?.toString().trim() || lowerRow["timing/distance"]?.toString().trim() || lowerRow["time"]?.toString().trim() || ""
         };
 
         // Check if row is completely empty
@@ -275,8 +275,8 @@ export default function ManageRecords() {
                 <th className="p-2 w-[15%]">Name</th>
                 <th className="p-2 w-[10%]">Roll No.</th>
                 <th className="p-2 w-[8%]">Batch</th>
-                <th className="p-2 w-[12%]">Event</th>
                 <th className="p-2 w-[10%]">Gender</th>
+                <th className="p-2 w-[12%]">Event</th>
                 <th className="p-2 w-[12%]">Tournament</th>
                 <th className="p-2 w-[10%]">Record</th>
                 <th className="p-2 w-[10%]">Venue</th>
@@ -292,6 +292,16 @@ export default function ManageRecords() {
                   <td className="p-1"><Input type="text" value={row.batch} onChange={(e) => handleRowChange(index, "batch", e.target.value)} placeholder="24MS" maxLength={4} className="h-8 text-sm w-16 text-center" /></td>
                   <td className="p-1">
                     <select 
+                      value={row.gender} 
+                      onChange={(e) => handleRowChange(index, "gender", e.target.value)}
+                      className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </select>
+                  </td>
+                  <td className="p-1">
+                    <select 
                       value={row.event} 
                       onChange={(e) => handleRowChange(index, "event", e.target.value)}
                       className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
@@ -301,16 +311,6 @@ export default function ManageRecords() {
                           {events.map(ev => <option key={ev} value={ev} className="text-white">{ev}</option>)}
                         </optgroup>
                       ))}
-                    </select>
-                  </td>
-                  <td className="p-1">
-                    <select 
-                      value={row.gender} 
-                      onChange={(e) => handleRowChange(index, "gender", e.target.value)}
-                      className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
                     </select>
                   </td>
                   <td className="p-1">
@@ -377,7 +377,7 @@ export default function ManageRecords() {
           Bulk Upload via Spreadsheet
         </h2>
         <p className="text-text-muted text-sm mt-2">
-          Upload a CSV, TSV, or Excel (.xlsx) file. Columns do not need to be in any specific order and are not case-sensitive. Expected columns: <b>Name, Roll Number, Batch, Venue, Year, Tournament, Event, Gender, Record, IISM record</b>.
+          Upload a CSV, TSV, or Excel (.xlsx) file. Columns do not need to be in any specific order and are not case-sensitive. Expected columns: <b>Name, Roll Number, Batch, Gender, Event, Tournament, Record, Venue, Year</b>.
         </p>
         <div className="flex items-center justify-center w-full">
           <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-40 border-2 border-white/10 border-dashed rounded-xl cursor-pointer bg-surface-elevated hover:bg-surface-hover transition-colors">
@@ -411,12 +411,11 @@ export default function ManageRecords() {
                   <th className="p-2 w-[15%]">Name</th>
                   <th className="p-2 w-[10%]">Roll No.</th>
                   <th className="p-2 w-[8%]">Batch</th>
-                  <th className="p-2 w-[12%]">Event</th>
                   <th className="p-2 w-[8%]">Gender</th>
+                  <th className="p-2 w-[12%]">Event</th>
                   <th className="p-2 w-[12%]">Tournament</th>
                   <th className="p-2 w-[10%]">Record</th>
-                  <th className="p-2 w-[10%]">IISM Rec.</th>
-                  <th className="p-2 w-[8%]">Venue</th>
+                  <th className="p-2 w-[10%]">Venue</th>
                   <th className="p-2 w-[8%]">Year</th>
                   <th className="p-2 w-[8%] text-center">Actions</th>
                 </tr>
@@ -438,6 +437,16 @@ export default function ManageRecords() {
                             <td className="p-1"><Input value={editingFormData.batch || ""} onChange={(e) => handleEditChange("batch", e.target.value)} maxLength={4} className="h-8 text-sm w-16 text-center" /></td>
                             <td className="p-1">
                               <select 
+                                value={editingFormData.gender || ""} 
+                                onChange={(e) => handleEditChange("gender", e.target.value)}
+                                className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                              >
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                              </select>
+                            </td>
+                            <td className="p-1">
+                              <select 
                                 value={editingFormData.event || ""} 
                                 onChange={(e) => handleEditChange("event", e.target.value)}
                                 className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
@@ -447,16 +456,6 @@ export default function ManageRecords() {
                                     {events.map(ev => <option key={ev} value={ev} className="text-white">{ev}</option>)}
                                   </optgroup>
                                 ))}
-                              </select>
-                            </td>
-                            <td className="p-1">
-                              <select 
-                                value={editingFormData.gender || ""} 
-                                onChange={(e) => handleEditChange("gender", e.target.value)}
-                                className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                              >
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
                               </select>
                             </td>
                             <td className="p-1">
@@ -478,7 +477,6 @@ export default function ManageRecords() {
                               )}
                             </td>
                             <td className="p-1"><Input value={editingFormData.record || ""} onChange={(e) => handleEditChange("record", e.target.value)} className="h-8 text-sm" /></td>
-                            <td className="p-1"><Input value={editingFormData.iism_record || ""} onChange={(e) => handleEditChange("iism_record", e.target.value)} className="h-8 text-sm" /></td>
                             <td className="p-1"><Input value={editingFormData.place || ""} onChange={(e) => handleEditChange("place", e.target.value)} className="h-8 text-sm" /></td>
                             <td className="p-1">
                               <select 
@@ -504,11 +502,10 @@ export default function ManageRecords() {
                             <td className="p-2 text-sm">{r.name}</td>
                             <td className="p-2 text-sm font-mono">{r.roll_number}</td>
                             <td className="p-2 text-sm">{r.batch}</td>
-                            <td className="p-2 font-medium text-primary text-sm">{r.event}</td>
                             <td className="p-2 text-sm">{r.gender}</td>
+                            <td className="p-2 font-medium text-primary text-sm">{r.event}</td>
                             <td className="p-2 text-sm">{r.tournament}</td>
                             <td className="p-2 font-mono text-secondary text-sm">{r.record}</td>
-                            <td className="p-2 font-mono text-text-muted text-sm">{r.iism_record}</td>
                             <td className="p-2 text-sm">{r.place}</td>
                             <td className="p-2 text-sm">{r.year ? `'${r.year}` : ""}</td>
                             <td className="p-2 flex items-center justify-center gap-1">

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Medal, Search, Calendar, MapPin, Loader2 } from "lucide-react";
+import { Trophy, Search, Calendar, MapPin, Loader2 } from "lucide-react";
 import API from "../api/axios";
 
 // Helper to parse time strings into milliseconds for sorting
@@ -63,14 +63,9 @@ const EventSection = ({ eventName, records }) => {
               key={record.id}
               className="group relative glass p-5 rounded-2xl border border-white/5 overflow-hidden hover:border-primary/30 transition-colors"
             >
+              {/* Decorative Gradient Blob */}
               <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
-              {record.iism_record && record.iism_record !== "null" && record.iism_record !== "" && (
-                <div className="absolute top-4 right-4 bg-secondary/10 border border-secondary/20 text-secondary text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <Medal className="w-3 h-3" /> IISM
-                </div>
-              )}
-
               <div className="relative z-10 space-y-3">
                 <div>
                   <div className="flex items-center gap-2 mb-1">

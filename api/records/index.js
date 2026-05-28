@@ -11,7 +11,6 @@ const recordSchema = z.object({
   event: z.string().optional(),
   gender: z.string().optional(),
   record: z.string().optional(),
-  iism_record: z.string().optional(),
 });
 
 export default async function handler(req, res) {
