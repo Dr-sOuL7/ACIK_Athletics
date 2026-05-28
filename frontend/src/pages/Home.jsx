@@ -54,8 +54,34 @@ export default function Home() {
   return (
     <div className="flex flex-col space-y-16 pb-16 w-full max-w-full">
       
+      {/* Dynamic Branding Banner */}
+      {!loading && (content?.banner_url || content?.logo_url) && (
+        <section className="relative w-full h-[35vh] min-h-[300px] max-h-[500px] rounded-3xl overflow-hidden shadow-2xl mb-12 -mt-4 flex items-center justify-center">
+          {content.banner_url ? (
+            <img 
+              src={content.banner_url} 
+              alt="Homepage Banner" 
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20" />
+          )}
+          
+          {/* Subtle overlay to ensure the logo pops */}
+          <div className="absolute inset-0 bg-black/20" />
+
+          {content.logo_url && (
+            <div className="relative z-10 flex items-center justify-center">
+              <div className="h-36 w-36 md:h-52 md:w-52 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl bg-white/10 backdrop-blur-md flex items-center justify-center hover:scale-105 transition-transform duration-500 p-4">
+                <img src={content.logo_url} alt="Homepage Logo" className="w-full h-full object-contain drop-shadow-lg" />
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
       {/* Cinematic Hero Section */}
-      <section className="relative w-full h-[70vh] min-h-[500px] max-h-[800px] rounded-3xl overflow-hidden -mt-4 shadow-2xl">
+      <section className={`relative w-full h-[70vh] min-h-[500px] max-h-[800px] rounded-3xl overflow-hidden shadow-2xl ${(!content?.banner_url && !content?.logo_url) ? '-mt-4' : ''}`}>
         <div className="absolute inset-0 bg-background">
           <img 
             src={heroImg} 
@@ -79,7 +105,9 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }} 
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <img src="/acik-logo.png" alt="ACIK Logo" className="h-28 md:h-40 mb-6 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:scale-105 transition-transform duration-500" style={{ mixBlendMode: 'plus-lighter' }} />
+              {!content?.logo_url && (
+                <img src="/acik-logo.png" alt="ACIK Logo" className="h-28 md:h-40 mb-6 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:scale-105 transition-transform duration-500" style={{ mixBlendMode: 'plus-lighter' }} />
+              )}
               <h1 className="text-5xl md:text-7xl font-extrabold text-white font-heading tracking-tight mb-6 leading-tight drop-shadow-lg">
                 {content?.title || "ACIK Athletics"}
               </h1>

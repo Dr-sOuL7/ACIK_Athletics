@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import AddAnnouncementForm from "../forms/AddAnnouncementForm";
+import UpdateHomepageForm from "../forms/UpdateHomepageForm";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/Card";
 import { Activity, Megaphone, Trash2, Loader2 } from "lucide-react";
 import API from "../api/axios";
@@ -61,6 +62,13 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-8">
+        <Card className="border-white/5">
+          <CardHeader>
+            <CardTitle>Manage Homepage Branding</CardTitle>
+          </CardHeader>
+          <UpdateHomepageForm />
+        </Card>
+
         <Card className="border-white/5">
           <CardHeader>
             <CardTitle>Add Announcement</CardTitle>
