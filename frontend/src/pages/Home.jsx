@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronRight, Trophy, Megaphone, Image as ImageIcon, FileDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import API from "../api/axios";
 import { Card, CardHeader, CardTitle } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
@@ -28,6 +28,7 @@ const itemVariants = {
 };
 
 export default function Home() {
+  const navigate = useNavigate();
   const [content, setContent] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -224,7 +225,11 @@ export default function Home() {
           >
             {announcements.map((item) => (
               <motion.div key={item.id} variants={itemVariants}>
-                <Card hover className="h-full flex flex-col group">
+                <Card 
+                  hover 
+                  className="h-full flex flex-col group cursor-pointer"
+                  onClick={() => navigate("/announcements")}
+                >
                   <CardHeader>
                     <CardTitle className="group-hover:text-primary transition-colors line-clamp-2">
                       {item.title}
