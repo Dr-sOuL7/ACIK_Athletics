@@ -98,14 +98,14 @@ export default function ManageRecords() {
 
   const filteredRecords = records.filter((r) => {
     return (
-      (filters.name === "" || (r.name && r.name.toLowerCase().includes(filters.name.toLowerCase()))) &&
-      (filters.roll_number === "" || (r.roll_number && r.roll_number.toLowerCase().includes(filters.roll_number.toLowerCase()))) &&
-      (filters.batch === "" || (r.batch && r.batch.toLowerCase().includes(filters.batch.toLowerCase()))) &&
-      (filters.gender === "" || r.gender === filters.gender) &&
-      (filters.event === "" || (r.event && r.event.toLowerCase().includes(filters.event.toLowerCase()))) &&
-      (filters.tournament === "" || (r.tournament && r.tournament.toLowerCase().includes(filters.tournament.toLowerCase()))) &&
-      (filters.place === "" || (r.place && r.place.toLowerCase().includes(filters.place.toLowerCase()))) &&
-      (filters.year === "" || r.year === filters.year)
+      (!filters.name || (r.name && String(r.name).toLowerCase().includes(filters.name.toLowerCase()))) &&
+      (!filters.roll_number || (r.roll_number && String(r.roll_number).toLowerCase().includes(filters.roll_number.toLowerCase()))) &&
+      (!filters.batch || (r.batch && String(r.batch).toLowerCase().includes(filters.batch.toLowerCase()))) &&
+      (!filters.gender || (r.gender && String(r.gender).toLowerCase() === filters.gender.toLowerCase())) &&
+      (!filters.event || (r.event && String(r.event).toLowerCase().includes(filters.event.toLowerCase()))) &&
+      (!filters.tournament || (r.tournament && String(r.tournament).toLowerCase().includes(filters.tournament.toLowerCase()))) &&
+      (!filters.place || (r.place && String(r.place).toLowerCase().includes(filters.place.toLowerCase()))) &&
+      (!filters.year || (r.year && String(r.year) === String(filters.year)))
     );
   });
 
