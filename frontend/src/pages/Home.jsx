@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Trophy, Megaphone, Image as ImageIcon, FileDown, X, Calendar } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ChevronRight, Megaphone, FileDown, X, Calendar } from "lucide-react";
 import API from "../api/axios";
 import { Card, CardHeader, CardTitle } from "../components/ui/Card";
-import { Button } from "../components/ui/Button";
 import { Skeleton } from "../components/ui/Skeleton";
 import { EmptyState } from "../components/ui/EmptyState";
 
@@ -145,7 +143,7 @@ export default function Home() {
       )}
 
       {/* Cinematic Hero Section */}
-      <section className={`relative w-full h-[70vh] min-h-[500px] max-h-[800px] rounded-3xl overflow-hidden shadow-2xl ${(!content?.banner_url && !content?.logo_url) ? '-mt-4' : ''}`}>
+      <section className={`relative w-full h-[40vh] min-h-[300px] max-h-[500px] rounded-3xl overflow-hidden shadow-2xl ${(!content?.banner_url && !content?.logo_url) ? '-mt-4' : ''}`}>
         <div className="absolute inset-0 bg-background">
           <img 
             src={heroImg} 
@@ -173,25 +171,12 @@ export default function Home() {
               {!content?.logo_url && (
                 <img src="/acik-logo.png" alt="ACIK Logo" className="h-28 md:h-40 mb-6 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:scale-105 transition-transform duration-500" style={{ mixBlendMode: 'plus-lighter' }} />
               )}
-              <h1 className="text-5xl md:text-7xl font-extrabold text-white font-heading tracking-tight mb-6 leading-tight drop-shadow-lg max-w-4xl mx-auto">
+              <h1 className="text-4xl md:text-6xl font-extrabold text-white font-heading tracking-tight mb-4 leading-tight drop-shadow-lg max-w-4xl mx-auto">
                 {content?.title || "ACIK Athletics"}
               </h1>
-              <p className="text-xl md:text-3xl text-text-muted max-w-2xl mx-auto font-light mb-10 leading-relaxed">
+              <p className="text-lg md:text-2xl text-text-muted max-w-2xl mx-auto font-light leading-relaxed">
                 {content?.subtitle || "Athletics Club of IISER Kolkata"}
               </p>
-              
-              <div className="flex flex-wrap gap-4 justify-center">
-                <Link to="/gallery">
-                  <Button size="lg" className="gap-2 shadow-[0_0_20px_rgba(6,182,212,0.4)]">
-                    View Gallery <ImageIcon className="w-5 h-5" />
-                  </Button>
-                </Link>
-                <Link to="/records">
-                  <Button variant="surface" size="lg" className="gap-2">
-                    All-Time Records <Trophy className="w-5 h-5" />
-                  </Button>
-                </Link>
-              </div>
             </motion.div>
           )}
         </div>
