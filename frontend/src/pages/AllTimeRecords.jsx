@@ -316,6 +316,10 @@ export default function AllTimeRecords() {
     return Array.from(cats).join(", ");
   };
 
+  const profilePic = useMemo(() => {
+    return athleteRecords?.find(r => r.profile_pic)?.profile_pic || null;
+  }, [athleteRecords]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -542,8 +546,12 @@ export default function AllTimeRecords() {
                 </button>
 
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shrink-0">
-                    <User className="w-10 h-10 text-white" />
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shrink-0 overflow-hidden">
+                    {profilePic ? (
+                      <img src={profilePic} alt={selectedAthlete.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <User className="w-10 h-10 text-white" />
+                    )}
                   </div>
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-3">

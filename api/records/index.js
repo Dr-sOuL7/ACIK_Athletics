@@ -13,6 +13,7 @@ const recordSchema = z.object({
   event: emptyToNull,
   gender: emptyToNull,
   record: emptyToNull,
+  profile_pic: emptyToNull,
 });
 
 export default async function handler(req, res) {

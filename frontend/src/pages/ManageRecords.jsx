@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import API from "../api/axios";
+import { supabase } from "../api/supabase";
 import { UploadCloud, Trash2, Loader2, FileSpreadsheet, Plus, Save, Table as TableIcon, Edit, X, Check, Filter } from "lucide-react";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
@@ -45,9 +46,25 @@ export default function ManageRecords() {
 
   const PREDEFINED_YEARS = ["27", "26", "25", "24", "23"];
 
-  const emptyRow = { name: "", roll_number: "", batch: "", gender: "Male", event: "100 m", tournament_select: "PRATAP", tournament_other: "", record: "", place: "", year: "24" };
+  const emptyRow = { name: "", roll_number: "", batch: "", gender: "Male", event: "100 m", tournament_select: "PRATAP", tournament_other: "", record: "", place: "", year: "24", profile_pic: "" };
   const [manualRecords, setManualRecords] = useState([{ ...emptyRow }]);
   const [submittingManual, setSubmittingManual] = useState(false);
+
+  const handleUploadPic = async (file, setUrlCallback) => {
+    if (!file) return;
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      const filePath = `profiles/${fileName}`;
+      const { error: uploadError } = await supabase.storage.from("gallery_images").upload(filePath, file);
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from("gallery_images").getPublicUrl(filePath);
+      setUrlCallback(publicUrl);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload image");
+    }
+  };
 
   const fetchRecords = async () => {
     setLoading(true);
@@ -174,7 +191,8 @@ export default function ManageRecords() {
           event: lowerRow["event"]?.toString().trim() || lowerRow["category"]?.toString().trim() || "",
           gender: lowerRow["gender"]?.toString().trim() || lowerRow["sex"]?.toString().trim() || "",
           gender: lowerRow["gender"]?.toString().trim() || lowerRow["sex"]?.toString().trim() || "",
-          record: lowerRow["record"]?.toString().trim() || lowerRow["timing/distance"]?.toString().trim() || lowerRow["time"]?.toString().trim() || ""
+          record: lowerRow["record"]?.toString().trim() || lowerRow["timing/distance"]?.toString().trim() || lowerRow["time"]?.toString().trim() || "",
+          profile_pic: lowerRow["profile pic"]?.toString().trim() || lowerRow["profile_pic"]?.toString().trim() || ""
         };
 
         // Check if row is completely empty
@@ -305,6 +323,7 @@ export default function ManageRecords() {
                 <th className="p-2 w-[10%]">Record</th>
                 <th className="p-2 w-[10%]">Venue</th>
                 <th className="p-2 w-[8%]">Year</th>
+                <th className="p-2 w-[8%]">Profile Pic</th>
                 <th className="p-2 w-[5%]"></th>
               </tr>
             </thead>
@@ -366,6 +385,25 @@ export default function ManageRecords() {
                       <option value="">YY</option>
                       {PREDEFINED_YEARS.map(y => <option key={y} value={y}>'{y}</option>)}
                     </select>
+                  </td>
+                  <td className="p-1">
+                    {row.profile_pic ? (
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-green-400">Uploaded</span>
+                        <button type="button" onClick={() => handleRowChange(index, "profile_pic", "")} className="text-red-400 text-xs hover:underline">&times;</button>
+                      </div>
+                    ) : (
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="w-[80px] text-[10px] text-text-muted file:bg-surface-elevated file:text-white file:border-0 file:rounded file:px-2 file:py-1 file:cursor-pointer" 
+                        onChange={(e) => {
+                          if (e.target.files[0]) {
+                            handleUploadPic(e.target.files[0], (url) => handleRowChange(index, "profile_pic", url));
+                          }
+                        }} 
+                      />
+                    )}
                   </td>
                   <td className="p-1 text-center">
                     <button 
@@ -492,6 +530,7 @@ export default function ManageRecords() {
                   <th className="p-2 w-[10%]">Record</th>
                   <th className="p-2 w-[10%]">Venue</th>
                   <th className="p-2 w-[8%]">Year</th>
+                  <th className="p-2 w-[6%]">Pic</th>
                   <th className="p-2 w-[8%] text-center">Actions</th>
                 </tr>
               </thead>
@@ -563,6 +602,25 @@ export default function ManageRecords() {
                                 {PREDEFINED_YEARS.map(y => <option key={y} value={y}>'{y}</option>)}
                               </select>
                             </td>
+                            <td className="p-1">
+                              {editingFormData.profile_pic ? (
+                                <div className="flex items-center gap-1">
+                                  <span className="text-xs text-green-400">Yes</span>
+                                  <button type="button" onClick={() => handleEditChange("profile_pic", "")} className="text-red-400 text-xs hover:underline">&times;</button>
+                                </div>
+                              ) : (
+                                <input 
+                                  type="file" 
+                                  accept="image/*" 
+                                  className="w-[60px] text-[10px] text-text-muted file:bg-surface-elevated file:text-white file:border-0 file:rounded file:px-1 file:py-1 file:cursor-pointer" 
+                                  onChange={(e) => {
+                                    if (e.target.files[0]) {
+                                      handleUploadPic(e.target.files[0], (url) => handleEditChange("profile_pic", url));
+                                    }
+                                  }} 
+                                />
+                              )}
+                            </td>
                             <td className="p-1 flex items-center justify-center gap-1 mt-1">
                               <button onClick={handleSaveEdit} disabled={savingEdit} className="text-success hover:text-green-400 p-1.5 rounded hover:bg-green-500/10 transition-colors disabled:opacity-50" title="Save changes">
                                 {savingEdit ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
@@ -583,6 +641,9 @@ export default function ManageRecords() {
                             <td className="p-2 font-mono text-secondary text-sm">{r.record}</td>
                             <td className="p-2 text-sm">{r.place}</td>
                             <td className="p-2 text-sm">{r.year ? `'${r.year}` : ""}</td>
+                            <td className="p-2 text-sm text-center">
+                              {r.profile_pic ? <span className="text-green-400 text-xs">Yes</span> : <span className="text-text-muted text-xs">-</span>}
+                            </td>
                             <td className="p-2 flex items-center justify-center gap-1">
                               <button onClick={() => handleEditClick(r)} className="text-blue-400 hover:text-blue-300 p-1.5 rounded-lg hover:bg-blue-500/10 transition-colors" title="Edit record">
                                 <Edit className="w-4 h-4" />
