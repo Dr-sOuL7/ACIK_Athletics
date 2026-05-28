@@ -24,6 +24,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import EditHomepage from "./pages/EditHomepage";
 import ManageRecords from "./pages/ManageRecords";
 import ManageGallery from "./pages/ManageGallery";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function App() {
   return (
@@ -137,6 +138,7 @@ export default function App() {
       </Routes>
 
     </BrowserRouter>
+    <Analytics />
     </MotionConfig>
   );
 }
