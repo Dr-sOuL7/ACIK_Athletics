@@ -15,7 +15,7 @@ const categories = [
 ];
 
 export default function AddPhotoForm({ refresh }) {
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [category, setCategory] = useState("IISM");
   const [caption, setCaption] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,8 +23,8 @@ export default function AddPhotoForm({ refresh }) {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!file) {
-      setError("Please select a file first.");
+    if (!files || files.length === 0) {
+      setError("Please select at least one file.");
       return;
     }
     
@@ -32,37 +32,39 @@ export default function AddPhotoForm({ refresh }) {
     setError(null);
 
     try {
-      // 1. Upload file to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-      const filePath = `${category}/${fileName}`;
+      // Upload all files concurrently
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+        const filePath = `${category}/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("gallery_images")
-        .upload(filePath, file);
+        const { error: uploadError } = await supabase.storage
+          .from("gallery_images")
+          .upload(filePath, file);
 
-      if (uploadError) throw new Error("Failed to upload image: " + uploadError.message);
+        if (uploadError) throw new Error(`Failed to upload ${file.name}: ` + uploadError.message);
 
-      // 2. Get Public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from("gallery_images")
-        .getPublicUrl(filePath);
+        const { data: { publicUrl } } = supabase.storage
+          .from("gallery_images")
+          .getPublicUrl(filePath);
 
-      // 3. Save to database
-      await API.post("/gallery", {
-        image_url: publicUrl,
-        category: category,
-        caption: caption,
+        await API.post("/gallery", {
+          image_url: publicUrl,
+          category: category,
+          caption: caption,
+        });
       });
 
-      // 4. Cleanup and refresh
-      setFile(null);
+      await Promise.all(uploadPromises);
+
+      // Cleanup and refresh
+      setFiles([]);
       setCaption("");
       if (refresh) refresh();
 
     } catch (err) {
       console.error(err);
-      setError(err.message || "Failed to upload photo.");
+      setError(err.message || "Failed to upload photos.");
     } finally {
       setLoading(false);
     }
@@ -83,19 +85,36 @@ export default function AddPhotoForm({ refresh }) {
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               <UploadCloud className="w-8 h-8 mb-2 text-primary" />
               <p className="mb-2 text-sm text-text-muted">
-                {file ? <span className="text-white font-medium">{file.name}</span> : <span><span className="font-semibold text-white">Click to upload</span> or drag and drop</span>}
+                {files.length > 0 ? (
+                  <span className="text-white font-medium">{files.length} file{files.length > 1 ? 's' : ''} selected</span>
+                ) : (
+                  <span><span className="font-semibold text-white">Click to upload</span> or drag and drop</span>
+                )}
               </p>
             </div>
             <input 
               id="photo-upload" 
               type="file" 
               accept="image/*" 
+              multiple
               className="hidden" 
-              onChange={(e) => setFile(e.target.files[0])} 
+              onChange={(e) => setFiles(Array.from(e.target.files))} 
               disabled={loading} 
             />
           </label>
         </div>
+        {files.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {files.map((f, i) => (
+              <div key={i} className="bg-white/10 px-3 py-1 rounded text-xs flex items-center gap-2">
+                <span className="truncate max-w-[150px]">{f.name}</span>
+                <button type="button" onClick={() => setFiles(files.filter((_, idx) => idx !== i))} className="text-red-400 hover:text-red-300">
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div>
@@ -123,9 +142,9 @@ export default function AddPhotoForm({ refresh }) {
         />
       </div>
 
-      <Button type="submit" variant="primary" className="w-full justify-center" disabled={loading || !file}>
+      <Button type="submit" variant="primary" className="w-full justify-center" disabled={loading || files.length === 0}>
         {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ImagePlus className="w-5 h-5" />}
-        {loading ? "Uploading..." : "Upload Photo"}
+        {loading ? "Uploading..." : `Upload ${files.length > 1 ? files.length + ' Photos' : 'Photo'}`}
       </Button>
     </form>
   );
