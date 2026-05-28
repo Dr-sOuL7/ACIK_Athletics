@@ -107,16 +107,7 @@ export default function App() {
           }
         />
 
-        <Route
-          path="/admin/announcements"
-          element={
-            <AdminRoute>
-              <AdminLayout>
-                <Announcements />
-              </AdminLayout>
-            </AdminRoute>
-          }
-        />
+
 
         <Route
           path="/admin/gallery"

@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import AddAnnouncementForm from "../forms/AddAnnouncementForm";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/Card";
+import { Button } from "../components/ui/Button";
 import { Activity, Megaphone, Trash2, Loader2 } from "lucide-react";
 import API from "../api/axios";
 
 export default function AdminDashboard() {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   const fetchAnnouncements = async (showLoader = false) => {
     if (showLoader) setLoading(true);
@@ -30,9 +32,37 @@ export default function AdminDashboard() {
     try {
       await API.delete(`/announcements?id=${id}`);
       fetchAnnouncements(true);
+      setSelectedIds(selectedIds.filter(selectedId => selectedId !== id));
     } catch (err) {
       console.error(err);
       alert("Failed to delete announcement");
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} announcements?`)) return;
+    try {
+      setLoading(true);
+      await Promise.all(selectedIds.map(id => API.delete(`/announcements?id=${id}`)));
+      setSelectedIds([]);
+      fetchAnnouncements(true);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete some announcements");
+      fetchAnnouncements(true);
+    }
+  };
+
+  const toggleSelect = (id) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === announcements.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(announcements.map(a => a.id));
     }
   };
 
@@ -69,10 +99,27 @@ export default function AdminDashboard() {
         </Card>
 
         <Card className="border-white/5">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle>Manage Announcements</CardTitle>
+            {selectedIds.length > 0 && (
+              <Button variant="outline" onClick={handleBulkDelete} className="text-red-500 hover:text-red-400 border-red-500/20 hover:bg-red-500/10 gap-2">
+                <Trash2 className="w-4 h-4" /> Delete Selected ({selectedIds.length})
+              </Button>
+            )}
           </CardHeader>
           <CardContent>
+            <div className="mb-4">
+              <label className="flex items-center gap-2 text-sm text-text-muted cursor-pointer hover:text-white transition-colors w-fit">
+                <input 
+                  type="checkbox" 
+                  className="rounded border-white/20 bg-surface text-primary focus:ring-primary focus:ring-offset-surface cursor-pointer"
+                  checked={announcements.length > 0 && selectedIds.length === announcements.length}
+                  onChange={toggleSelectAll}
+                  disabled={announcements.length === 0}
+                />
+                Select All
+              </label>
+            </div>
             {loading ? (
               <div className="flex items-center gap-2 text-text-muted"><Loader2 className="w-4 h-4 animate-spin" /> Loading announcements...</div>
             ) : announcements.length === 0 ? (
@@ -80,15 +127,23 @@ export default function AdminDashboard() {
             ) : (
               <div className="space-y-4">
                 {announcements.map(ann => (
-                  <div key={ann.id} className="flex items-start justify-between bg-surface-elevated p-4 rounded-xl border border-white/5">
-                    <div>
-                      <h4 className="font-bold text-white mb-1">{ann.title}</h4>
-                      <p className="text-sm text-text-muted line-clamp-2">{ann.message}</p>
-                      {(ann.file_url || (ann.attachments && ann.attachments.length > 0)) && (
-                        <span className="inline-block mt-2 text-xs font-medium bg-primary/20 text-primary px-2 py-1 rounded">
-                          Has Attachment(s)
-                        </span>
-                      )}
+                  <div key={ann.id} className={`flex items-start justify-between bg-surface-elevated p-4 rounded-xl border transition-colors ${selectedIds.includes(ann.id) ? 'border-primary/50 bg-primary/5' : 'border-white/5'}`}>
+                    <div className="flex items-start gap-4">
+                      <input 
+                        type="checkbox" 
+                        className="mt-1 rounded border-white/20 bg-surface text-primary focus:ring-primary focus:ring-offset-surface cursor-pointer"
+                        checked={selectedIds.includes(ann.id)}
+                        onChange={() => toggleSelect(ann.id)}
+                      />
+                      <div>
+                        <h4 className="font-bold text-white mb-1">{ann.title}</h4>
+                        <p className="text-sm text-text-muted line-clamp-2">{ann.message}</p>
+                        {(ann.file_url || (ann.attachments && ann.attachments.length > 0)) && (
+                          <span className="inline-block mt-2 text-xs font-medium bg-primary/20 text-primary px-2 py-1 rounded">
+                            Has Attachment(s)
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <button 
                       onClick={() => handleDelete(ann.id)}

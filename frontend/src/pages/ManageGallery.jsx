@@ -3,10 +3,12 @@ import { useState, useEffect } from "react";
 import API from "../api/axios";
 import AddPhotoForm from "../forms/AddPhotoForm";
 import { Loader2, Trash2, Image as ImageIcon } from "lucide-react";
+import { Button } from "../components/ui/Button";
 
 export default function ManageGallery() {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   const fetchPhotos = async () => {
     setLoading(true);
@@ -29,9 +31,37 @@ export default function ManageGallery() {
     try {
       await API.delete(`/gallery?id=${id}`);
       fetchPhotos();
+      setSelectedIds(selectedIds.filter(selectedId => selectedId !== id));
     } catch (err) {
       console.error(err);
       alert("Failed to delete photo.");
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} photos?`)) return;
+    try {
+      setLoading(true);
+      await Promise.all(selectedIds.map(id => API.delete(`/gallery?id=${id}`)));
+      setSelectedIds([]);
+      fetchPhotos();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete some photos.");
+      fetchPhotos();
+    }
+  };
+
+  const toggleSelect = (id) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === photos.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(photos.map(p => p.id));
     }
   };
 
@@ -59,7 +89,27 @@ export default function ManageGallery() {
         {/* Existing Photos Grid */}
         <div className="lg:col-span-2">
           <div className="glass p-6 rounded-2xl border border-white/5 min-h-[500px]">
-            <h2 className="text-2xl font-bold mb-6">Existing Photos</h2>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+              <h2 className="text-2xl font-bold">Existing Photos</h2>
+              {selectedIds.length > 0 && (
+                <Button variant="outline" onClick={handleBulkDelete} className="text-red-500 hover:text-red-400 border-red-500/20 hover:bg-red-500/10 gap-2">
+                  <Trash2 className="w-4 h-4" /> Delete Selected ({selectedIds.length})
+                </Button>
+              )}
+            </div>
+            
+            <div className="mb-6">
+              <label className="flex items-center gap-2 text-sm text-text-muted cursor-pointer hover:text-white transition-colors w-fit">
+                <input 
+                  type="checkbox" 
+                  className="rounded border-white/20 bg-surface text-primary focus:ring-primary focus:ring-offset-surface cursor-pointer"
+                  checked={photos.length > 0 && selectedIds.length === photos.length}
+                  onChange={toggleSelectAll}
+                  disabled={photos.length === 0}
+                />
+                Select All
+              </label>
+            </div>
             
             {loading ? (
               <div className="flex items-center gap-2 text-text-muted">
@@ -72,8 +122,14 @@ export default function ManageGallery() {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {photos.map(photo => (
-                  <div key={photo.id} className="group relative rounded-xl overflow-hidden border border-white/10 bg-surface-elevated">
+                {photos.map(photo => {
+                  const isSelected = selectedIds.includes(photo.id);
+                  return (
+                  <div 
+                    key={photo.id} 
+                    className={`group relative rounded-xl overflow-hidden border transition-all ${isSelected ? 'border-primary ring-2 ring-primary/50' : 'border-white/10'} bg-surface-elevated cursor-pointer`}
+                    onClick={() => toggleSelect(photo.id)}
+                  >
                     <img 
                       src={photo.image_url} 
                       alt={photo.caption || photo.category} 
@@ -88,10 +144,24 @@ export default function ManageGallery() {
                       )}
                     </div>
                     
+                    {/* Checkbox Overlay */}
+                    <div className="absolute top-2 left-2 z-10">
+                      <input 
+                        type="checkbox" 
+                        className="w-5 h-5 rounded border-white/20 bg-surface text-primary focus:ring-primary focus:ring-offset-surface cursor-pointer shadow-lg"
+                        checked={isSelected}
+                        onChange={() => toggleSelect(photo.id)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
+
                     {/* Delete Overlay */}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className={`absolute inset-0 bg-black/60 transition-opacity flex items-center justify-center ${isSelected ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'}`}>
                       <button 
-                        onClick={() => handleDelete(photo.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(photo.id);
+                        }}
                         className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-full shadow-lg transition-transform hover:scale-110"
                         title="Delete Photo"
                       >
@@ -99,7 +169,8 @@ export default function ManageGallery() {
                       </button>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
