@@ -1,16 +1,18 @@
 import { z } from 'zod';
 import { supabase, supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
 
+const emptyToNull = z.preprocess((val) => (val === '' ? null : val), z.string().nullable().optional());
+
 const recordSchema = z.object({
-  name: z.string().optional(),
-  roll_number: z.string().optional(),
-  batch: z.string().optional(),
-  place: z.string().optional(),
-  year: z.string().optional(),
-  tournament: z.string().optional(),
-  event: z.string().optional(),
-  gender: z.string().optional(),
-  record: z.string().optional(),
+  name: emptyToNull,
+  roll_number: emptyToNull,
+  batch: emptyToNull,
+  place: emptyToNull,
+  year: emptyToNull,
+  tournament: emptyToNull,
+  event: emptyToNull,
+  gender: emptyToNull,
+  record: emptyToNull,
 });
 
 export default async function handler(req, res) {

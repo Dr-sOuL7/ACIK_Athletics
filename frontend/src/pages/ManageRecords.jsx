@@ -234,8 +234,7 @@ export default function ManageRecords() {
       setEditingRecordId(null);
       fetchRecords();
     } catch (err) {
-      console.error(err);
-      alert("Failed to save record.");
+      alert(err.response?.data?.error || err.message || "Failed to save record.");
     } finally {
       setSavingEdit(false);
     }
