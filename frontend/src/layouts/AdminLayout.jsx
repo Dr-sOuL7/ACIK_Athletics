@@ -1,8 +1,6 @@
-import { useState }
-from "react";
-
-import { Link }
-from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
 
 export default function AdminLayout({
 
@@ -24,6 +22,16 @@ export default function AdminLayout({
       >
         ☰
       </button>
+
+      {/* View Live Site Button */}
+      <a 
+        href="/" 
+        className="fixed top-4 right-4 z-50 bg-primary/20 hover:bg-primary/30 text-primary p-2 md:px-4 md:py-2 rounded-xl flex items-center gap-2 transition-all border border-primary/30 shadow-lg backdrop-blur-md font-medium"
+        title="Go to User Home Page"
+      >
+        <span className="hidden md:inline">View Live Site</span>
+        <ExternalLink className="w-5 h-5" />
+      </a>
 
       {/* Mobile Backdrop */}
       {open && (
