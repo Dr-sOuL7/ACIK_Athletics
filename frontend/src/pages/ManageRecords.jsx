@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import API from "../api/axios";
-import { UploadCloud, Trash2, Loader2, FileSpreadsheet, Plus, Save, Table as TableIcon, Edit, X, Check } from "lucide-react";
+import { UploadCloud, Trash2, Loader2, FileSpreadsheet, Plus, Save, Table as TableIcon, Edit, X, Check, Filter } from "lucide-react";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 
@@ -15,6 +15,18 @@ export default function ManageRecords() {
   const [editingRecordId, setEditingRecordId] = useState(null);
   const [editingFormData, setEditingFormData] = useState({});
   const [savingEdit, setSavingEdit] = useState(false);
+
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    name: "",
+    roll_number: "",
+    batch: "",
+    gender: "",
+    event: "",
+    tournament: "",
+    place: "",
+    year: ""
+  });
 
   const EVENT_CATEGORIES = {
     "Track": ["100 m", "200 m", "400 m", "800 m", "1500 m", "3k m", "5k m", "10k m"],
@@ -53,6 +65,19 @@ export default function ManageRecords() {
   useEffect(() => {
     fetchRecords();
   }, []);
+
+  const filteredRecords = records.filter((r) => {
+    return (
+      (filters.name === "" || r.name.toLowerCase().includes(filters.name.toLowerCase())) &&
+      (filters.roll_number === "" || r.roll_number?.toLowerCase().includes(filters.roll_number.toLowerCase())) &&
+      (filters.batch === "" || r.batch.toLowerCase().includes(filters.batch.toLowerCase())) &&
+      (filters.gender === "" || r.gender === filters.gender) &&
+      (filters.event === "" || r.event.toLowerCase().includes(filters.event.toLowerCase())) &&
+      (filters.tournament === "" || r.tournament.toLowerCase().includes(filters.tournament.toLowerCase())) &&
+      (filters.place === "" || r.place.toLowerCase().includes(filters.place.toLowerCase())) &&
+      (filters.year === "" || r.year === filters.year)
+    );
+  });
 
   const handleAddRow = () => {
     setManualRecords([...manualRecords, { ...emptyRow }]);
@@ -399,7 +424,58 @@ export default function ManageRecords() {
 
       {/* EXISTING RECORDS LIST */}
       <div className="glass p-8 rounded-2xl border border-white/5">
-        <h2 className="text-2xl font-bold mb-6">Existing Records</h2>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+          <h2 className="text-2xl font-bold">Existing Records</h2>
+          <Button variant={showFilters ? "primary" : "outline"} onClick={() => setShowFilters(!showFilters)} className="flex items-center gap-2">
+            <Filter className="w-4 h-4" /> Filter
+          </Button>
+        </div>
+
+        {showFilters && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-surface-elevated rounded-xl border border-white/5">
+            <div>
+              <label className="text-xs text-text-muted mb-1 block">Name</label>
+              <Input placeholder="Filter by Name" value={filters.name} onChange={(e) => setFilters({...filters, name: e.target.value})} className="h-9" />
+            </div>
+            <div>
+              <label className="text-xs text-text-muted mb-1 block">Roll</label>
+              <Input placeholder="Filter by Roll" value={filters.roll_number} onChange={(e) => setFilters({...filters, roll_number: e.target.value})} className="h-9" />
+            </div>
+            <div>
+              <label className="text-xs text-text-muted mb-1 block">Batch</label>
+              <Input placeholder="Filter by Batch" value={filters.batch} onChange={(e) => setFilters({...filters, batch: e.target.value})} className="h-9" />
+            </div>
+            <div>
+              <label className="text-xs text-text-muted mb-1 block">Gender</label>
+              <select 
+                className="w-full h-9 px-3 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" 
+                value={filters.gender} 
+                onChange={(e) => setFilters({...filters, gender: e.target.value})}
+              >
+                <option value="">Any Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-text-muted mb-1 block">Event</label>
+              <Input placeholder="Filter by Event" value={filters.event} onChange={(e) => setFilters({...filters, event: e.target.value})} className="h-9" />
+            </div>
+            <div>
+              <label className="text-xs text-text-muted mb-1 block">Tournament</label>
+              <Input placeholder="Filter by Tournament" value={filters.tournament} onChange={(e) => setFilters({...filters, tournament: e.target.value})} className="h-9" />
+            </div>
+            <div>
+              <label className="text-xs text-text-muted mb-1 block">Venue</label>
+              <Input placeholder="Filter by Venue" value={filters.place} onChange={(e) => setFilters({...filters, place: e.target.value})} className="h-9" />
+            </div>
+            <div>
+              <label className="text-xs text-text-muted mb-1 block">Year</label>
+              <Input placeholder="Filter by Year (e.g. 24)" value={filters.year} onChange={(e) => setFilters({...filters, year: e.target.value})} className="h-9" />
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="flex items-center gap-2 text-text-muted"><Loader2 className="w-4 h-4 animate-spin" /> Loading records...</div>
         ) : (
@@ -420,12 +496,12 @@ export default function ManageRecords() {
                 </tr>
               </thead>
               <tbody>
-                {records.length === 0 ? (
+                {filteredRecords.length === 0 ? (
                   <tr>
-                    <td colSpan="11" className="p-6 text-center text-text-muted">No records found.</td>
+                    <td colSpan="11" className="p-6 text-center text-text-muted">No records found matching filters.</td>
                   </tr>
                 ) : (
-                  records.map((r) => {
+                  filteredRecords.map((r) => {
                     const isEditing = editingRecordId === r.id;
                     return (
                       <tr key={r.id} className="border-b border-white/5 hover:bg-surface-elevated/50 transition-colors">
