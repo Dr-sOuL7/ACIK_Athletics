@@ -169,7 +169,7 @@ export default function ManageRecords() {
           name: formatTitleCase(row.name),
           roll_number: row.roll_number?.toUpperCase(),
           batch: row.batch?.toUpperCase(),
-          place: formatTitleCase(row.place),
+          place: row.place?.toUpperCase(),
           tournament: (tournament_select === "Other" ? tournament_other.trim() : tournament_select).toUpperCase()
         };
       });
@@ -228,7 +228,7 @@ export default function ManageRecords() {
           name: formatTitleCase(lowerRow["name"]?.toString().trim() || ""),
           roll_number: (lowerRow["roll number"]?.toString().trim() || lowerRow["roll_number"]?.toString().trim() || lowerRow["roll"]?.toString().trim() || "").toUpperCase(),
           batch: (lowerRow["batch"]?.toString().trim() || "").toUpperCase(),
-          place: formatTitleCase(lowerRow["venue"]?.toString().trim() || lowerRow["place"]?.toString().trim() || lowerRow["position"]?.toString().trim() || ""),
+          place: (lowerRow["venue"]?.toString().trim() || lowerRow["place"]?.toString().trim() || lowerRow["position"]?.toString().trim() || "").toUpperCase(),
           year: formatYearString(lowerRow["year"]?.toString().trim() || lowerRow["date"]?.toString().trim() || ""),
           tournament: (lowerRow["tournament"]?.toString().trim() || lowerRow["event name"]?.toString().trim() || "").toUpperCase(),
           event: formatEvent(lowerRow["event"]?.toString().trim() || lowerRow["category"]?.toString().trim() || ""),
@@ -315,7 +315,7 @@ export default function ManageRecords() {
         name: formatTitleCase(rest.name),
         roll_number: rest.roll_number?.toUpperCase(),
         batch: rest.batch?.toUpperCase(),
-        place: formatTitleCase(rest.place),
+        place: rest.place?.toUpperCase(),
         tournament: (tournament_select === "Other" ? tournament_other.trim() : tournament_select).toUpperCase()
       };
       
