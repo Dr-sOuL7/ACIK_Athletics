@@ -6,6 +6,10 @@ const announcementSchema = z.object({
   message: z.string().min(1),
   file_url: z.string().url().optional(),
   file_name: z.string().optional(),
+  attachments: z.array(z.object({
+    url: z.string().url(),
+    name: z.string()
+  })).optional()
 });
 
 export default async function handler(req, res) {

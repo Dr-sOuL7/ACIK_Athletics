@@ -238,30 +238,51 @@ export default function Home() {
                   <p className="text-text-muted mb-4 flex-grow line-clamp-3">
                     {item.message}
                   </p>
-                  {item.file_url && (
-                    <div className="mb-4">
-                      {item.file_name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || item.file_url?.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
-                        <a href={item.file_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-                          <img 
-                            src={item.file_url} 
-                            alt={item.file_name || "Attachment"} 
-                            className="w-full h-32 object-cover rounded-lg border border-white/5 hover:opacity-90 transition-opacity"
-                          />
-                        </a>
-                      ) : (
-                        <a 
-                          href={item.file_url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-primary hover:text-primary-hover font-medium text-sm transition-colors"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <FileDown className="w-4 h-4" />
-                          {item.file_name || "Attachment"}
-                        </a>
-                      )}
-                    </div>
-                  )}
+                  {(() => {
+                    const itemAttachments = item.attachments || [];
+                    if (item.file_url && itemAttachments.length === 0) {
+                      itemAttachments.push({ url: item.file_url, name: item.file_name || "Attachment" });
+                    }
+                    if (itemAttachments.length === 0) return null;
+
+                    const images = itemAttachments.filter(att => att.name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || att.url?.match(/\.(jpeg|jpg|gif|png|webp)$/i));
+                    const docs = itemAttachments.filter(att => !(att.name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || att.url?.match(/\.(jpeg|jpg|gif|png|webp)$/i)));
+
+                    return (
+                      <div className="mb-4 space-y-2">
+                        {images.length > 0 && (
+                          <div className={`grid gap-2 ${images.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                            {images.map((img, idx) => (
+                              <a key={idx} href={img.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                                <img 
+                                  src={img.url} 
+                                  alt={img.name} 
+                                  className="w-full h-32 object-cover rounded-lg border border-white/5 hover:opacity-90 transition-opacity"
+                                />
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                        {docs.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {docs.map((doc, idx) => (
+                              <a 
+                                key={idx}
+                                href={doc.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-primary hover:text-primary-hover font-medium text-sm transition-colors bg-primary/10 px-2 py-1 rounded"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <FileDown className="w-4 h-4" />
+                                <span className="truncate max-w-[150px]">{doc.name}</span>
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                   <div className="text-xs font-medium text-surface-hover bg-surface-elevated w-fit px-3 py-1 rounded-full mt-auto">
                     {new Date(item.created_at).toLocaleDateString(undefined, {
                       year: 'numeric', month: 'short', day: 'numeric'

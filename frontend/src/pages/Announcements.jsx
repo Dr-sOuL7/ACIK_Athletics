@@ -82,29 +82,51 @@ export default function Announcements() {
                 <p className="text-text-main text-lg mb-6 whitespace-pre-wrap">
                   {item.message}
                 </p>
-                {item.file_url && (
-                  <div className="mb-6">
-                    {item.file_name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || item.file_url?.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
-                      <a href={item.file_url} target="_blank" rel="noopener noreferrer">
-                        <img 
-                          src={item.file_url} 
-                          alt={item.file_name || "Attachment"} 
-                          className="w-full max-h-96 object-contain rounded-xl border border-white/10 bg-surface/50 hover:opacity-90 transition-opacity"
-                        />
-                      </a>
-                    ) : (
-                      <a 
-                        href={item.file_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated hover:bg-surface-hover border border-white/10 rounded-xl text-primary transition-colors font-medium text-sm group-hover:border-primary/30"
-                      >
-                        <FileDown className="w-4 h-4" />
-                        {item.file_name || "Download Attachment"}
-                      </a>
-                    )}
-                  </div>
-                )}
+                {(() => {
+                  const itemAttachments = item.attachments || [];
+                  if (item.file_url && itemAttachments.length === 0) {
+                    itemAttachments.push({ url: item.file_url, name: item.file_name || "Attachment" });
+                  }
+                  
+                  if (itemAttachments.length === 0) return null;
+
+                  const images = itemAttachments.filter(att => att.name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || att.url?.match(/\.(jpeg|jpg|gif|png|webp)$/i));
+                  const docs = itemAttachments.filter(att => !(att.name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || att.url?.match(/\.(jpeg|jpg|gif|png|webp)$/i)));
+
+                  return (
+                    <div className="mb-6 space-y-4">
+                      {images.length > 0 && (
+                        <div className={`grid gap-4 ${images.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                          {images.map((img, idx) => (
+                            <a key={idx} href={img.url} target="_blank" rel="noopener noreferrer">
+                              <img 
+                                src={img.url} 
+                                alt={img.name} 
+                                className="w-full h-64 object-cover rounded-xl border border-white/10 bg-surface/50 hover:opacity-90 transition-opacity"
+                              />
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                      {docs.length > 0 && (
+                        <div className="flex flex-wrap gap-3">
+                          {docs.map((doc, idx) => (
+                            <a 
+                              key={idx}
+                              href={doc.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated hover:bg-surface-hover border border-white/10 rounded-xl text-primary transition-colors font-medium text-sm group-hover:border-primary/30"
+                            >
+                              <FileDown className="w-4 h-4" />
+                              {doc.name}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
                 <div className="flex items-center gap-2 text-sm text-text-muted bg-surface-elevated w-fit px-3 py-1.5 rounded-lg">
                   <Calendar className="w-4 h-4" />
                   {new Date(item.created_at).toLocaleString(undefined, {

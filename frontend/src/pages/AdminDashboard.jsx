@@ -84,9 +84,9 @@ export default function AdminDashboard() {
                     <div>
                       <h4 className="font-bold text-white mb-1">{ann.title}</h4>
                       <p className="text-sm text-text-muted line-clamp-2">{ann.message}</p>
-                      {ann.file_url && (
+                      {(ann.file_url || (ann.attachments && ann.attachments.length > 0)) && (
                         <span className="inline-block mt-2 text-xs font-medium bg-primary/20 text-primary px-2 py-1 rounded">
-                          Has Attachment
+                          Has Attachment(s)
                         </span>
                       )}
                     </div>
