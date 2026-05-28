@@ -72,6 +72,9 @@ export default function ManageRecords() {
     year: ""
   });
 
+  const [selectedRecords, setSelectedRecords] = useState(new Set());
+  const [deletingBulk, setDeletingBulk] = useState(false);
+
   const emptyRow = { name: "", roll_number: "", batch: "", gender: "Male", event: "100 m", tournament_select: "PRATAP", tournament_other: "", record: "", place: "", year: "24", profile_pic: "" };
   const [manualRecords, setManualRecords] = useState([{ ...emptyRow }]);
   const [submittingManual, setSubmittingManual] = useState(false);
@@ -286,6 +289,43 @@ export default function ManageRecords() {
       console.error(err);
       alert("Failed to delete record.");
     }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedRecords.size === 0) return;
+    if (!window.confirm(`Are you sure you want to delete ${selectedRecords.size} selected records?`)) return;
+    
+    setDeletingBulk(true);
+    try {
+      await Promise.all(Array.from(selectedRecords).map(id => API.delete(`/records?id=${id}`)));
+      setSelectedRecords(new Set());
+      fetchRecords();
+      alert(`Successfully deleted ${selectedRecords.size} records.`);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete some records.");
+    } finally {
+      setDeletingBulk(false);
+    }
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      const newSelected = new Set(filteredRecords.map(r => r.id));
+      setSelectedRecords(newSelected);
+    } else {
+      setSelectedRecords(new Set());
+    }
+  };
+
+  const handleSelectRow = (id) => {
+    const newSelected = new Set(selectedRecords);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedRecords(newSelected);
   };
 
   const handleEditClick = (record) => {
@@ -510,9 +550,22 @@ export default function ManageRecords() {
       <div className="glass p-8 rounded-2xl border border-white/5">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <h2 className="text-2xl font-bold">Existing Records</h2>
-          <Button variant={showFilters ? "primary" : "outline"} onClick={() => setShowFilters(!showFilters)} className="flex items-center gap-2">
-            <Filter className="w-4 h-4" /> Filter
-          </Button>
+          <div className="flex items-center gap-3">
+            {selectedRecords.size > 0 && (
+              <Button 
+                variant="destructive" 
+                onClick={handleBulkDelete} 
+                disabled={deletingBulk}
+                className="flex items-center gap-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 hover:text-red-300 border border-red-500/50"
+              >
+                {deletingBulk ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                Delete Selected ({selectedRecords.size})
+              </Button>
+            )}
+            <Button variant={showFilters ? "primary" : "outline"} onClick={() => setShowFilters(!showFilters)} className="flex items-center gap-2">
+              <Filter className="w-4 h-4" /> Filter
+            </Button>
+          </div>
         </div>
 
         {showFilters && (
@@ -592,29 +645,46 @@ export default function ManageRecords() {
             <table className="w-full text-left border-collapse min-w-[1200px]">
               <thead>
                 <tr className="border-b border-white/10 text-text-muted text-xs uppercase tracking-wider">
-                  <th className="p-2 w-[15%]">Name</th>
-                  <th className="p-2 w-[10%]">Roll No.</th>
+                  <th className="p-2 w-[4%] text-center">
+                    <input 
+                      type="checkbox" 
+                      className="rounded border-white/20 bg-surface/50 text-primary focus:ring-primary/50 cursor-pointer"
+                      checked={filteredRecords.length > 0 && selectedRecords.size === filteredRecords.length}
+                      onChange={handleSelectAll}
+                    />
+                  </th>
+                  <th className="p-2 w-[14%]">Name</th>
+                  <th className="p-2 w-[8%]">Roll No.</th>
                   <th className="p-2 w-[8%]">Batch</th>
                   <th className="p-2 w-[8%]">Gender</th>
                   <th className="p-2 w-[12%]">Event</th>
                   <th className="p-2 w-[12%]">Tournament</th>
                   <th className="p-2 w-[10%]">Record</th>
                   <th className="p-2 w-[10%]">Venue</th>
-                  <th className="p-2 w-[8%]">Year</th>
-                  <th className="p-2 w-[6%]">Pic</th>
+                  <th className="p-2 w-[6%]">Year</th>
+                  <th className="p-2 w-[4%]">Pic</th>
                   <th className="p-2 w-[8%] text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredRecords.length === 0 ? (
                   <tr>
-                    <td colSpan="11" className="p-6 text-center text-text-muted">No records found matching filters.</td>
+                    <td colSpan="12" className="p-6 text-center text-text-muted">No records found matching filters.</td>
                   </tr>
                 ) : (
                   filteredRecords.map((r) => {
                     const isEditing = editingRecordId === r.id;
+                    const isSelected = selectedRecords.has(r.id);
                     return (
-                      <tr key={r.id} className="border-b border-white/5 hover:bg-surface-elevated/50 transition-colors">
+                      <tr key={r.id} className={`border-b border-white/5 hover:bg-surface-elevated/50 transition-colors ${isSelected ? 'bg-primary/5' : ''}`}>
+                        <td className="p-2 text-center">
+                          <input 
+                            type="checkbox" 
+                            className="rounded border-white/20 bg-surface/50 text-primary focus:ring-primary/50 cursor-pointer"
+                            checked={isSelected}
+                            onChange={() => handleSelectRow(r.id)}
+                          />
+                        </td>
                         {isEditing ? (
                           <>
                             <td className="p-1"><Input value={editingFormData.name || ""} onChange={(e) => handleEditChange("name", e.target.value)} className="h-8 text-sm" /></td>
