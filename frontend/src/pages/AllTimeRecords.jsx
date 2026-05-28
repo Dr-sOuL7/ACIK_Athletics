@@ -304,7 +304,7 @@ export default function AllTimeRecords() {
                         <MapPin className="w-3 h-3" /> {record.tournament || "Tournament"}
                       </div>
                       <div className="text-white/80 font-medium">
-                        {record.place || "Unknown Location"}
+                        {record.place || "Unknown Venue"}
                       </div>
                     </div>
                   </div>

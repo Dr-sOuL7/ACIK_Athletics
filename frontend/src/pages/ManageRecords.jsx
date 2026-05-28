@@ -143,7 +143,7 @@ export default function ManageRecords() {
           name: lowerRow["name"]?.toString().trim() || "",
           roll_number: lowerRow["roll number"]?.toString().trim() || lowerRow["roll_number"]?.toString().trim() || lowerRow["roll"]?.toString().trim() || "",
           batch: lowerRow["batch"]?.toString().trim() || "",
-          place: lowerRow["place"]?.toString().trim() || lowerRow["position"]?.toString().trim() || "",
+          place: lowerRow["venue"]?.toString().trim() || lowerRow["place"]?.toString().trim() || lowerRow["position"]?.toString().trim() || "",
           year: lowerRow["year"]?.toString().trim() || lowerRow["date"]?.toString().trim() || "",
           tournament: lowerRow["tournament"]?.toString().trim() || lowerRow["event name"]?.toString().trim() || "",
           event: lowerRow["event"]?.toString().trim() || lowerRow["category"]?.toString().trim() || "",
@@ -279,7 +279,7 @@ export default function ManageRecords() {
                 <th className="p-2 w-[10%]">Gender</th>
                 <th className="p-2 w-[12%]">Tournament</th>
                 <th className="p-2 w-[10%]">Record</th>
-                <th className="p-2 w-[10%]">Place</th>
+                <th className="p-2 w-[10%]">Venue</th>
                 <th className="p-2 w-[8%]">Year</th>
                 <th className="p-2 w-[5%]"></th>
               </tr>
@@ -332,7 +332,7 @@ export default function ManageRecords() {
                     )}
                   </td>
                   <td className="p-1"><Input value={row.record} onChange={(e) => handleRowChange(index, "record", e.target.value)} placeholder="10.5s" className="h-8 text-sm" /></td>
-                  <td className="p-1"><Input value={row.place} onChange={(e) => handleRowChange(index, "place", e.target.value)} placeholder="1st" className="h-8 text-sm" /></td>
+                  <td className="p-1"><Input value={row.place} onChange={(e) => handleRowChange(index, "place", e.target.value)} placeholder="Stadium" className="h-8 text-sm" /></td>
                   <td className="p-1">
                     <select 
                       value={row.year} 
@@ -377,7 +377,7 @@ export default function ManageRecords() {
           Bulk Upload via Spreadsheet
         </h2>
         <p className="text-text-muted text-sm mt-2">
-          Upload a CSV, TSV, or Excel (.xlsx) file. Columns do not need to be in any specific order and are not case-sensitive. Expected columns: <b>Name, Roll Number, Batch, Place, Year, Tournament, Event, Gender, Record, IISM record</b>.
+          Upload a CSV, TSV, or Excel (.xlsx) file. Columns do not need to be in any specific order and are not case-sensitive. Expected columns: <b>Name, Roll Number, Batch, Venue, Year, Tournament, Event, Gender, Record, IISM record</b>.
         </p>
         <div className="flex items-center justify-center w-full">
           <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-40 border-2 border-white/10 border-dashed rounded-xl cursor-pointer bg-surface-elevated hover:bg-surface-hover transition-colors">
@@ -416,7 +416,7 @@ export default function ManageRecords() {
                   <th className="p-2 w-[12%]">Tournament</th>
                   <th className="p-2 w-[10%]">Record</th>
                   <th className="p-2 w-[10%]">IISM Rec.</th>
-                  <th className="p-2 w-[8%]">Place</th>
+                  <th className="p-2 w-[8%]">Venue</th>
                   <th className="p-2 w-[8%]">Year</th>
                   <th className="p-2 w-[8%] text-center">Actions</th>
                 </tr>
