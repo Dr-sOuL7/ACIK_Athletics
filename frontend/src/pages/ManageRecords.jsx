@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import API from "../api/axios";
-import { UploadCloud, Trash2, Loader2, FileSpreadsheet, Plus, Save, Table as TableIcon } from "lucide-react";
+import { UploadCloud, Trash2, Loader2, FileSpreadsheet, Plus, Save, Table as TableIcon, Edit, X, Check } from "lucide-react";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 
@@ -11,6 +11,10 @@ export default function ManageRecords() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
+
+  const [editingRecordId, setEditingRecordId] = useState(null);
+  const [editingFormData, setEditingFormData] = useState({});
+  const [savingEdit, setSavingEdit] = useState(false);
 
   const EVENT_CATEGORIES = {
     "Track": ["100 m", "200 m", "400 m", "800 m", "1500 m", "3k m", "5k m", "10k m"],
@@ -199,6 +203,44 @@ export default function ManageRecords() {
     }
   };
 
+  const handleEditClick = (record) => {
+    setEditingRecordId(record.id);
+    setEditingFormData({
+      ...record,
+      tournament_select: PREDEFINED_TOURNAMENTS.includes(record.tournament) ? record.tournament : (record.tournament ? "Other" : ""),
+      tournament_other: PREDEFINED_TOURNAMENTS.includes(record.tournament) ? "" : record.tournament || ""
+    });
+  };
+
+  const handleEditChange = (field, value) => {
+    setEditingFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleCancelEdit = () => {
+    setEditingRecordId(null);
+    setEditingFormData({});
+  };
+
+  const handleSaveEdit = async () => {
+    setSavingEdit(true);
+    try {
+      const { tournament_select, tournament_other, ...rest } = editingFormData;
+      const dataToSave = {
+        ...rest,
+        tournament: tournament_select === "Other" ? tournament_other.trim() : tournament_select
+      };
+      
+      await API.put(`/records?id=${editingRecordId}`, dataToSave);
+      setEditingRecordId(null);
+      fetchRecords();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save record.");
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -363,40 +405,125 @@ export default function ManageRecords() {
           <div className="flex items-center gap-2 text-text-muted"><Loader2 className="w-4 h-4 animate-spin" /> Loading records...</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[1200px]">
               <thead>
-                <tr className="border-b border-white/10 text-text-muted text-sm uppercase tracking-wider">
-                  <th className="p-3">Name (Roll)</th>
-                  <th className="p-3">Event</th>
-                  <th className="p-3">Gender</th>
-                  <th className="p-3">Tournament</th>
-                  <th className="p-3">Record</th>
-                  <th className="p-3">Actions</th>
+                <tr className="border-b border-white/10 text-text-muted text-xs uppercase tracking-wider">
+                  <th className="p-2 w-[15%]">Name</th>
+                  <th className="p-2 w-[10%]">Roll No.</th>
+                  <th className="p-2 w-[8%]">Batch</th>
+                  <th className="p-2 w-[12%]">Event</th>
+                  <th className="p-2 w-[8%]">Gender</th>
+                  <th className="p-2 w-[12%]">Tournament</th>
+                  <th className="p-2 w-[10%]">Record</th>
+                  <th className="p-2 w-[10%]">IISM Rec.</th>
+                  <th className="p-2 w-[8%]">Place</th>
+                  <th className="p-2 w-[8%]">Year</th>
+                  <th className="p-2 w-[8%] text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {records.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="p-6 text-center text-text-muted">No records found.</td>
+                    <td colSpan="11" className="p-6 text-center text-text-muted">No records found.</td>
                   </tr>
                 ) : (
-                  records.map((r) => (
-                    <tr key={r.id} className="border-b border-white/5 hover:bg-surface-elevated/50 transition-colors">
-                      <td className="p-3">
-                        <div className="font-semibold">{r.name}</div>
-                        <div className="text-xs text-text-muted">{r.roll_number} - {r.batch}</div>
-                      </td>
-                      <td className="p-3 font-medium text-primary">{r.event}</td>
-                      <td className="p-3 text-sm">{r.gender}</td>
-                      <td className="p-3 text-sm">{r.tournament}</td>
-                      <td className="p-3 font-mono text-secondary">{r.record}</td>
-                      <td className="p-3">
-                        <button onClick={() => handleDelete(r.id)} className="text-red-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10 transition-colors">
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                  records.map((r) => {
+                    const isEditing = editingRecordId === r.id;
+                    return (
+                      <tr key={r.id} className="border-b border-white/5 hover:bg-surface-elevated/50 transition-colors">
+                        {isEditing ? (
+                          <>
+                            <td className="p-1"><Input value={editingFormData.name || ""} onChange={(e) => handleEditChange("name", e.target.value)} className="h-8 text-sm" /></td>
+                            <td className="p-1"><Input value={editingFormData.roll_number || ""} onChange={(e) => handleEditChange("roll_number", e.target.value)} className="h-8 text-sm" /></td>
+                            <td className="p-1"><Input value={editingFormData.batch || ""} onChange={(e) => handleEditChange("batch", e.target.value)} maxLength={4} className="h-8 text-sm w-16 text-center" /></td>
+                            <td className="p-1">
+                              <select 
+                                value={editingFormData.event || ""} 
+                                onChange={(e) => handleEditChange("event", e.target.value)}
+                                className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                              >
+                                {Object.entries(EVENT_CATEGORIES).map(([category, events]) => (
+                                  <optgroup key={category} label={category} className="bg-surface text-text-muted">
+                                    {events.map(ev => <option key={ev} value={ev} className="text-white">{ev}</option>)}
+                                  </optgroup>
+                                ))}
+                              </select>
+                            </td>
+                            <td className="p-1">
+                              <select 
+                                value={editingFormData.gender || ""} 
+                                onChange={(e) => handleEditChange("gender", e.target.value)}
+                                className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                              >
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                              </select>
+                            </td>
+                            <td className="p-1">
+                              <select 
+                                value={editingFormData.tournament_select || ""} 
+                                onChange={(e) => handleEditChange("tournament_select", e.target.value)}
+                                className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                              >
+                                {PREDEFINED_TOURNAMENTS.map(t => <option key={t} value={t}>{t}</option>)}
+                                <option value="Other">Other...</option>
+                              </select>
+                              {editingFormData.tournament_select === "Other" && (
+                                <Input 
+                                  value={editingFormData.tournament_other || ""} 
+                                  onChange={(e) => handleEditChange("tournament_other", e.target.value)} 
+                                  placeholder="Specify tournament" 
+                                  className="h-8 text-sm mt-1" 
+                                />
+                              )}
+                            </td>
+                            <td className="p-1"><Input value={editingFormData.record || ""} onChange={(e) => handleEditChange("record", e.target.value)} className="h-8 text-sm" /></td>
+                            <td className="p-1"><Input value={editingFormData.iism_record || ""} onChange={(e) => handleEditChange("iism_record", e.target.value)} className="h-8 text-sm" /></td>
+                            <td className="p-1"><Input value={editingFormData.place || ""} onChange={(e) => handleEditChange("place", e.target.value)} className="h-8 text-sm" /></td>
+                            <td className="p-1">
+                              <select 
+                                value={editingFormData.year || ""} 
+                                onChange={(e) => handleEditChange("year", e.target.value)}
+                                className="w-full h-8 px-2 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                              >
+                                <option value="">YY</option>
+                                {PREDEFINED_YEARS.map(y => <option key={y} value={y}>'{y}</option>)}
+                              </select>
+                            </td>
+                            <td className="p-1 flex items-center justify-center gap-1 mt-1">
+                              <button onClick={handleSaveEdit} disabled={savingEdit} className="text-success hover:text-green-400 p-1.5 rounded hover:bg-green-500/10 transition-colors disabled:opacity-50" title="Save changes">
+                                {savingEdit ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-5 h-5" />}
+                              </button>
+                              <button onClick={handleCancelEdit} disabled={savingEdit} className="text-text-muted hover:text-white p-1.5 rounded hover:bg-white/10 transition-colors disabled:opacity-50" title="Cancel">
+                                <X className="w-5 h-5" />
+                              </button>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="p-2 text-sm">{r.name}</td>
+                            <td className="p-2 text-sm font-mono">{r.roll_number}</td>
+                            <td className="p-2 text-sm">{r.batch}</td>
+                            <td className="p-2 font-medium text-primary text-sm">{r.event}</td>
+                            <td className="p-2 text-sm">{r.gender}</td>
+                            <td className="p-2 text-sm">{r.tournament}</td>
+                            <td className="p-2 font-mono text-secondary text-sm">{r.record}</td>
+                            <td className="p-2 font-mono text-text-muted text-sm">{r.iism_record}</td>
+                            <td className="p-2 text-sm">{r.place}</td>
+                            <td className="p-2 text-sm">{r.year ? `'${r.year}` : ""}</td>
+                            <td className="p-2 flex items-center justify-center gap-1">
+                              <button onClick={() => handleEditClick(r)} className="text-blue-400 hover:text-blue-300 p-1.5 rounded-lg hover:bg-blue-500/10 transition-colors" title="Edit record">
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => handleDelete(r.id)} className="text-red-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors" title="Delete record">
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
