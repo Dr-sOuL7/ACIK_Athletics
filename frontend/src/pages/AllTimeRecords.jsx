@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Search, Calendar, MapPin, Loader2 } from "lucide-react";
+import { Trophy, Search, Calendar, MapPin, Loader2, Medal } from "lucide-react";
 import API from "../api/axios";
 
 // Helper to parse time strings into milliseconds for sorting
@@ -85,9 +85,9 @@ const EventSection = ({ eventName, records }) => {
 
                 <div className="h-px w-full bg-white/10 my-2" />
 
-                <div className="grid grid-cols-2 gap-y-3 text-sm">
+                <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
                   <div>
-                    <div className="text-text-muted flex items-center gap-1 mb-1 text-xs">
+                    <div className="text-text-muted flex items-center gap-1 mb-1 text-[10px] uppercase tracking-wider">
                       <Trophy className="w-3 h-3" /> Record
                     </div>
                     <div className="font-bold text-base text-white">
@@ -96,21 +96,30 @@ const EventSection = ({ eventName, records }) => {
                   </div>
                   
                   <div>
-                    <div className="text-text-muted flex items-center gap-1 mb-1 text-xs">
+                    <div className="text-text-muted flex items-center gap-1 mb-1 text-[10px] uppercase tracking-wider">
                       <Calendar className="w-3 h-3" /> Year
                     </div>
                     <div className="font-medium text-white/90">
                       {record.year ? `'${formatYear(record.year)}` : "Unknown"}
                     </div>
                   </div>
-                </div>
 
-                <div className="pt-1">
-                  <div className="text-text-muted flex items-center gap-1 text-[10px] mb-0.5 uppercase tracking-wider">
-                    <MapPin className="w-3 h-3" /> {record.tournament || "Tournament"}
+                  <div>
+                    <div className="text-text-muted flex items-center gap-1 mb-1 text-[10px] uppercase tracking-wider">
+                      <Medal className="w-3 h-3" /> Tournament
+                    </div>
+                    <div className="text-white/80 font-medium text-sm">
+                      {record.tournament || "Unknown"}
+                    </div>
                   </div>
-                  <div className="text-white/80 font-medium text-sm">
-                    {record.place || "Unknown Venue"}
+
+                  <div>
+                    <div className="text-text-muted flex items-center gap-1 mb-1 text-[10px] uppercase tracking-wider">
+                      <MapPin className="w-3 h-3" /> Venue
+                    </div>
+                    <div className="text-white/80 font-medium text-sm">
+                      {record.place || "Unknown Venue"}
+                    </div>
                   </div>
                 </div>
               </div>
