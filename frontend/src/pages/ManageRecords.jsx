@@ -7,6 +7,49 @@ import { UploadCloud, Trash2, Loader2, FileSpreadsheet, Plus, Save, Table as Tab
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 
+const EVENT_CATEGORIES = {
+  "Track": ["100 m", "200 m", "400 m", "800 m", "1500 m", "3k m", "5k m", "10k m"],
+  "Field": ["Long Jump", "Triple Jump", "Discus Throw", "Javelin Throw", "Shotput Throw"],
+  "Relay": ["4 x 100 m", "4 x 400 m", "Medley", "Mixed Relay 4 x 100 m", "Mixed Relay 4 x 400 m"]
+};
+
+const PREDEFINED_TOURNAMENTS = [
+  "PRATAP",
+  "IISM",
+  "GANRAJYAM PRIDE RUN",
+  "FREEDOM RUN",
+  "FRESHERS",
+  "INTER BATCH"
+];
+
+const PREDEFINED_YEARS = ["27", "26", "25", "24", "23"];
+
+const formatTitleCase = (str) => {
+  if (!str) return "";
+  return str.split(/\s+/).map(word => word ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() : "").join(' ').trim();
+};
+
+const formatEvent = (str) => {
+  if (!str) return "";
+  const cleanInput = str.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const predefined = Object.values(EVENT_CATEGORIES).flat();
+  for (const ev of predefined) {
+    if (ev.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanInput) {
+      return ev;
+    }
+  }
+  return formatTitleCase(str);
+};
+
+const formatYearString = (str) => {
+  if (!str) return "";
+  const match = str.match(/\d{2,4}/);
+  if (match) {
+    return match[0].slice(-2);
+  }
+  return str.trim();
+};
+
 export default function ManageRecords() {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -28,23 +71,6 @@ export default function ManageRecords() {
     place: "",
     year: ""
   });
-
-  const EVENT_CATEGORIES = {
-    "Track": ["100 m", "200 m", "400 m", "800 m", "1500 m", "3k m", "5k m", "10k m"],
-    "Field": ["Long Jump", "Triple Jump", "Discus Throw", "Javelin Throw", "Shotput Throw"],
-    "Relay": ["4 x 100 m", "4 x 400 m", "Medley", "Mixed Relay 4 x 100 m", "Mixed Relay 4 x 400 m"]
-  };
-
-  const PREDEFINED_TOURNAMENTS = [
-    "PRATAP",
-    "IISM",
-    "GANRAJYAM PRIDE RUN",
-    "FREEDOM RUN",
-    "FRESHERS",
-    "INTER BATCH"
-  ];
-
-  const PREDEFINED_YEARS = ["27", "26", "25", "24", "23"];
 
   const emptyRow = { name: "", roll_number: "", batch: "", gender: "Male", event: "100 m", tournament_select: "PRATAP", tournament_other: "", record: "", place: "", year: "24", profile_pic: "" };
   const [manualRecords, setManualRecords] = useState([{ ...emptyRow }]);
@@ -140,7 +166,11 @@ export default function ManageRecords() {
         const { tournament_select, tournament_other, ...rest } = row;
         return {
           ...rest,
-          tournament: tournament_select === "Other" ? tournament_other.trim() : tournament_select
+          name: formatTitleCase(row.name),
+          roll_number: row.roll_number?.toUpperCase(),
+          batch: row.batch?.toUpperCase(),
+          place: formatTitleCase(row.place),
+          tournament: (tournament_select === "Other" ? tournament_other.trim() : tournament_select).toUpperCase()
         };
       });
 
@@ -195,15 +225,14 @@ export default function ManageRecords() {
         }
 
         const parsedRow = {
-          name: lowerRow["name"]?.toString().trim() || "",
-          roll_number: lowerRow["roll number"]?.toString().trim() || lowerRow["roll_number"]?.toString().trim() || lowerRow["roll"]?.toString().trim() || "",
-          batch: lowerRow["batch"]?.toString().trim() || "",
-          place: lowerRow["venue"]?.toString().trim() || lowerRow["place"]?.toString().trim() || lowerRow["position"]?.toString().trim() || "",
-          year: lowerRow["year"]?.toString().trim() || lowerRow["date"]?.toString().trim() || "",
-          tournament: lowerRow["tournament"]?.toString().trim() || lowerRow["event name"]?.toString().trim() || "",
-          event: lowerRow["event"]?.toString().trim() || lowerRow["category"]?.toString().trim() || "",
-          gender: lowerRow["gender"]?.toString().trim() || lowerRow["sex"]?.toString().trim() || "",
-          gender: lowerRow["gender"]?.toString().trim() || lowerRow["sex"]?.toString().trim() || "",
+          name: formatTitleCase(lowerRow["name"]?.toString().trim() || ""),
+          roll_number: (lowerRow["roll number"]?.toString().trim() || lowerRow["roll_number"]?.toString().trim() || lowerRow["roll"]?.toString().trim() || "").toUpperCase(),
+          batch: (lowerRow["batch"]?.toString().trim() || "").toUpperCase(),
+          place: formatTitleCase(lowerRow["venue"]?.toString().trim() || lowerRow["place"]?.toString().trim() || lowerRow["position"]?.toString().trim() || ""),
+          year: formatYearString(lowerRow["year"]?.toString().trim() || lowerRow["date"]?.toString().trim() || ""),
+          tournament: (lowerRow["tournament"]?.toString().trim() || lowerRow["event name"]?.toString().trim() || "").toUpperCase(),
+          event: formatEvent(lowerRow["event"]?.toString().trim() || lowerRow["category"]?.toString().trim() || ""),
+          gender: formatTitleCase(lowerRow["gender"]?.toString().trim() || lowerRow["sex"]?.toString().trim() || ""),
           record: lowerRow["record"]?.toString().trim() || lowerRow["timing/distance"]?.toString().trim() || lowerRow["time"]?.toString().trim() || "",
           profile_pic: lowerRow["profile pic"]?.toString().trim() || lowerRow["profile_pic"]?.toString().trim() || ""
         };
@@ -283,7 +312,11 @@ export default function ManageRecords() {
       const { tournament_select, tournament_other, ...rest } = editingFormData;
       const dataToSave = {
         ...rest,
-        tournament: tournament_select === "Other" ? tournament_other.trim() : tournament_select
+        name: formatTitleCase(rest.name),
+        roll_number: rest.roll_number?.toUpperCase(),
+        batch: rest.batch?.toUpperCase(),
+        place: formatTitleCase(rest.place),
+        tournament: (tournament_select === "Other" ? tournament_other.trim() : tournament_select).toUpperCase()
       };
       
       await API.put(`/records?id=${editingRecordId}`, dataToSave);
