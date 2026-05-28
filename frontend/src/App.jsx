@@ -17,7 +17,6 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import AllTimeRecords from "./pages/AllTimeRecords";
-import Announcements from "./pages/Announcements";
 import Gallery from "./pages/Gallery";
 
 import AdminDashboard from "./pages/AdminDashboard";
@@ -50,15 +49,6 @@ export default function App() {
           element={
             <MainLayout>
               <AllTimeRecords />
-            </MainLayout>
-          }
-        />
-
-        <Route
-          path="/announcements"
-          element={
-            <MainLayout>
-              <Announcements />
             </MainLayout>
           }
         />

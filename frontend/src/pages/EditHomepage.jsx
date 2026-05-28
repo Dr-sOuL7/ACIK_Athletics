@@ -10,7 +10,6 @@ export default function EditHomepage() {
   const [formData, setFormData] = useState({
     title: "",
     subtitle: "",
-    announcement: "",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -78,19 +77,7 @@ export default function EditHomepage() {
               <label htmlFor="subtitle" className="block text-sm font-medium text-text-muted mb-1">Hero Subtitle</label>
               <Input id="subtitle" name="subtitle" value={formData.subtitle} onChange={handleChange} placeholder="Subtitle or tagline" />
             </div>
-            
-            <div>
-              <label htmlFor="announcement" className="block text-sm font-medium text-text-muted mb-1">Announcement Box</label>
-              <textarea
-                id="announcement"
-                name="announcement"
-                value={formData.announcement}
-                onChange={handleChange}
-                placeholder="Important announcements..."
-                className="w-full bg-surface-elevated border border-white/10 rounded-lg px-4 py-3 text-white placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
-                rows="5"
-              />
-            </div>
+
             
             <Button type="submit" disabled={saving} className="mt-4">
               {saving ? "Saving..." : "Save Changes"}

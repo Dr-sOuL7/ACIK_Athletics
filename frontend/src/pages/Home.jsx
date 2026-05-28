@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { ChevronRight, Trophy, Megaphone, Image as ImageIcon, FileDown } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronRight, Trophy, Megaphone, Image as ImageIcon, FileDown, X, Calendar } from "lucide-react";
+import { Link } from "react-router-dom";
 import API from "../api/axios";
 import { Card, CardHeader, CardTitle } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
@@ -28,10 +28,13 @@ const itemVariants = {
 };
 
 export default function Home() {
-  const navigate = useNavigate();
   const [content, setContent] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Modals state
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+  const [showAllAnnouncements, setShowAllAnnouncements] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -42,7 +45,7 @@ export default function Home() {
         ]);
         
         setContent(homepageRes.data);
-        setAnnouncements(announcementRes.data.slice(0, 3));
+        setAnnouncements(announcementRes.data); // Keep all announcements
       } catch (err) {
         console.error(err);
       } finally {
@@ -51,6 +54,66 @@ export default function Home() {
     }
     fetchData();
   }, []);
+
+  // Lock body scroll when any modal is open
+  useEffect(() => {
+    if (selectedAnnouncement || showAllAnnouncements) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [selectedAnnouncement, showAllAnnouncements]);
+
+  const previewAnnouncements = announcements.slice(0, 3);
+
+  const renderAttachments = (item, isModal = false) => {
+    const itemAttachments = item.attachments || [];
+    if (item.file_url && itemAttachments.length === 0) {
+      itemAttachments.push({ url: item.file_url, name: item.file_name || "Attachment" });
+    }
+    if (itemAttachments.length === 0) return null;
+
+    const images = itemAttachments.filter(att => att.name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || att.url?.match(/\.(jpeg|jpg|gif|png|webp)$/i));
+    const docs = itemAttachments.filter(att => !(att.name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || att.url?.match(/\.(jpeg|jpg|gif|png|webp)$/i)));
+
+    return (
+      <div className={`mt-4 space-y-2 ${!isModal && 'opacity-80 hover:opacity-100 transition-opacity'}`}>
+        {images.length > 0 && (
+          <div className={`grid gap-2 ${images.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+            {images.map((img, idx) => (
+              <a key={idx} href={img.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                <img 
+                  src={img.url} 
+                  alt={img.name} 
+                  className={`w-full ${isModal ? 'max-h-96' : 'h-32'} object-cover rounded-lg border border-white/5 hover:opacity-90 transition-opacity`}
+                />
+              </a>
+            ))}
+          </div>
+        )}
+        {docs.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {docs.map((doc, idx) => (
+              <a 
+                key={idx}
+                href={doc.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-primary hover:text-primary-hover font-medium text-sm transition-colors bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/20"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <FileDown className="w-4 h-4" />
+                <span className="truncate max-w-[200px]">{doc.name}</span>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col space-y-16 pb-16 w-full max-w-full">
@@ -94,29 +157,30 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent" />
         </div>
         
-        <div className="relative z-10 h-full flex flex-col justify-center px-8 md:px-16 max-w-4xl">
+        <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-8 md:px-16 w-full mx-auto">
           {loading ? (
-            <div className="space-y-4">
-              <Skeleton className="w-3/4 h-16 md:h-24 rounded-xl" />
-              <Skeleton className="w-1/2 h-8 rounded-lg" />
+            <div className="space-y-4 flex flex-col items-center">
+              <Skeleton className="w-3/4 max-w-2xl h-16 md:h-24 rounded-xl" />
+              <Skeleton className="w-1/2 max-w-md h-8 rounded-lg" />
             </div>
           ) : (
             <motion.div 
-              initial={{ opacity: 0, x: -30 }} 
-              animate={{ opacity: 1, x: 0 }} 
+              initial={{ opacity: 0, y: 30 }} 
+              animate={{ opacity: 1, y: 0 }} 
               transition={{ duration: 0.8, ease: "easeOut" }}
+              className="flex flex-col items-center"
             >
               {!content?.logo_url && (
                 <img src="/acik-logo.png" alt="ACIK Logo" className="h-28 md:h-40 mb-6 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:scale-105 transition-transform duration-500" style={{ mixBlendMode: 'plus-lighter' }} />
               )}
-              <h1 className="text-5xl md:text-7xl font-extrabold text-white font-heading tracking-tight mb-6 leading-tight drop-shadow-lg">
+              <h1 className="text-5xl md:text-7xl font-extrabold text-white font-heading tracking-tight mb-6 leading-tight drop-shadow-lg max-w-4xl mx-auto">
                 {content?.title || "ACIK Athletics"}
               </h1>
-              <p className="text-xl md:text-3xl text-text-muted max-w-2xl font-light mb-10 leading-relaxed">
+              <p className="text-xl md:text-3xl text-text-muted max-w-2xl mx-auto font-light mb-10 leading-relaxed">
                 {content?.subtitle || "Athletics Club of IISER Kolkata"}
               </p>
               
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4 justify-center">
                 <Link to="/gallery">
                   <Button size="lg" className="gap-2 shadow-[0_0_20px_rgba(6,182,212,0.4)]">
                     View Gallery <ImageIcon className="w-5 h-5" />
@@ -133,54 +197,81 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Main Announcement Banner */}
-      {!loading && content?.announcement && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="w-full"
-        >
-          <div className="glass p-8 rounded-2xl border-primary/20 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-              <Megaphone className="w-32 h-32 text-primary" />
-            </div>
-            <div className="relative z-10 max-w-3xl">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="flex h-3 w-3 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-secondary"></span>
-                </span>
-                <h2 className="text-2xl font-bold font-heading text-secondary">Bulletin</h2>
-              </div>
-              <p className="text-xl text-text-main leading-relaxed mb-4">
-                {content.announcement}
-              </p>
-              {content.file_url && (
-                <div className="mt-4">
-                  {content.file_name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || content.file_url?.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
-                    <img 
-                      src={content.file_url} 
-                      alt={content.file_name || "Attachment"} 
-                      className="max-h-64 rounded-xl object-contain border border-white/10"
-                    />
-                  ) : (
-                    <a 
-                      href={content.file_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/10 hover:bg-secondary/20 border border-secondary/20 rounded-xl text-secondary transition-colors font-medium text-sm w-fit"
-                    >
-                      <FileDown className="w-4 h-4" />
-                      {content.file_name || "Download Attachment"}
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
+      {/* Announcements Section */}
+      <section className="w-full">
+        <div className="flex justify-between items-end mb-8 border-b border-white/10 pb-4">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-white flex items-center gap-3">
+            <Megaphone className="w-8 h-8 text-primary" />
+            ANNOUNCEMENTS
+          </h2>
+          {announcements.length > 3 && (
+            <button 
+              onClick={() => setShowAllAnnouncements(true)} 
+              className="text-primary hover:text-primary-hover font-medium flex items-center gap-1 transition-colors bg-primary/10 px-4 py-2 rounded-lg"
+            >
+              View All <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => (
+              <Card key={i} className="h-48">
+                <Skeleton className="w-2/3 h-6 mb-4" />
+                <Skeleton className="w-full h-4 mb-2" />
+                <Skeleton className="w-full h-4 mb-2" />
+                <Skeleton className="w-1/2 h-4 mt-6" />
+              </Card>
+            ))}
           </div>
-        </motion.div>
-      )}
+        ) : previewAnnouncements.length > 0 ? (
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {previewAnnouncements.map((item) => (
+              <motion.div key={item.id} variants={itemVariants}>
+                <Card 
+                  hover 
+                  className="h-full flex flex-col group cursor-pointer border-white/5 hover:border-primary/30 transition-all shadow-lg hover:shadow-primary/10"
+                  onClick={() => setSelectedAnnouncement(item)}
+                >
+                  <CardHeader>
+                    <CardTitle className="group-hover:text-primary transition-colors line-clamp-1">
+                      {item.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <p className="text-text-muted mb-4 flex-grow line-clamp-3">
+                    {item.message}
+                  </p>
+                  
+                  {renderAttachments(item, false)}
+
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="text-xs font-medium text-surface-hover bg-surface-elevated w-fit px-3 py-1 rounded-full flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(item.created_at).toLocaleDateString(undefined, {
+                        year: 'numeric', month: 'short', day: 'numeric'
+                      })}
+                    </div>
+                    <span className="text-primary text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Read more</span>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <EmptyState 
+            icon={Megaphone}
+            title="No announcements"
+            description="Check back later for the latest news and updates."
+          />
+        )}
+      </section>
 
       {/* About Us Section */}
       <section className="w-full">
@@ -195,111 +286,112 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Latest Updates Grid */}
-      <section className="w-full">
-        <div className="flex justify-between items-end mb-8">
-          <h2 className="text-3xl md:text-4xl font-heading font-bold text-white">Latest Updates</h2>
-          <Link to="/announcements" className="text-primary hover:text-primary-hover font-medium flex items-center gap-1 transition-colors">
-            View All <ChevronRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => (
-              <Card key={i} className="h-48">
-                <Skeleton className="w-2/3 h-6 mb-4" />
-                <Skeleton className="w-full h-4 mb-2" />
-                <Skeleton className="w-full h-4 mb-2" />
-                <Skeleton className="w-1/2 h-4 mt-6" />
-              </Card>
-            ))}
-          </div>
-        ) : announcements.length > 0 ? (
-          <motion.div 
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {announcements.map((item) => (
-              <motion.div key={item.id} variants={itemVariants}>
-                <Card 
-                  hover 
-                  className="h-full flex flex-col group cursor-pointer"
-                  onClick={() => navigate("/announcements")}
-                >
-                  <CardHeader>
-                    <CardTitle className="group-hover:text-primary transition-colors line-clamp-2">
-                      {item.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <p className="text-text-muted mb-4 flex-grow line-clamp-3">
-                    {item.message}
-                  </p>
-                  {(() => {
-                    const itemAttachments = item.attachments || [];
-                    if (item.file_url && itemAttachments.length === 0) {
-                      itemAttachments.push({ url: item.file_url, name: item.file_name || "Attachment" });
-                    }
-                    if (itemAttachments.length === 0) return null;
-
-                    const images = itemAttachments.filter(att => att.name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || att.url?.match(/\.(jpeg|jpg|gif|png|webp)$/i));
-                    const docs = itemAttachments.filter(att => !(att.name?.match(/\.(jpeg|jpg|gif|png|webp)$/i) || att.url?.match(/\.(jpeg|jpg|gif|png|webp)$/i)));
-
-                    return (
-                      <div className="mb-4 space-y-2">
-                        {images.length > 0 && (
-                          <div className={`grid gap-2 ${images.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                            {images.map((img, idx) => (
-                              <a key={idx} href={img.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-                                <img 
-                                  src={img.url} 
-                                  alt={img.name} 
-                                  className="w-full h-32 object-cover rounded-lg border border-white/5 hover:opacity-90 transition-opacity"
-                                />
-                              </a>
-                            ))}
-                          </div>
-                        )}
-                        {docs.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {docs.map((doc, idx) => (
-                              <a 
-                                key={idx}
-                                href={doc.url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-primary hover:text-primary-hover font-medium text-sm transition-colors bg-primary/10 px-2 py-1 rounded"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <FileDown className="w-4 h-4" />
-                                <span className="truncate max-w-[150px]">{doc.name}</span>
-                              </a>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })()}
-                  <div className="text-xs font-medium text-surface-hover bg-surface-elevated w-fit px-3 py-1 rounded-full mt-auto">
-                    {new Date(item.created_at).toLocaleDateString(undefined, {
-                      year: 'numeric', month: 'short', day: 'numeric'
+      {/* Single Announcement Modal */}
+      <AnimatePresence>
+        {selectedAnnouncement && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-12">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedAnnouncement(null)}
+              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+            />
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl max-h-full flex flex-col glass rounded-3xl border border-white/10 shadow-2xl overflow-hidden bg-surface/95"
+            >
+              <div className="p-6 md:p-8 border-b border-white/5 relative shrink-0 flex justify-between items-start gap-4 bg-surface-elevated/50">
+                <div className="space-y-2">
+                  <h2 className="text-2xl md:text-3xl font-heading font-black text-white">
+                    {selectedAnnouncement.title}
+                  </h2>
+                  <div className="text-sm font-medium text-text-muted flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    {new Date(selectedAnnouncement.created_at).toLocaleDateString(undefined, {
+                      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                     })}
                   </div>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        ) : (
-          <EmptyState 
-            icon={Megaphone}
-            title="No recent updates"
-            description="Check back later for the latest news and announcements."
-          />
+                </div>
+                <button
+                  onClick={() => setSelectedAnnouncement(null)}
+                  className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 md:p-8 overflow-y-auto">
+                <div className="prose prose-invert max-w-none">
+                  <p className="text-lg text-text-main leading-relaxed whitespace-pre-wrap">
+                    {selectedAnnouncement.message}
+                  </p>
+                </div>
+                
+                <div className="mt-8">
+                  {renderAttachments(selectedAnnouncement, true)}
+                </div>
+              </div>
+            </motion.div>
+          </div>
         )}
-      </section>
+      </AnimatePresence>
+
+      {/* All Announcements Modal */}
+      <AnimatePresence>
+        {showAllAnnouncements && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAllAnnouncements(false)}
+              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+            />
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-4xl h-[90vh] flex flex-col glass rounded-3xl border border-white/10 shadow-2xl overflow-hidden bg-surface/95"
+            >
+              <div className="p-6 md:p-8 border-b border-white/5 relative shrink-0 flex justify-between items-center bg-surface-elevated/50">
+                <div className="flex items-center gap-3">
+                  <Megaphone className="w-8 h-8 text-primary" />
+                  <h2 className="text-2xl md:text-3xl font-heading font-black text-white">
+                    All Announcements
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setShowAllAnnouncements(false)}
+                  className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 md:p-8 overflow-y-auto space-y-6">
+                {announcements.map((item) => (
+                  <div key={item.id} className="bg-surface-elevated rounded-2xl border border-white/5 p-6 shadow-md">
+                    <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
+                    <div className="text-sm font-medium text-text-muted flex items-center gap-2 mb-4">
+                      <Calendar className="w-4 h-4" />
+                      {new Date(item.created_at).toLocaleDateString(undefined, {
+                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                      })}
+                    </div>
+                    <p className="text-text-main whitespace-pre-wrap leading-relaxed">{item.message}</p>
+                    {renderAttachments(item, true)}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
