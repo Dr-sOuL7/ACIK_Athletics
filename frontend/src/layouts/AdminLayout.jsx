@@ -80,6 +80,7 @@ export default function AdminLayout({
           <Link to="/admin" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Dashboard</Link>
           <Link to="/admin/homepage" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Home</Link>
           <Link to="/admin/records" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Records</Link>
+          <Link to="/admin/achievements" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Achievements</Link>
           <Link to="/admin/gallery" onClick={() => setOpen(false)} className="text-text-muted hover:text-white transition-colors">Gallery</Link>
 
         </nav>

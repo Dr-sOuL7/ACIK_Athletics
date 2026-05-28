@@ -204,7 +204,7 @@ export default function Home() {
             <Megaphone className="w-8 h-8 text-primary" />
             ANNOUNCEMENTS
           </h2>
-          {announcements.length > 3 && (
+          {announcements.length > 1 && (
             <button 
               onClick={() => setShowAllAnnouncements(true)} 
               className="text-primary hover:text-primary-hover font-medium flex items-center gap-1 transition-colors bg-primary/10 px-4 py-2 rounded-lg"

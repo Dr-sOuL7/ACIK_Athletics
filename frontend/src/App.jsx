@@ -18,11 +18,13 @@ import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import AllTimeRecords from "./pages/AllTimeRecords";
 import Gallery from "./pages/Gallery";
+import Achievements from "./pages/Achievements";
 
 import AdminDashboard from "./pages/AdminDashboard";
 import EditHomepage from "./pages/EditHomepage";
 import ManageRecords from "./pages/ManageRecords";
 import ManageGallery from "./pages/ManageGallery";
+import ManageAchievements from "./pages/ManageAchievements";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
@@ -62,6 +64,15 @@ export default function App() {
           }
         />
 
+        <Route
+          path="/achievements"
+          element={
+            <MainLayout>
+              <Achievements />
+            </MainLayout>
+          }
+        />
+
         {/* ================= ADMIN ROUTES ================= */}
 
         <Route
@@ -70,6 +81,17 @@ export default function App() {
             <AdminRoute>
               <AdminLayout>
                 <AdminDashboard />
+              </AdminLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/achievements"
+          element={
+            <AdminRoute>
+              <AdminLayout>
+                <ManageAchievements />
               </AdminLayout>
             </AdminRoute>
           }
