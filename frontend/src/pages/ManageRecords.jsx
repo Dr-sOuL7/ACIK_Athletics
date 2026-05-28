@@ -66,6 +66,19 @@ export default function ManageRecords() {
     }
   };
 
+  const handleDirectPicUpload = async (record, file) => {
+    handleUploadPic(file, async (url) => {
+      try {
+        const { id, created_at, ...rest } = record;
+        const dataToSave = { ...rest, profile_pic: url };
+        await API.put(`/records?id=${id}`, dataToSave);
+        fetchRecords();
+      } catch (err) {
+        alert("Failed to save picture.");
+      }
+    });
+  };
+
   const fetchRecords = async () => {
     setLoading(true);
     try {
@@ -642,7 +655,34 @@ export default function ManageRecords() {
                             <td className="p-2 text-sm">{r.place}</td>
                             <td className="p-2 text-sm">{r.year ? `'${r.year}` : ""}</td>
                             <td className="p-2 text-sm text-center">
-                              {r.profile_pic ? <span className="text-green-400 text-xs">Yes</span> : <span className="text-text-muted text-xs">-</span>}
+                              {r.profile_pic ? (
+                                <div className="flex items-center justify-center gap-1">
+                                  <span className="text-green-400 text-xs font-bold">Yes</span>
+                                  <button onClick={() => {
+                                    if(window.confirm("Remove profile picture?")) {
+                                      const { id, created_at, ...rest } = r;
+                                      API.put(`/records?id=${id}`, { ...rest, profile_pic: null }).then(fetchRecords);
+                                    }
+                                  }} className="text-red-400 hover:text-red-300 ml-1">
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <label className="cursor-pointer text-primary hover:text-primary-hover flex items-center justify-center bg-primary/10 rounded px-2 py-1 transition-colors" title="Upload Profile Pic">
+                                  <UploadCloud className="w-4 h-4 mr-1" />
+                                  <span className="text-xs font-medium">Upload</span>
+                                  <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    onChange={(e) => {
+                                      if (e.target.files[0]) {
+                                        handleDirectPicUpload(r, e.target.files[0]);
+                                      }
+                                    }} 
+                                  />
+                                </label>
+                              )}
                             </td>
                             <td className="p-2 flex items-center justify-center gap-1">
                               <button onClick={() => handleEditClick(r)} className="text-blue-400 hover:text-blue-300 p-1.5 rounded-lg hover:bg-blue-500/10 transition-colors" title="Edit record">
