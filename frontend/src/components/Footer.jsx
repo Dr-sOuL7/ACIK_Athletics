@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <Link to="/" className="inline-block mb-4">
-              <h2 className="font-heading text-primary text-2xl font-bold tracking-tight drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">
+              <h2 className="font-heading text-primary text-2xl font-bold tracking-tight">
                 ACIK
               </h2>
               <p className="text-xs text-text-muted font-medium tracking-wide uppercase">

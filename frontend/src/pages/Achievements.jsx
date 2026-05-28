@@ -76,7 +76,7 @@ export default function Achievements() {
           className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6"
         >
           {achievements.map((item) => (
-            <motion.div key={item.id} variants={itemVariants} className="break-inside-avoid group relative rounded-3xl overflow-hidden glass border border-white/10 shadow-2xl hover:shadow-[0_0_40px_rgba(6,182,212,0.15)] transition-all duration-500">
+            <motion.div key={item.id} variants={itemVariants} className="break-inside-avoid group relative rounded-3xl overflow-hidden glass border border-white/10 shadow-2xl hover:shadow-xl transition-all duration-500">
               
               <div className="relative overflow-hidden w-full h-auto max-h-[600px]">
                 <img 

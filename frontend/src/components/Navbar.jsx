@@ -32,7 +32,7 @@ export default function Navbar() {
         
         {/* Logo */}
         <Link to="/" className="flex flex-col">
-          <h1 className="font-heading text-primary text-3xl font-extrabold tracking-tight drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">
+          <h1 className="font-heading text-primary text-3xl font-extrabold tracking-tight">
             ACIK
           </h1>
           <p className="text-xs text-text-muted font-medium tracking-wide uppercase">

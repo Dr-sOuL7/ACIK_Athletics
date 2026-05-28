@@ -143,15 +143,15 @@ export default function Home() {
       )}
 
       {/* Cinematic Hero Section */}
-      <section className={`relative w-full h-[40vh] min-h-[300px] max-h-[500px] rounded-3xl overflow-hidden shadow-2xl ${(!content?.banner_url && !content?.logo_url) ? '-mt-4' : ''}`}>
+      <section className={`relative w-full h-[40vh] min-h-[300px] max-h-[500px] rounded-3xl overflow-hidden shadow-2xl shadow-black/50 border border-white/5 ${(!content?.banner_url && !content?.logo_url) ? '-mt-4' : ''}`}>
         <div className="absolute inset-0 bg-background">
           <img 
             src={heroImg} 
             alt="Track at night" 
-            className="w-full h-full object-cover opacity-60 mix-blend-screen"
+            className="w-full h-full object-cover opacity-40 mix-blend-luminosity"
           />
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/20" />
           <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent" />
         </div>
         
@@ -165,16 +165,16 @@ export default function Home() {
             <motion.div 
               initial={{ opacity: 0, y: 30 }} 
               animate={{ opacity: 1, y: 0 }} 
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: 1, ease: "easeOut" }}
               className="flex flex-col items-center"
             >
               {!content?.logo_url && (
-                <img src="/acik-logo.png" alt="ACIK Logo" className="h-28 md:h-40 mb-6 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:scale-105 transition-transform duration-500" style={{ mixBlendMode: 'plus-lighter' }} />
+                <img src="/acik-logo.png" alt="ACIK Logo" className="h-28 md:h-40 mb-8 object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700" />
               )}
-              <h1 className="text-4xl md:text-6xl font-extrabold text-white font-heading tracking-tight mb-4 leading-tight drop-shadow-lg max-w-4xl mx-auto">
+              <h1 className="text-4xl md:text-6xl font-bold text-white font-heading tracking-wider mb-4 leading-tight drop-shadow-xl uppercase">
                 {content?.title || "ACIK Athletics"}
               </h1>
-              <p className="text-lg md:text-2xl text-text-muted max-w-2xl mx-auto font-light leading-relaxed">
+              <p className="text-lg md:text-2xl text-primary max-w-2xl mx-auto font-medium leading-relaxed tracking-widest uppercase text-opacity-90">
                 {content?.subtitle || "Athletics Club of IISER Kolkata"}
               </p>
             </motion.div>

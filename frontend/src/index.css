@@ -1,24 +1,24 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #06b6d4; /* Electric Cyan */
-  --color-primary-hover: #0891b2;
-  --color-secondary: #f97316; /* Restrained Orange */
-  --color-secondary-hover: #ea580c;
+  --color-primary: #d4af37; /* Warm Gold */
+  --color-primary-hover: #b8860b;
+  --color-secondary: #e6c27a; /* Champagne Gold */
+  --color-secondary-hover: #d4af37;
   
-  --color-background: #020617; /* Slate 950 / Near black */
-  --color-surface: #0f172a; /* Slate 900 */
-  --color-surface-elevated: #1e293b; /* Slate 800 */
-  --color-surface-hover: #334155; /* Slate 700 */
+  --color-background: #0a0a0a; /* Deep graphite */
+  --color-surface: #141414; /* Rich charcoal */
+  --color-surface-elevated: #1f1f1f; /* Elevated charcoal */
+  --color-surface-hover: #292929;
   
-  --color-text-main: #f8fafc; /* Slate 50 */
-  --color-text-muted: #94a3b8; /* Slate 400 */
+  --color-text-main: #fdfbf7; /* Ivory / Soft Cream */
+  --color-text-muted: #a39b8b; /* Subtle bronze/gray */
   
   --color-danger: #ef4444;
   --color-success: #10b981;
   
   --font-sans: 'Inter', sans-serif;
-  --font-heading: 'Outfit', sans-serif;
+  --font-heading: 'Playfair Display', serif;
 }
 
 @layer base {
@@ -38,16 +38,16 @@
 @layer components {
   /* Reusable button styles */
   .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:pointer-events-none;
   }
   .btn-primary {
-    @apply bg-primary text-background hover:bg-primary-hover focus:ring-primary;
+    @apply bg-primary text-background hover:bg-primary-hover hover:shadow-[0_4px_14px_rgba(212,175,55,0.2)] focus:ring-primary;
   }
   .btn-secondary {
-    @apply bg-secondary text-white hover:bg-secondary-hover focus:ring-secondary;
+    @apply bg-secondary text-background hover:bg-secondary-hover focus:ring-secondary;
   }
   .btn-surface {
-    @apply bg-surface-elevated text-text-main hover:bg-surface-hover focus:ring-surface-hover;
+    @apply bg-surface-elevated text-text-main border border-white/5 hover:bg-surface-hover hover:border-primary/20 focus:ring-surface-hover;
   }
   .btn-danger {
     @apply bg-danger text-white hover:bg-red-600 focus:ring-danger;
@@ -55,20 +55,20 @@
 
   /* Card */
   .card {
-    @apply bg-surface border border-surface-elevated rounded-2xl overflow-hidden;
+    @apply bg-surface border border-white/5 rounded-2xl overflow-hidden shadow-lg shadow-black/20;
   }
   .card-hover {
-    @apply transition-transform duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-primary/20;
+    @apply transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5;
   }
   
   /* Input */
   .input {
-    @apply flex w-full px-3 py-2 bg-background border border-surface-elevated rounded-lg text-sm text-text-main placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors disabled:opacity-50;
+    @apply flex w-full px-3 py-2 bg-background border border-surface-elevated rounded-lg text-sm text-text-main placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors disabled:opacity-50;
   }
   
   /* Glassmorphism */
   .glass {
-    @apply bg-surface/80 backdrop-blur-md border border-white/5;
+    @apply bg-surface/80 backdrop-blur-md border border-white/5 shadow-xl shadow-black/40;
   }
 
   /* Shimmer animation for Skeleton Loader */

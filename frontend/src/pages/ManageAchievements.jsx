@@ -38,7 +38,7 @@ export default function ManageAchievements() {
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
-        <h1 className="text-4xl font-heading text-primary font-bold drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">
+        <h1 className="text-4xl font-heading text-primary font-bold">
           Manage Achievements
         </h1>
         <p className="text-text-muted mt-2">Add and manage hall of fame achievements.</p>
