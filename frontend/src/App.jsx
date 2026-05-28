@@ -25,6 +25,7 @@ import EditHomepage from "./pages/EditHomepage";
 import ManageRecords from "./pages/ManageRecords";
 import ManageGallery from "./pages/ManageGallery";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 export default function App() {
   return (
@@ -139,6 +140,7 @@ export default function App() {
 
     </BrowserRouter>
     <Analytics />
+    <SpeedInsights />
     </MotionConfig>
   );
 }
