@@ -510,11 +510,29 @@ export default function ManageRecords() {
             </div>
             <div>
               <label className="text-xs text-text-muted mb-1 block">Event</label>
-              <Input placeholder="Filter by Event" value={filters.event} onChange={(e) => setFilters({...filters, event: e.target.value})} className="h-9" />
+              <select 
+                className="w-full h-9 px-3 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" 
+                value={filters.event} 
+                onChange={(e) => setFilters({...filters, event: e.target.value})}
+              >
+                <option value="">Any Event</option>
+                {Object.entries(EVENT_CATEGORIES).map(([category, events]) => (
+                  <optgroup key={category} label={category} className="bg-surface text-text-muted">
+                    {events.map(ev => <option key={ev} value={ev} className="text-white">{ev}</option>)}
+                  </optgroup>
+                ))}
+              </select>
             </div>
             <div>
               <label className="text-xs text-text-muted mb-1 block">Tournament</label>
-              <Input placeholder="Filter by Tournament" value={filters.tournament} onChange={(e) => setFilters({...filters, tournament: e.target.value})} className="h-9" />
+              <select 
+                className="w-full h-9 px-3 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" 
+                value={filters.tournament} 
+                onChange={(e) => setFilters({...filters, tournament: e.target.value})}
+              >
+                <option value="">Any Tournament</option>
+                {PREDEFINED_TOURNAMENTS.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
             </div>
             <div>
               <label className="text-xs text-text-muted mb-1 block">Venue</label>
@@ -522,7 +540,14 @@ export default function ManageRecords() {
             </div>
             <div>
               <label className="text-xs text-text-muted mb-1 block">Year</label>
-              <Input placeholder="Filter by Year (e.g. 24)" value={filters.year} onChange={(e) => setFilters({...filters, year: e.target.value})} className="h-9" />
+              <select 
+                className="w-full h-9 px-3 rounded-lg bg-surface border border-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" 
+                value={filters.year} 
+                onChange={(e) => setFilters({...filters, year: e.target.value})}
+              >
+                <option value="">Any Year</option>
+                {PREDEFINED_YEARS.map(y => <option key={y} value={y}>'{y}</option>)}
+              </select>
             </div>
           </div>
         )}
