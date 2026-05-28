@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../api/axios";
+import UpdateHomepageForm from "../forms/UpdateHomepageForm";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
@@ -96,6 +97,13 @@ export default function EditHomepage() {
             </Button>
           </form>
         </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Manage Homepage Branding</CardTitle>
+        </CardHeader>
+        <UpdateHomepageForm />
       </Card>
     </div>
   );
