@@ -115,35 +115,73 @@ export default function ManageRecords() {
 
     try {
       const data = await file.arrayBuffer();
-      const workbook = XLSX.read(data);
+      // Ensure the read works for CSV, TSV, XLSX
+      const workbook = XLSX.read(data, { type: 'array' });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       const results = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-      const parsedData = results.map(row => ({
-        name: row["Name"]?.toString().trim() || "",
-        roll_number: row["Roll Number"]?.toString().trim() || "",
-        batch: row["Batch"]?.toString().trim() || "",
-        place: row["Place"]?.toString().trim() || "",
-        year: row["Year"]?.toString().trim() || row["Date"]?.toString().trim() || "",
-        tournament: row["Tournament"]?.toString().trim() || "",
-        event: row["Event"]?.toString().trim() || "",
-        gender: row["Gender"]?.toString().trim() || "",
-        record: row["Record"]?.toString().trim() || "",
-        iism_record: row["IISM record"]?.toString().trim() || row["IISM record (if any)"]?.toString().trim() || ""
-      }));
+      if (!results || results.length === 0) {
+        throw new Error("The file appears to be empty or could not be parsed.");
+      }
+
+      const parsedData = [];
+      const validationErrors = [];
+
+      results.forEach((row, idx) => {
+        // Make keys case-insensitive and trim whitespace
+        const lowerRow = {};
+        for (const key in row) {
+          lowerRow[key.toLowerCase().trim()] = row[key];
+        }
+
+        const parsedRow = {
+          name: lowerRow["name"]?.toString().trim() || "",
+          roll_number: lowerRow["roll number"]?.toString().trim() || lowerRow["roll_number"]?.toString().trim() || lowerRow["roll"]?.toString().trim() || "",
+          batch: lowerRow["batch"]?.toString().trim() || "",
+          place: lowerRow["place"]?.toString().trim() || lowerRow["position"]?.toString().trim() || "",
+          year: lowerRow["year"]?.toString().trim() || lowerRow["date"]?.toString().trim() || "",
+          tournament: lowerRow["tournament"]?.toString().trim() || lowerRow["event name"]?.toString().trim() || "",
+          event: lowerRow["event"]?.toString().trim() || lowerRow["category"]?.toString().trim() || "",
+          gender: lowerRow["gender"]?.toString().trim() || lowerRow["sex"]?.toString().trim() || "",
+          record: lowerRow["record"]?.toString().trim() || lowerRow["timing/distance"]?.toString().trim() || lowerRow["time"]?.toString().trim() || "",
+          iism_record: lowerRow["iism record"]?.toString().trim() || lowerRow["iism record (if any)"]?.toString().trim() || lowerRow["iism_record"]?.toString().trim() || ""
+        };
+
+        // Check if row is completely empty
+        const isRowEmpty = Object.values(parsedRow).every(val => val === "");
+        if (isRowEmpty) return;
+
+        // Custom validations to ensure exact issue reporting
+        if (parsedRow.batch && parsedRow.batch.length > 4) {
+          validationErrors.push(`Row ${idx + 2} (Name: ${parsedRow.name || 'Unknown'}): Batch '${parsedRow.batch}' exceeds 4 characters.`);
+        }
+
+        parsedData.push(parsedRow);
+      });
+
+      if (parsedData.length === 0) {
+        throw new Error("No valid data rows found. Please ensure your file has columns like 'Name', 'Roll Number', 'Event', etc.");
+      }
+
+      if (validationErrors.length > 0) {
+        throw new Error(`Please fix the following issues before uploading:\n${validationErrors.join('\n')}`);
+      }
 
       await API.post("/records?action=bulk", parsedData);
-      alert("Records uploaded successfully.");
+      alert(`${parsedData.length} records uploaded successfully.`);
       fetchRecords();
     } catch (err) {
       console.error(err);
-      const serverError = err.response?.data?.error;
-      if (serverError) {
-        setError(serverError);
-      } else {
-        setError(err.message || "Failed to upload bulk records.");
+      let errorMsg = "Failed to upload bulk records.";
+      if (err.response?.data?.error) {
+        errorMsg = typeof err.response.data.error === 'string' 
+          ? err.response.data.error 
+          : JSON.stringify(err.response.data.error, null, 2);
+      } else if (err.message) {
+        errorMsg = err.message;
       }
+      setError(errorMsg);
     } finally {
       setUploading(false);
       e.target.value = null;
@@ -294,10 +332,10 @@ export default function ManageRecords() {
       <div className="glass p-8 rounded-2xl border border-white/5 space-y-6">
         <h2 className="text-2xl font-bold flex items-center gap-2">
           <FileSpreadsheet className="w-6 h-6 text-secondary" />
-          Bulk Upload via CSV
+          Bulk Upload via Spreadsheet
         </h2>
         <p className="text-text-muted text-sm mt-2">
-          Upload a CSV or Excel (.xlsx) file. Expected columns: <b>Name, Roll Number, Batch, Place, Year, Tournament, Event, Gender, Record, IISM record</b>.
+          Upload a CSV, TSV, or Excel (.xlsx) file. Columns do not need to be in any specific order and are not case-sensitive. Expected columns: <b>Name, Roll Number, Batch, Place, Year, Tournament, Event, Gender, Record, IISM record</b>.
         </p>
         <div className="flex items-center justify-center w-full">
           <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-40 border-2 border-white/10 border-dashed rounded-xl cursor-pointer bg-surface-elevated hover:bg-surface-hover transition-colors">
@@ -306,9 +344,9 @@ export default function ManageRecords() {
               <p className="mb-2 text-sm text-text-muted">
                 <span className="font-semibold text-text-main">Click to upload</span> or drag and drop
               </p>
-              <p className="text-xs text-text-muted">CSV or Excel files (.xlsx)</p>
+              <p className="text-xs text-text-muted">CSV, TSV, or Excel files (.xlsx, .xls)</p>
             </div>
-            <input id="dropzone-file" type="file" accept=".csv, .xlsx, .xls" className="hidden" onChange={handleFileUpload} disabled={uploading} />
+            <input id="dropzone-file" type="file" accept=".csv, .tsv, .xlsx, .xls" className="hidden" onChange={handleFileUpload} disabled={uploading} />
           </label>
         </div>
         {uploading && (
