@@ -106,7 +106,7 @@ export default function Achievements() {
                     {item.tournament}
                   </span>
                   
-                  <h3 className="text-2xl md:text-3xl font-heading font-bold text-white leading-tight mb-6">
+                  <h3 className="text-xl md:text-2xl font-heading font-bold text-white leading-tight mb-6">
                     {item.caption}
                   </h3>
                   
