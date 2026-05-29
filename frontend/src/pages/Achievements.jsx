@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Medal, Calendar } from "lucide-react";
+import { Trophy, Medal, AlertCircle } from "lucide-react";
 import API from "../api/axios";
 import { Skeleton } from "../components/ui/Skeleton";
 import { EmptyState } from "../components/ui/EmptyState";
@@ -118,16 +118,9 @@ export default function Achievements() {
                     <div className="h-px w-12 bg-primary/40" />
                   </div>
                   
-                  <h3 className="text-xl md:text-2xl font-heading font-medium text-white leading-relaxed mb-8 max-w-2xl drop-shadow-sm">
+                  <h3 className="text-xl md:text-2xl font-heading font-medium text-white leading-relaxed max-w-2xl drop-shadow-sm">
                     "{item.caption}"
                   </h3>
-                  
-                  <div className="flex items-center gap-2 text-text-muted text-xs font-medium uppercase tracking-widest">
-                    <Calendar className="w-4 h-4 text-primary/70" />
-                    {new Date(item.created_at).toLocaleDateString(undefined, {
-                      year: 'numeric', month: 'long', day: 'numeric'
-                    })}
-                  </div>
                 </div>
               </div>
 
