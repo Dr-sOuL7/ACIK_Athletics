@@ -219,9 +219,33 @@ export default function AllTimeRecords() {
 
   const otherTournaments = uniqueTournaments.filter(t => !PREDEFINED_TOURNAMENTS.includes(t));
 
+  // Enhance records to ensure all records of the same athlete share the profile pic
+  const enhancedRecords = useMemo(() => {
+    const picMap = {};
+    records.forEach(r => {
+      if (r.profile_pic) {
+        const key = r.roll_number 
+          ? String(r.roll_number).toLowerCase().trim() 
+          : `${(r.name || "").toLowerCase().trim()}_${(r.batch || "").toLowerCase().trim()}`;
+        if (!picMap[key]) picMap[key] = r.profile_pic;
+      }
+    });
+
+    return records.map(r => {
+      if (r.profile_pic) return r;
+      const key = r.roll_number 
+        ? String(r.roll_number).toLowerCase().trim() 
+        : `${(r.name || "").toLowerCase().trim()}_${(r.batch || "").toLowerCase().trim()}`;
+      return {
+        ...r,
+        profile_pic: picMap[key] || ""
+      };
+    });
+  }, [records]);
+
   // Apply filters
   const filteredRecords = useMemo(() => {
-    return records.filter(record => {
+    return enhancedRecords.filter(record => {
       const matchEvent = selectedEvent === "" || record.event === selectedEvent;
       const matchTournament = selectedTournament === "" || record.tournament === selectedTournament;
       const matchGender = selectedGender === "" || record.gender === selectedGender;
@@ -234,7 +258,7 @@ export default function AllTimeRecords() {
 
       return matchEvent && matchTournament && matchGender && matchYear && matchSearch;
     });
-  }, [records, selectedEvent, selectedTournament, selectedGender, selectedYear, searchQuery]);
+  }, [enhancedRecords, selectedEvent, selectedTournament, selectedGender, selectedYear, searchQuery]);
 
   // Group records into columns
   const groupedRecords = useMemo(() => {
@@ -290,7 +314,7 @@ export default function AllTimeRecords() {
     if (!selectedAthlete) return [];
     
     // Find all records that match this athlete from the UNFILTERED full records list
-    const matchingRecords = records.filter(r => isSameAthlete(selectedAthlete, r));
+    const matchingRecords = enhancedRecords.filter(r => isSameAthlete(selectedAthlete, r));
     
     // Sort logic: Year (most recent first) -> Track/Field/Relay
     const getCategoryPriority = (eventName) => {
@@ -314,7 +338,7 @@ export default function AllTimeRecords() {
       // Same category, sort alphabetically by event name
       return (a.event || "").localeCompare(b.event || "");
     });
-  }, [selectedAthlete, records]);
+  }, [selectedAthlete, enhancedRecords]);
 
   // Extract events string for modal header
   const getAthleteEventCategories = (athleteRecs) => {
