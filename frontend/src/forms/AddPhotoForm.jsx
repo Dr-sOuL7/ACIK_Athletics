@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getErrorMessage } from "../utils/errorHelper";
 import { supabase } from "../api/supabase";
 import API from "../api/axios";
 import { UploadCloud, Loader2, ImagePlus } from "lucide-react";
@@ -64,7 +65,7 @@ export default function AddPhotoForm({ refresh }) {
 
     } catch (err) {
       console.error(err);
-      setError(err.message || "Failed to upload photos.");
+      setError("Failed to upload photos: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getErrorMessage } from "../utils/errorHelper";
 import API from "../api/axios";
 import UpdateHomepageForm from "../forms/UpdateHomepageForm";
 import { Input } from "../components/ui/Input";
@@ -40,7 +41,7 @@ export default function EditHomepage() {
       alert("Homepage updated successfully");
     } catch (err) {
       console.error(err);
-      alert("Failed to update homepage");
+      alert("Failed to update homepage: " + getErrorMessage(err));
     } finally {
       setSaving(false);
     }

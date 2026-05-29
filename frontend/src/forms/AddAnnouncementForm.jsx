@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getErrorMessage } from "../utils/errorHelper";
 import { supabase } from "../api/supabase";
 import API from "../api/axios";
 import { Input } from "../components/ui/Input";
@@ -68,7 +69,7 @@ export default function AddAnnouncementForm({ refresh }) {
       setFiles([]);
     } catch (err) {
       console.error(err);
-      alert(err.message || "Failed to add announcement");
+      alert("Failed to publish announcement: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }

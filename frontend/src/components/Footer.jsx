@@ -20,8 +20,8 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/records" className="text-text-muted hover:text-primary transition-colors">All-Time Records</Link></li>
-              <li><Link to="/announcements" className="text-text-muted hover:text-primary transition-colors">Announcements</Link></li>
+              <li><Link to="/records" className="text-text-muted hover:text-primary transition-colors">Records</Link></li>
+              <li><Link to="/achievements" className="text-text-muted hover:text-primary transition-colors">Achievements</Link></li>
               <li><Link to="/gallery" className="text-text-muted hover:text-primary transition-colors">Gallery</Link></li>
             </ul>
           </div>

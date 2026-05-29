@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getErrorMessage } from "../utils/errorHelper";
 import AddAnnouncementForm from "../forms/AddAnnouncementForm";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
@@ -35,7 +36,7 @@ export default function AdminDashboard() {
       setSelectedIds(selectedIds.filter(selectedId => selectedId !== id));
     } catch (err) {
       console.error(err);
-      alert("Failed to delete announcement");
+      alert("Failed to delete announcement: " + getErrorMessage(err));
     }
   };
 
@@ -49,7 +50,7 @@ export default function AdminDashboard() {
       fetchAnnouncements(true);
     } catch (err) {
       console.error(err);
-      alert("Failed to delete some announcements");
+      alert("Failed to delete some announcements: " + getErrorMessage(err));
       fetchAnnouncements(true);
     }
   };

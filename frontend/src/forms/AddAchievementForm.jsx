@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getErrorMessage } from "../utils/errorHelper";
 import { supabase } from "../api/supabase";
 import API from "../api/axios";
 import { UploadCloud, Loader2, Trophy } from "lucide-react";
@@ -54,7 +55,7 @@ export default function AddAchievementForm({ refresh }) {
 
     } catch (err) {
       console.error(err);
-      setError(err.message || "Failed to add achievement.");
+      setError("Failed to add achievement: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }

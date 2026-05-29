@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import API from "../api/axios";
 import { supabase } from "../api/supabase";
+import { getErrorMessage } from "../utils/errorHelper";
 import { UploadCloud, Trash2, Loader2, FileSpreadsheet, Plus, Save, Table as TableIcon, Edit, X, Check, Filter } from "lucide-react";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
@@ -91,7 +92,7 @@ export default function ManageRecords() {
       setUrlCallback(publicUrl);
     } catch (err) {
       console.error(err);
-      alert("Failed to upload image");
+      alert("Failed to upload image: " + getErrorMessage(err));
     }
   };
 
@@ -103,7 +104,7 @@ export default function ManageRecords() {
         await API.put(`/records?id=${id}`, dataToSave);
         fetchRecords();
       } catch (err) {
-        alert("Failed to save picture.");
+        alert("Failed to save picture: " + getErrorMessage(err));
       }
     });
   };
@@ -115,7 +116,7 @@ export default function ManageRecords() {
       setRecords(res.data);
     } catch (err) {
       console.error(err);
-      setError("Failed to load records.");
+      setError("Failed to load records: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -191,8 +192,7 @@ export default function ManageRecords() {
       fetchRecords();
     } catch (err) {
       console.error(err);
-      const serverError = err.response?.data?.error;
-      setError(serverError || err.message || "Failed to save records.");
+      setError("Failed to save records: " + getErrorMessage(err));
     } finally {
       setSubmittingManual(false);
     }
@@ -265,15 +265,7 @@ export default function ManageRecords() {
       fetchRecords();
     } catch (err) {
       console.error(err);
-      let errorMsg = "Failed to upload bulk records.";
-      if (err.response?.data?.error) {
-        errorMsg = typeof err.response.data.error === 'string' 
-          ? err.response.data.error 
-          : JSON.stringify(err.response.data.error, null, 2);
-      } else if (err.message) {
-        errorMsg = err.message;
-      }
-      setError(errorMsg);
+      setError("Failed to upload bulk records: " + getErrorMessage(err));
     } finally {
       setUploading(false);
       e.target.value = null;
@@ -287,7 +279,7 @@ export default function ManageRecords() {
       fetchRecords();
     } catch (err) {
       console.error(err);
-      alert("Failed to delete record.");
+      alert("Failed to delete record: " + getErrorMessage(err));
     }
   };
 
@@ -303,7 +295,7 @@ export default function ManageRecords() {
       alert(`Successfully deleted ${selectedRecords.size} records.`);
     } catch (err) {
       console.error(err);
-      alert("Failed to delete some records.");
+      alert("Failed to delete some records: " + getErrorMessage(err));
     } finally {
       setDeletingBulk(false);
     }
@@ -363,7 +355,7 @@ export default function ManageRecords() {
       setEditingRecordId(null);
       fetchRecords();
     } catch (err) {
-      alert(err.response?.data?.error || err.message || "Failed to save record.");
+      alert("Failed to save record: " + getErrorMessage(err));
     } finally {
       setSavingEdit(false);
     }

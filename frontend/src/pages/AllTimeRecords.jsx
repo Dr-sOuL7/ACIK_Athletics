@@ -540,7 +540,7 @@ export default function AllTimeRecords() {
                 
                 <button
                   onClick={closeAthleteModal}
-                  className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors z-10"
+                  className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors z-50 cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>

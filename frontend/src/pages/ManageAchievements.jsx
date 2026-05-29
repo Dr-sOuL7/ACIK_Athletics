@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getErrorMessage } from "../utils/errorHelper";
 import API from "../api/axios";
 import AddAchievementForm from "../forms/AddAchievementForm";
 import { Loader2, Trash2, Trophy } from "lucide-react";
@@ -31,7 +32,7 @@ export default function ManageAchievements() {
       fetchAchievements();
     } catch (err) {
       console.error(err);
-      alert("Failed to delete achievement.");
+      alert("Failed to delete achievement: " + getErrorMessage(err));
     }
   };
 

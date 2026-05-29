@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { useState, useEffect } from "react";
+import { getErrorMessage } from "../utils/errorHelper";
 import API from "../api/axios";
 import AddPhotoForm from "../forms/AddPhotoForm";
 import { Loader2, Trash2, Image as ImageIcon } from "lucide-react";
@@ -34,7 +35,7 @@ export default function ManageGallery() {
       setSelectedIds(selectedIds.filter(selectedId => selectedId !== id));
     } catch (err) {
       console.error(err);
-      alert("Failed to delete photo.");
+      alert("Failed to delete photo: " + getErrorMessage(err));
     }
   };
 
@@ -48,7 +49,7 @@ export default function ManageGallery() {
       fetchPhotos();
     } catch (err) {
       console.error(err);
-      alert("Failed to delete some photos.");
+      alert("Failed to delete some photos: " + getErrorMessage(err));
       fetchPhotos();
     }
   };

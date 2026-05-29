@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getErrorMessage } from "../utils/errorHelper";
 import { supabase } from "../api/supabase";
 import API from "../api/axios";
 import { Button } from "../components/ui/Button";
@@ -75,7 +76,7 @@ export default function UpdateHomepageForm() {
       setCurrentData(res.data);
     } catch (err) {
       console.error(err);
-      alert(err.message || "Failed to update branding");
+      alert("Failed to update branding: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -93,7 +94,7 @@ export default function UpdateHomepageForm() {
       alert(`${type} removed successfully.`);
     } catch (err) {
       console.error(err);
-      alert(`Failed to remove ${type}`);
+      alert(`Failed to remove ${type}: ` + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
