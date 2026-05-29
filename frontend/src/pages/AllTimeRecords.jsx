@@ -88,20 +88,31 @@ const EventSection = ({ eventName, records, onCardClick }) => {
               <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               
               <div className="relative z-10 space-y-3">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    {record.gender && (
-                      <span className="bg-white/10 text-white/80 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full">
-                        {record.gender}
-                      </span>
-                    )}
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      {record.gender && (
+                        <span className="bg-white/10 text-white/80 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full">
+                          {record.gender}
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-xl font-heading font-bold text-white mb-1 group-hover:text-primary transition-colors">
+                      {record.name}
+                    </h3>
+                    <p className="text-xs text-text-muted font-mono bg-white/5 inline-block px-2 py-0.5 rounded">
+                      {record.roll_number} • Batch {record.batch}
+                    </p>
                   </div>
-                  <h3 className="text-xl font-heading font-bold text-white mb-1 group-hover:text-primary transition-colors">
-                    {record.name}
-                  </h3>
-                  <p className="text-xs text-text-muted font-mono bg-white/5 inline-block px-2 py-0.5 rounded">
-                    {record.roll_number} • Batch {record.batch}
-                  </p>
+                  
+                  {/* Small Profile Pic */}
+                  {record.profile_pic ? (
+                    <img src={record.profile_pic} alt={record.name} className="w-14 h-14 rounded-full object-cover border-2 border-white/10 shrink-0 shadow-lg" />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center shrink-0 border border-white/10 shadow-lg">
+                       <User className="w-6 h-6 text-white/40" />
+                    </div>
+                  )}
                 </div>
 
                 <div className="h-px w-full bg-white/10 my-2" />
@@ -546,11 +557,11 @@ export default function AllTimeRecords() {
                 </button>
 
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shrink-0 overflow-hidden">
+                  <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-2xl shrink-0 overflow-hidden border-4 border-surface">
                     {profilePic ? (
                       <img src={profilePic} alt={selectedAthlete.name} className="w-full h-full object-cover" />
                     ) : (
-                      <User className="w-10 h-10 text-white" />
+                      <User className="w-16 h-16 text-white/50" />
                     )}
                   </div>
                   <div className="space-y-2">
