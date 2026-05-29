@@ -55,10 +55,15 @@ export default function Achievements() {
       </div>
 
       {loading ? (
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="break-inside-avoid">
-              <Skeleton className="w-full h-64 rounded-3xl" />
+        <div className="flex flex-col gap-8 w-full max-w-5xl mx-auto">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex flex-col md:flex-row gap-6 glass rounded-3xl p-4 border border-white/5">
+              <Skeleton className="w-full md:w-2/5 h-64 md:h-72 rounded-2xl shrink-0" />
+              <div className="flex flex-col gap-4 w-full justify-center p-4">
+                <Skeleton className="w-24 h-6 rounded-full" />
+                <Skeleton className="w-full h-12 rounded-xl" />
+                <Skeleton className="w-3/4 h-12 rounded-xl" />
+              </div>
             </div>
           ))}
         </div>
@@ -73,37 +78,48 @@ export default function Achievements() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6"
+          className="flex flex-col gap-8 w-full max-w-5xl mx-auto"
         >
           {achievements.map((item) => (
-            <motion.div key={item.id} variants={itemVariants} className="break-inside-avoid group relative rounded-3xl overflow-hidden glass border border-white/10 shadow-2xl hover:shadow-xl transition-all duration-500">
+            <motion.div 
+              key={item.id} 
+              variants={itemVariants} 
+              className="group flex flex-col md:flex-row rounded-3xl overflow-hidden glass border border-white/10 shadow-2xl hover:shadow-xl hover:border-primary/30 transition-all duration-500 bg-surface/50"
+            >
               
-              <div className="relative overflow-hidden w-full h-auto max-h-[600px]">
+              {/* Image Section */}
+              <div className="relative overflow-hidden w-full md:w-2/5 shrink-0 bg-black/20">
                 <img 
                   src={item.file_url} 
                   alt={item.caption} 
-                  className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700 ease-in-out"
+                  className="w-full h-64 md:h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-in-out min-h-[250px]"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
               
-              <div className="absolute bottom-0 left-0 w-full p-6 md:p-8 flex flex-col justify-end transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                <span className="inline-block px-3 py-1 bg-primary/20 border border-primary/30 text-primary text-xs font-bold uppercase tracking-wider rounded-full mb-3 w-fit backdrop-blur-md shadow-lg">
-                  {item.tournament}
-                </span>
+              {/* Content Section */}
+              <div className="flex flex-col justify-center p-6 md:p-8 lg:p-10 w-full md:w-3/5 relative">
+                {/* Decorative blob */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                 
-                <h3 className="text-xl md:text-2xl font-bold text-white leading-snug drop-shadow-lg">
-                  {item.caption}
-                </h3>
-                
-                <div className="flex items-center gap-2 mt-4 text-white/60 text-sm font-medium">
-                  <Calendar className="w-4 h-4" />
-                  {new Date(item.created_at).toLocaleDateString(undefined, {
-                    year: 'numeric', month: 'long', day: 'numeric'
-                  })}
+                <div className="relative z-10">
+                  <span className="inline-block px-3 py-1 bg-primary/20 border border-primary/30 text-primary text-xs font-bold uppercase tracking-wider rounded-full mb-4 shadow-sm">
+                    {item.tournament}
+                  </span>
+                  
+                  <h3 className="text-2xl md:text-3xl font-heading font-bold text-white leading-tight mb-6">
+                    {item.caption}
+                  </h3>
+                  
+                  <div className="flex items-center gap-2 text-text-muted text-sm font-medium">
+                    <Calendar className="w-4 h-4 text-primary" />
+                    {new Date(item.created_at).toLocaleDateString(undefined, {
+                      year: 'numeric', month: 'long', day: 'numeric'
+                    })}
+                  </div>
                 </div>
               </div>
+
             </motion.div>
           ))}
         </motion.div>
