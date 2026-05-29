@@ -169,6 +169,7 @@ export default function AllTimeRecords() {
   
   // Athlete Profile Modal state
   const [selectedAthlete, setSelectedAthlete] = useState(null);
+  const [fullScreenImage, setFullScreenImage] = useState(false);
 
   // Filters
   const [selectedEvent, setSelectedEvent] = useState("");
@@ -557,9 +558,17 @@ export default function AllTimeRecords() {
                 </button>
 
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
-                  <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-2xl shrink-0 overflow-hidden border-4 border-surface">
+                  <div 
+                    className={`w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-2xl shrink-0 overflow-hidden border-4 border-surface relative ${profilePic ? 'cursor-pointer group' : ''}`}
+                    onClick={() => profilePic && setFullScreenImage(true)}
+                  >
                     {profilePic ? (
-                      <img src={profilePic} alt={selectedAthlete.name} className="w-full h-full object-cover" />
+                      <>
+                        <img src={profilePic} alt={selectedAthlete.name} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                           <Search className="w-8 h-8 text-white drop-shadow-md" />
+                        </div>
+                      </>
                     ) : (
                       <User className="w-16 h-16 text-white/50" />
                     )}
@@ -645,6 +654,30 @@ export default function AllTimeRecords() {
                 </div>
               </div>
             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Full Screen Image Lightbox */}
+      <AnimatePresence>
+        {fullScreenImage && selectedAthlete && profilePic && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm" onClick={() => setFullScreenImage(false)}>
+            <button
+              onClick={() => setFullScreenImage(false)}
+              className="absolute top-6 right-6 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-[110]"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <motion.img
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              src={profilePic}
+              alt="Full screen profile"
+              className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl border border-white/10"
+              onClick={(e) => e.stopPropagation()} // Prevent clicking image from closing modal
+            />
           </div>
         )}
       </AnimatePresence>
