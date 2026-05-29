@@ -2,11 +2,16 @@ import { useState, useEffect } from "react";
 import { getErrorMessage } from "../utils/errorHelper";
 import API from "../api/axios";
 import AddAchievementForm from "../forms/AddAchievementForm";
-import { Loader2, Trash2, Trophy } from "lucide-react";
+import { Loader2, Trash2, Trophy, Edit, X } from "lucide-react";
 
 export default function ManageAchievements() {
   const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Edit State
+  const [editingAchievement, setEditingAchievement] = useState(null);
+  const [editForm, setEditForm] = useState({ caption: "", tournament: "", file_url: "" });
+  const [editLoading, setEditLoading] = useState(false);
 
   const fetchAchievements = async () => {
     setLoading(true);
@@ -33,6 +38,27 @@ export default function ManageAchievements() {
     } catch (err) {
       console.error(err);
       alert("Failed to delete achievement: " + getErrorMessage(err));
+    }
+  };
+
+  const openEdit = (item) => {
+    setEditingAchievement(item);
+    setEditForm({ caption: item.caption, tournament: item.tournament, file_url: item.file_url });
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setEditLoading(true);
+    try {
+      await API.put(`/achievements?id=${editingAchievement.id}`, editForm);
+      alert("Achievement updated successfully!");
+      setEditingAchievement(null);
+      fetchAchievements();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update achievement: " + getErrorMessage(err));
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -90,8 +116,18 @@ export default function ManageAchievements() {
                       <p className="text-sm text-white font-medium" title={item.caption}>{item.caption}</p>
                     </div>
                     
-                    {/* Delete Overlay */}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    {/* Actions Overlay */}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openEdit(item);
+                        }}
+                        className="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg transition-transform hover:scale-110"
+                        title="Edit Achievement"
+                      >
+                        <Edit className="w-5 h-5" />
+                      </button>
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
@@ -110,6 +146,62 @@ export default function ManageAchievements() {
           </div>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {editingAchievement && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-surface glass rounded-3xl w-full max-w-lg p-6 md:p-8 relative border border-white/10 shadow-2xl">
+            <button 
+              onClick={() => setEditingAchievement(null)}
+              className="absolute top-4 right-4 p-2 text-white/50 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <h2 className="text-2xl font-heading font-bold text-white mb-6">Edit Achievement</h2>
+            <form onSubmit={handleEditSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-white/70 mb-1">Tournament / Event Name</label>
+                <input
+                  type="text"
+                  required
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors"
+                  value={editForm.tournament}
+                  onChange={e => setEditForm({...editForm, tournament: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white/70 mb-1">Caption</label>
+                <textarea
+                  required
+                  rows={3}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors"
+                  value={editForm.caption}
+                  onChange={e => setEditForm({...editForm, caption: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white/70 mb-1">Image URL</label>
+                <input
+                  type="url"
+                  required
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors"
+                  value={editForm.file_url}
+                  onChange={e => setEditForm({...editForm, file_url: e.target.value})}
+                />
+              </div>
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  disabled={editLoading}
+                  className="w-full py-3 rounded-xl bg-primary text-background font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {editLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Save Changes"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
