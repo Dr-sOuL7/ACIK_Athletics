@@ -83,35 +83,47 @@ export default function Achievements() {
             <motion.div 
               key={item.id} 
               variants={itemVariants} 
-              className="group flex flex-col rounded-3xl overflow-hidden glass border border-white/10 shadow-2xl hover:shadow-xl hover:border-primary/30 transition-all duration-500 bg-surface/50"
+              className="group relative flex flex-col rounded-xl overflow-hidden bg-surface-elevated border-4 md:border-[8px] border-surface shadow-2xl ring-1 ring-primary/20 hover:ring-primary/40 transition-all duration-700"
             >
+              {/* Inner Plaque Border */}
+              <div className="absolute inset-0 border border-primary/10 rounded-lg pointer-events-none z-20" />
               
               {/* Image Section - Spans Horizontally */}
-              <div className="relative overflow-hidden w-full bg-black/20">
+              <div className="relative overflow-hidden w-full bg-black/40 border-b-2 border-primary/20">
                 <img 
                   src={item.file_url} 
                   alt={item.caption} 
-                  className="w-full h-auto max-h-[600px] object-cover object-center transform group-hover:scale-105 transition-transform duration-700 ease-in-out"
+                  className="w-full h-auto max-h-[600px] object-cover object-center transform group-hover:scale-105 transition-transform duration-1000 ease-out"
                   loading="lazy"
                 />
+                {/* Image Overlay for dramatic effect */}
+                <div className="absolute inset-0 bg-gradient-to-t from-surface-elevated via-transparent to-transparent opacity-60" />
               </div>
               
               {/* Content Section - Below Image */}
-              <div className="flex flex-col p-6 md:p-8 relative">
-                {/* Decorative blob */}
-                <div className="absolute bottom-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="flex flex-col items-center text-center p-8 md:p-12 relative overflow-hidden">
+                {/* Decorative background icon */}
+                <Medal className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 text-primary/5 blur-[2px] pointer-events-none" />
                 
-                <div className="relative z-10">
-                  <span className="inline-block px-4 py-1.5 bg-primary/20 border border-primary/30 text-primary text-xs font-bold uppercase tracking-wider rounded-full mb-4 shadow-sm">
-                    {item.tournament}
-                  </span>
+                {/* Decorative blob for warm lighting */}
+                <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
+                <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
+                
+                <div className="relative z-10 max-w-3xl flex flex-col items-center">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="h-px w-12 bg-primary/40" />
+                    <span className="text-primary text-xs font-bold uppercase tracking-[0.3em]">
+                      {item.tournament}
+                    </span>
+                    <div className="h-px w-12 bg-primary/40" />
+                  </div>
                   
-                  <h3 className="text-xl md:text-2xl font-heading font-bold text-white leading-tight mb-6">
-                    {item.caption}
+                  <h3 className="text-xl md:text-2xl font-heading font-medium text-white leading-relaxed mb-8 max-w-2xl drop-shadow-sm">
+                    "{item.caption}"
                   </h3>
                   
-                  <div className="flex items-center gap-2 text-text-muted text-sm font-medium">
-                    <Calendar className="w-4 h-4 text-primary" />
+                  <div className="flex items-center gap-2 text-text-muted text-xs font-medium uppercase tracking-widest">
+                    <Calendar className="w-4 h-4 text-primary/70" />
                     {new Date(item.created_at).toLocaleDateString(undefined, {
                       year: 'numeric', month: 'long', day: 'numeric'
                     })}
