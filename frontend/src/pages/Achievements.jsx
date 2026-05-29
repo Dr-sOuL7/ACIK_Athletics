@@ -57,12 +57,11 @@ export default function Achievements() {
       {loading ? (
         <div className="flex flex-col gap-8 w-full max-w-5xl mx-auto">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="flex flex-col md:flex-row gap-6 glass rounded-3xl p-4 border border-white/5">
-              <Skeleton className="w-full md:w-2/5 h-64 md:h-72 rounded-2xl shrink-0" />
-              <div className="flex flex-col gap-4 w-full justify-center p-4">
+            <div key={i} className="flex flex-col gap-6 glass rounded-3xl p-6 border border-white/5">
+              <Skeleton className="w-full h-72 md:h-96 rounded-2xl shrink-0" />
+              <div className="flex flex-col gap-4 w-full">
                 <Skeleton className="w-24 h-6 rounded-full" />
                 <Skeleton className="w-full h-12 rounded-xl" />
-                <Skeleton className="w-3/4 h-12 rounded-xl" />
               </div>
             </div>
           ))}
@@ -84,26 +83,26 @@ export default function Achievements() {
             <motion.div 
               key={item.id} 
               variants={itemVariants} 
-              className="group flex flex-col md:flex-row rounded-3xl overflow-hidden glass border border-white/10 shadow-2xl hover:shadow-xl hover:border-primary/30 transition-all duration-500 bg-surface/50"
+              className="group flex flex-col rounded-3xl overflow-hidden glass border border-white/10 shadow-2xl hover:shadow-xl hover:border-primary/30 transition-all duration-500 bg-surface/50"
             >
               
-              {/* Image Section */}
-              <div className="relative overflow-hidden w-full md:w-2/5 shrink-0 bg-black/20">
+              {/* Image Section - Spans Horizontally */}
+              <div className="relative overflow-hidden w-full bg-black/20">
                 <img 
                   src={item.file_url} 
                   alt={item.caption} 
-                  className="w-full h-64 md:h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-in-out min-h-[250px]"
+                  className="w-full h-auto max-h-[600px] object-cover object-center transform group-hover:scale-105 transition-transform duration-700 ease-in-out"
                   loading="lazy"
                 />
               </div>
               
-              {/* Content Section */}
-              <div className="flex flex-col justify-center p-6 md:p-8 lg:p-10 w-full md:w-3/5 relative">
+              {/* Content Section - Below Image */}
+              <div className="flex flex-col p-6 md:p-8 relative">
                 {/* Decorative blob */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute bottom-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                 
                 <div className="relative z-10">
-                  <span className="inline-block px-3 py-1 bg-primary/20 border border-primary/30 text-primary text-xs font-bold uppercase tracking-wider rounded-full mb-4 shadow-sm">
+                  <span className="inline-block px-4 py-1.5 bg-primary/20 border border-primary/30 text-primary text-xs font-bold uppercase tracking-wider rounded-full mb-4 shadow-sm">
                     {item.tournament}
                   </span>
                   
