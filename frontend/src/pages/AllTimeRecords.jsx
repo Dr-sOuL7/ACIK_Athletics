@@ -34,6 +34,22 @@ const EVENT_CATEGORIES = {
 // Helper to parse time strings into milliseconds for sorting
 const parseTime = (timeStr) => {
   if (!timeStr) return Infinity;
+  const lowerStr = timeStr.toLowerCase();
+  
+  // Explicitly handle "min", "sec", "hr" format
+  if (lowerStr.includes("min") || lowerStr.includes("sec") || lowerStr.includes("hr")) {
+    let hrs = 0, mins = 0, secs = 0;
+    const hrMatch = lowerStr.match(/([\d.]+)\s*h/);
+    const minMatch = lowerStr.match(/([\d.]+)\s*m/);
+    const secMatch = lowerStr.match(/([\d.]+)\s*s/);
+    if (hrMatch) hrs = parseFloat(hrMatch[1]);
+    if (minMatch) mins = parseFloat(minMatch[1]);
+    if (secMatch) secs = parseFloat(secMatch[1]);
+    if (hrMatch || minMatch || secMatch) {
+       return (hrs * 3600000) + (mins * 60000) + (secs * 1000);
+    }
+  }
+
   const cleanStr = timeStr.replace(/[^\d:.,]/g, "").replace(",", ".");
   if (!cleanStr) return Infinity;
   
@@ -490,7 +506,7 @@ export default function AllTimeRecords() {
       <div className="space-y-6">
         <div className="flex items-center justify-between text-text-muted">
           <span>Showing {filteredRecords.length} records</span>
-          {filteredRecords.length > 0 && <span className="text-sm">Sorted chronologically</span>}
+          {filteredRecords.length > 0 && <span className="text-sm">Sorted by best performance</span>}
         </div>
 
         {filteredRecords.length === 0 ? (
