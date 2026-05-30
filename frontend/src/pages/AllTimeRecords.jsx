@@ -26,7 +26,7 @@ const isSameAthlete = (recordA, recordB) => {
 };
 
 const EVENT_CATEGORIES = {
-  "Track": ["100 m", "200 m", "400 m", "800 m", "1500 m", "3k m", "5k m", "10k m"],
+  "Track": ["100 m", "200 m", "400 m", "800 m", "1500 m", "3000 m", "5000 m", "10000 m"],
   "Field": ["Long Jump", "Triple Jump", "Discus Throw", "Javelin Throw", "Shotput Throw"],
   "Relay": ["4 x 100 m", "4 x 400 m", "Medley", "Mixed Relay 4 x 100 m", "Mixed Relay 4 x 400 m"]
 };
