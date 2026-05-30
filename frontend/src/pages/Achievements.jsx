@@ -89,7 +89,7 @@ export default function Achievements() {
               <div className="absolute inset-0 border border-primary/10 rounded-lg pointer-events-none z-20" />
               
               {/* Image Section - Spans Horizontally */}
-              <div className="relative overflow-hidden w-full bg-black/40 border-b-2 border-primary/20">
+              <div className="relative overflow-hidden w-full bg-black/40 border-b-2 border-primary/20 min-h-[300px] md:min-h-[400px]">
                 <img 
                   src={item.file_url} 
                   alt={item.caption} 

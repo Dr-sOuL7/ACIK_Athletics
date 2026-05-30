@@ -32,9 +32,9 @@ export default function Navbar() {
         
         {/* Logo */}
         <Link to="/" className="flex flex-col">
-          <h1 className="font-heading text-primary text-3xl font-extrabold tracking-tight">
+          <span className="font-heading text-primary text-3xl font-extrabold tracking-tight">
             ACIK
-          </h1>
+          </span>
           <p className="text-xs text-text-muted font-medium tracking-wide uppercase">
             Athletics Club
           </p>

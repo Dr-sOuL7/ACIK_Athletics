@@ -69,7 +69,13 @@ export default function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{ session, user, role, login, logout, loading, token: session?.access_token }}>
-      {!loading && children}
+      {loading ? (
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 }

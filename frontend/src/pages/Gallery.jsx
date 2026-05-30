@@ -88,7 +88,7 @@ export default function Gallery() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.3 }}
-                className="relative group break-inside-avoid rounded-xl overflow-hidden cursor-pointer border border-white/10"
+                className="relative group break-inside-avoid rounded-xl overflow-hidden cursor-pointer border border-white/10 min-h-[200px] bg-surface-elevated/50"
                 onClick={() => setSelectedPhoto(photo)}
               >
                 <img 

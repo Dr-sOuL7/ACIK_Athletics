@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, Megaphone, FileDown, X, Calendar } from "lucide-react";
+import { Link } from "react-router-dom";
 import API from "../api/axios";
 import { Card, CardHeader, CardTitle } from "../components/ui/Card";
 import { Skeleton } from "../components/ui/Skeleton";
@@ -143,16 +144,17 @@ export default function Home() {
       )}
 
       {/* Cinematic Hero Section */}
-      <section className={`relative w-full h-[40vh] min-h-[300px] max-h-[500px] rounded-3xl overflow-hidden shadow-2xl shadow-black/50 border border-white/5 ${(!content?.banner_url && !content?.logo_url) ? '-mt-4' : ''}`}>
+      <section className={`relative w-full h-[60vh] min-h-[500px] max-h-[700px] rounded-3xl overflow-hidden shadow-2xl shadow-black/50 border border-white/5 ${(!content?.banner_url && !content?.logo_url) ? '-mt-4' : ''}`}>
         <div className="absolute inset-0 bg-background">
           <img 
             src={heroImg} 
             alt="Track at night" 
-            className="w-full h-full object-cover opacity-40 mix-blend-luminosity"
+            fetchpriority="high"
+            className="w-full h-full object-cover opacity-80"
           />
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/20" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent" />
+          {/* Subtle Gradient Overlays for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+          <div className="absolute inset-0 bg-black/30" />
         </div>
         
         <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-8 md:px-16 w-full mx-auto">
@@ -169,14 +171,29 @@ export default function Home() {
               className="flex flex-col items-center"
             >
               {!content?.logo_url && (
-                <img src="/acik-logo.png" alt="ACIK Logo" className="h-28 md:h-40 mb-8 object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700" />
+                <img src="/acik-logo.png" alt="ACIK Logo" className="h-24 md:h-32 mb-6 object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700" />
               )}
-              <h1 className="text-4xl md:text-6xl font-bold text-white font-heading tracking-wider mb-4 leading-tight drop-shadow-xl uppercase">
+              <h1 className="text-5xl md:text-7xl font-bold text-white font-heading tracking-wider mb-6 leading-tight drop-shadow-xl uppercase">
                 {content?.title || "ACIK Athletics"}
               </h1>
-              <p className="text-lg md:text-2xl text-primary max-w-2xl mx-auto font-medium leading-relaxed tracking-widest uppercase text-opacity-90">
-                {content?.subtitle || "Athletics Club of IISER Kolkata"}
+              <p className="text-lg md:text-2xl text-primary max-w-2xl mx-auto font-medium leading-relaxed tracking-widest uppercase text-opacity-90 mb-10">
+                {content?.subtitle || "Where Records Are Made. Where Legends Begin."}
               </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link 
+                  to="/records" 
+                  className="px-8 py-4 bg-primary text-background font-bold rounded-full hover:bg-primary-hover hover:scale-105 transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+                >
+                  Explore Records
+                </Link>
+                <Link 
+                  to="/achievements" 
+                  className="px-8 py-4 bg-surface-elevated/80 backdrop-blur-md text-white font-bold rounded-full border border-white/10 hover:bg-white/10 hover:border-white/30 hover:scale-105 transition-all"
+                >
+                  Hall of Fame
+                </Link>
+              </div>
             </motion.div>
           )}
         </div>
