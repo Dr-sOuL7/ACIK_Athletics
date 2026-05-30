@@ -144,7 +144,7 @@ export default function UpdateHomepageForm() {
                   <UploadCloud className="w-6 h-6 mb-1 text-primary" />
                   <p className="text-xs text-text-muted"><span className="text-white font-medium">Click to upload new banner</span> (1920x400 recommended)</p>
                 </div>
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => setBannerFile(e.target.files[0])} disabled={loading} />
+                <input type="file" accept="image/*, .webp" className="hidden" onChange={(e) => setBannerFile(e.target.files[0])} disabled={loading} />
               </label>
             )}
           </div>
@@ -178,7 +178,7 @@ export default function UpdateHomepageForm() {
                   <UploadCloud className="w-6 h-6 mb-1 text-primary" />
                   <p className="text-xs text-text-muted"><span className="text-white font-medium">Click to upload new logo</span> (Square, transparent PNG recommended)</p>
                 </div>
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => setLogoFile(e.target.files[0])} disabled={loading} />
+                <input type="file" accept="image/*, .webp" className="hidden" onChange={(e) => setLogoFile(e.target.files[0])} disabled={loading} />
               </label>
             )}
           </div>
@@ -212,7 +212,7 @@ export default function UpdateHomepageForm() {
                   <UploadCloud className="w-6 h-6 mb-1 text-primary" />
                   <p className="text-xs text-text-muted"><span className="text-white font-medium">Click to upload hero background</span> (High-res landscape)</p>
                 </div>
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => setHeroBgFile(e.target.files[0])} disabled={loading} />
+                <input type="file" accept="image/*, .webp" className="hidden" onChange={(e) => setHeroBgFile(e.target.files[0])} disabled={loading} />
               </label>
             )}
           </div>

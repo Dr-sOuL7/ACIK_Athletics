@@ -91,7 +91,7 @@ export default function AddAchievementForm({ refresh }) {
             <input 
               id="achievement-upload" 
               type="file" 
-              accept="image/*" 
+              accept="image/*, .webp" 
               className="hidden" 
               onChange={(e) => setFile(e.target.files[0])} 
               disabled={loading} 

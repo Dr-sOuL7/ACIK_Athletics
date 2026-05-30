@@ -473,7 +473,7 @@ export default function ManageRecords() {
                     ) : (
                       <input 
                         type="file" 
-                        accept="image/*" 
+                        accept="image/*, .webp" 
                         className="w-[80px] text-[10px] text-text-muted file:bg-surface-elevated file:text-white file:border-0 file:rounded file:px-2 file:py-1 file:cursor-pointer" 
                         onChange={(e) => {
                           if (e.target.files[0]) {
@@ -744,7 +744,7 @@ export default function ManageRecords() {
                               ) : (
                                 <input 
                                   type="file" 
-                                  accept="image/*" 
+                                  accept="image/*, .webp" 
                                   className="w-[60px] text-[10px] text-text-muted file:bg-surface-elevated file:text-white file:border-0 file:rounded file:px-1 file:py-1 file:cursor-pointer" 
                                   onChange={(e) => {
                                     if (e.target.files[0]) {
@@ -793,7 +793,7 @@ export default function ManageRecords() {
                                   <span className="text-xs font-medium">Upload</span>
                                   <input 
                                     type="file" 
-                                    accept="image/*" 
+                                    accept="image/*, .webp" 
                                     className="hidden" 
                                     onChange={(e) => {
                                       if (e.target.files[0]) {

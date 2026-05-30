@@ -96,7 +96,7 @@ export default function AddPhotoForm({ refresh }) {
             <input 
               id="photo-upload" 
               type="file" 
-              accept="image/*" 
+              accept="image/*, .webp" 
               multiple
               className="hidden" 
               onChange={(e) => setFiles(Array.from(e.target.files))} 
