@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Search, Calendar, MapPin, Loader2, Medal, X, Activity, User, Hash } from "lucide-react";
+import { Trophy, Search, Calendar, MapPin, Loader2, Medal, X, Activity, User, Hash, Users } from "lucide-react";
 import API from "../api/axios";
 
 // Helper to format year consistently
@@ -88,7 +88,7 @@ const parseDistance = (distStr) => {
 };
 
 // Reusable component to render the cards for a specific event
-const EventSection = ({ eventName, records, onCardClick }) => {
+const EventSection = ({ eventName, records, onCardClick, onTeamClick }) => {
   if (!records || records.length === 0) return null;
   
   return (
@@ -179,6 +179,15 @@ const EventSection = ({ eventName, records, onCardClick }) => {
                     </div>
                   </div>
                 </div>
+
+                {record.team_id && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onTeamClick(record.team_id); }}
+                    className="mt-3 w-full py-2 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Users className="w-4 h-4" /> See Full Team
+                  </button>
+                )}
               </div>
             </motion.div>
           ))}
@@ -195,6 +204,9 @@ export default function AllTimeRecords() {
   // Athlete Profile Modal state
   const [selectedAthlete, setSelectedAthlete] = useState(null);
   const [fullScreenImage, setFullScreenImage] = useState(false);
+
+  // Relay Team Modal state
+  const [selectedTeamId, setSelectedTeamId] = useState(null);
 
   // Filters
   const [selectedEvent, setSelectedEvent] = useState("");
@@ -364,6 +376,11 @@ export default function AllTimeRecords() {
       return (a.event || "").localeCompare(b.event || "");
     });
   }, [selectedAthlete, enhancedRecords]);
+
+  const teamRecords = useMemo(() => {
+    if (!selectedTeamId) return [];
+    return enhancedRecords.filter(r => r.team_id === selectedTeamId);
+  }, [selectedTeamId, enhancedRecords]);
 
   // Extract events string for modal header
   const getAthleteEventCategories = (athleteRecs) => {
@@ -537,7 +554,7 @@ export default function AllTimeRecords() {
               <div>
                 <h2 className="text-2xl font-black font-heading text-white/20 mb-8 tracking-widest uppercase text-center border-b border-white/5 pb-4">Track Events</h2>
                 {EVENT_CATEGORIES.Track.map(eventName => (
-                  <EventSection key={eventName} eventName={eventName} records={groupedRecords.Track[eventName]} onCardClick={handleCardClick} />
+                  <EventSection key={eventName} eventName={eventName} records={groupedRecords.Track[eventName]} onCardClick={handleCardClick} onTeamClick={setSelectedTeamId} />
                 ))}
               </div>
 
@@ -545,7 +562,7 @@ export default function AllTimeRecords() {
               <div>
                 <h2 className="text-2xl font-black font-heading text-white/20 mb-8 tracking-widest uppercase text-center border-b border-white/5 pb-4">Field Events</h2>
                 {EVENT_CATEGORIES.Field.map(eventName => (
-                  <EventSection key={eventName} eventName={eventName} records={groupedRecords.Field[eventName]} onCardClick={handleCardClick} />
+                  <EventSection key={eventName} eventName={eventName} records={groupedRecords.Field[eventName]} onCardClick={handleCardClick} onTeamClick={setSelectedTeamId} />
                 ))}
               </div>
 
@@ -553,7 +570,7 @@ export default function AllTimeRecords() {
               <div>
                 <h2 className="text-2xl font-black font-heading text-white/20 mb-8 tracking-widest uppercase text-center border-b border-white/5 pb-4">Relay Events</h2>
                 {EVENT_CATEGORIES.Relay.map(eventName => (
-                  <EventSection key={eventName} eventName={eventName} records={groupedRecords.Relay[eventName]} onCardClick={handleCardClick} />
+                  <EventSection key={eventName} eventName={eventName} records={groupedRecords.Relay[eventName]} onCardClick={handleCardClick} onTeamClick={setSelectedTeamId} />
                 ))}
               </div>
             </div>
@@ -565,7 +582,7 @@ export default function AllTimeRecords() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   {Object.entries(groupedRecords.Other).map(([eventName, records]) => (
                     <div key={eventName}>
-                      <EventSection eventName={eventName} records={records} onCardClick={handleCardClick} />
+                      <EventSection eventName={eventName} records={records} onCardClick={handleCardClick} onTeamClick={setSelectedTeamId} />
                     </div>
                   ))}
                 </div>
@@ -697,6 +714,17 @@ export default function AllTimeRecords() {
                             </div>
                           </div>
                         </div>
+
+                        {record.team_id && (
+                          <div className="w-full mt-3 md:mt-0 flex md:block md:w-auto">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setSelectedTeamId(record.team_id); }}
+                              className="w-full md:w-auto px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
+                            >
+                              <Users className="w-4 h-4" /> See Full Team
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -717,7 +745,7 @@ export default function AllTimeRecords() {
             >
               <X className="w-6 h-6" />
             </button>
-            <motion.img
+              <motion.img
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
@@ -725,8 +753,86 @@ export default function AllTimeRecords() {
               src={profilePic}
               alt="Full screen profile"
               className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl border border-white/10"
-              onClick={(e) => e.stopPropagation()} // Prevent clicking image from closing modal
+              onClick={(e) => e.stopPropagation()}
             />
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Relay Team Modal */}
+      <AnimatePresence>
+        {selectedTeamId && teamRecords.length > 0 && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 md:p-12">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedTeamId(null)}
+              className="absolute inset-0 bg-background/90 backdrop-blur-md"
+            />
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl max-h-full flex flex-col glass rounded-3xl border border-white/10 shadow-2xl overflow-hidden bg-surface/95"
+            >
+              <div className="p-6 border-b border-white/5 relative overflow-hidden shrink-0">
+                <div className="absolute -top-20 -right-20 w-48 h-48 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
+                <button
+                  onClick={() => setSelectedTeamId(null)}
+                  className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors z-50 cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Users className="w-6 h-6 text-primary" />
+                    <h2 className="text-2xl font-black font-heading text-white">Relay Team</h2>
+                  </div>
+                  <div className="text-text-muted text-sm font-medium flex items-center flex-wrap gap-2">
+                    <span className="text-primary">{teamRecords[0].event}</span>
+                    <span className="w-1 h-1 rounded-full bg-white/30" />
+                    <span>{teamRecords[0].tournament}</span>
+                    <span className="w-1 h-1 rounded-full bg-white/30" />
+                    <span>'{formatYear(teamRecords[0].year)}</span>
+                    <span className="w-1 h-1 rounded-full bg-white/30" />
+                    <span>{teamRecords[0].record}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 overflow-y-auto space-y-3">
+                {teamRecords.map((player, idx) => (
+                  <div key={player.id || idx} className="bg-white/5 border border-white/5 rounded-2xl p-4 flex items-center justify-between hover:bg-white/10 hover:border-primary/30 transition-colors cursor-pointer" onClick={() => { setSelectedAthlete(player); setSelectedTeamId(null); }}>
+                    <div className="flex items-center gap-4">
+                      {player.profile_pic ? (
+                        <img src={player.profile_pic} alt={player.name} className="w-12 h-12 rounded-full object-cover border border-white/10" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                           <User className="w-5 h-5 text-white/40" />
+                        </div>
+                      )}
+                      <div>
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h4 className="font-bold text-white text-lg">{player.name}</h4>
+                          {player.gender && (
+                            <span className="bg-white/10 text-white/80 text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full">
+                              {player.gender}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-text-muted font-mono flex gap-2">
+                          <span>{player.roll_number || 'N/A'}</span>
+                          <span>•</span>
+                          <span>Batch {player.batch || 'N/A'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
           </div>
         )}
       </AnimatePresence>

@@ -51,6 +51,35 @@ const formatYearString = (str) => {
   return str.trim();
 };
 
+const generateTeamId = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+const explodeRelayRecord = (row) => {
+  const isRelay = EVENT_CATEGORIES.Relay.some(e => e.toLowerCase() === (row.event || '').toLowerCase());
+  if (!isRelay) return [row];
+
+  const splitField = (val) => {
+    if (!val) return Array(4).fill("");
+    const parts = val.toString().split(',').map(s => s.trim());
+    if (parts.length === 4) return parts;
+    return Array(4).fill(parts[0]);
+  };
+
+  const names = splitField(row.name);
+  const rolls = splitField(row.roll_number);
+  const batches = splitField(row.batch);
+  const genders = splitField(row.gender);
+  const teamId = generateTeamId();
+
+  return [0, 1, 2, 3].map(i => ({
+    ...row,
+    name: formatTitleCase(names[i]),
+    roll_number: rolls[i].toUpperCase(),
+    batch: batches[i].toUpperCase(),
+    gender: formatTitleCase(genders[i]),
+    team_id: teamId
+  }));
+};
+
 export default function ManageRecords() {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -166,16 +195,14 @@ export default function ManageRecords() {
         row.record.trim() !== "" ||
         (row.tournament_select === "Other" && row.tournament_other.trim() !== "")
       )
-      .map(row => {
+      .flatMap(row => {
         const { tournament_select, tournament_other, ...rest } = row;
-        return {
+        const processedRow = {
           ...rest,
-          name: formatTitleCase(row.name),
-          roll_number: row.roll_number?.toUpperCase(),
-          batch: row.batch?.toUpperCase(),
           place: row.place?.toUpperCase(),
           tournament: (tournament_select === "Other" ? tournament_other.trim() : tournament_select).toUpperCase()
         };
+        return explodeRelayRecord(processedRow);
       });
 
     if (validRecords.length === 0) {
@@ -245,11 +272,15 @@ export default function ManageRecords() {
         if (isRowEmpty) return;
 
         // Custom validations to ensure exact issue reporting
-        if (parsedRow.batch && parsedRow.batch.length > 4) {
-          validationErrors.push(`Row ${idx + 2} (Name: ${parsedRow.name || 'Unknown'}): Batch '${parsedRow.batch}' exceeds 4 characters.`);
-        }
+        const batches = parsedRow.batch.split(',');
+        batches.forEach(b => {
+          if (b.trim() && b.trim().length > 4) {
+            validationErrors.push(`Row ${idx + 2} (Name: ${parsedRow.name || 'Unknown'}): Batch '${b.trim()}' exceeds 4 characters.`);
+          }
+        });
 
-        parsedData.push(parsedRow);
+        const exploded = explodeRelayRecord(parsedRow);
+        parsedData.push(...exploded);
       });
 
       if (parsedData.length === 0) {
