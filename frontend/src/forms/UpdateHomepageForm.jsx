@@ -9,6 +9,7 @@ import { UploadCloud, File as FileIcon, X, Loader2 } from "lucide-react";
 export default function UpdateHomepageForm() {
   const [bannerFile, setBannerFile] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
+  const [heroBgFile, setHeroBgFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [currentData, setCurrentData] = useState(null);
 
@@ -44,7 +45,7 @@ export default function UpdateHomepageForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!bannerFile && !logoFile) {
+    if (!bannerFile && !logoFile && !heroBgFile) {
       alert("Please select at least one file to upload.");
       return;
     }
@@ -53,6 +54,7 @@ export default function UpdateHomepageForm() {
     try {
       let banner_url = undefined;
       let logo_url = undefined;
+      let hero_bg_url = undefined;
 
       if (bannerFile) {
         banner_url = await uploadFile(bannerFile);
@@ -61,15 +63,21 @@ export default function UpdateHomepageForm() {
       if (logoFile) {
         logo_url = await uploadFile(logoFile);
       }
+      
+      if (heroBgFile) {
+        hero_bg_url = await uploadFile(heroBgFile);
+      }
 
       await API.put("/homepage", {
         ...(banner_url && { banner_url }),
-        ...(logo_url && { logo_url })
+        ...(logo_url && { logo_url }),
+        ...(hero_bg_url && { hero_bg_url })
       });
       
       alert("Homepage branding updated successfully!");
       setBannerFile(null);
       setLogoFile(null);
+      setHeroBgFile(null);
       
       // Refresh current data
       const res = await API.get("/homepage");
@@ -86,8 +94,10 @@ export default function UpdateHomepageForm() {
     if (!window.confirm(`Are you sure you want to remove the current ${type}?`)) return;
     try {
       setLoading(true);
+      
+      let fieldName = type === 'banner' ? 'banner_url' : type === 'logo' ? 'logo_url' : 'hero_bg_url';
       await API.put("/homepage", {
-        [type === 'banner' ? 'banner_url' : 'logo_url']: null
+        [fieldName]: null
       });
       const res = await API.get("/homepage");
       setCurrentData(res.data);
@@ -173,7 +183,41 @@ export default function UpdateHomepageForm() {
             )}
           </div>
 
-          <Button type="submit" disabled={loading || (!bannerFile && !logoFile)} className="mt-2">
+          {/* Hero Background Upload */}
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-text-muted">Hero Background</label>
+              {currentData?.hero_bg_url && (
+                <button type="button" onClick={() => clearBranding('hero_bg')} className="text-xs text-red-400 hover:text-red-300">Remove Current</button>
+              )}
+            </div>
+            {currentData?.hero_bg_url && !heroBgFile && (
+               <div className="mb-2 h-20 w-full rounded-lg overflow-hidden border border-white/10">
+                 <img src={currentData.hero_bg_url} alt="Current Hero Bg" className="w-full h-full object-cover" />
+               </div>
+            )}
+            {heroBgFile ? (
+              <div className="flex items-center justify-between bg-surface-elevated border border-white/10 rounded-lg p-3">
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <FileIcon className="w-5 h-5 text-primary flex-shrink-0" />
+                  <span className="text-white text-sm truncate">{heroBgFile.name}</span>
+                </div>
+                <button type="button" onClick={() => setHeroBgFile(null)} className="text-text-muted hover:text-red-400 p-1">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-white/10 border-dashed rounded-lg cursor-pointer bg-surface-elevated hover:bg-surface-hover transition-colors">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <UploadCloud className="w-6 h-6 mb-1 text-primary" />
+                  <p className="text-xs text-text-muted"><span className="text-white font-medium">Click to upload hero background</span> (High-res landscape)</p>
+                </div>
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => setHeroBgFile(e.target.files[0])} disabled={loading} />
+              </label>
+            )}
+          </div>
+
+          <Button type="submit" disabled={loading || (!bannerFile && !logoFile && !heroBgFile)} className="mt-2">
             {loading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Uploading...</> : "Update Branding"}
           </Button>
         </form>

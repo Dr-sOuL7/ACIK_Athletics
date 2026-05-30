@@ -147,7 +147,7 @@ export default function Home() {
       <section className={`relative w-full h-[60vh] min-h-[500px] max-h-[700px] rounded-3xl overflow-hidden shadow-2xl shadow-black/50 border border-white/5 ${(!content?.banner_url && !content?.logo_url) ? '-mt-4' : ''}`}>
         <div className="absolute inset-0 bg-background">
           <img 
-            src={heroImg} 
+            src={content?.hero_bg_url || heroImg} 
             alt="Track at night" 
             fetchpriority="high"
             className="w-full h-full object-cover opacity-80"

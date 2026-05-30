@@ -7,6 +7,7 @@ const homepageSchema = z.object({
   announcement: z.string().optional(),
   banner_url: z.string().nullable().optional(),
   logo_url: z.string().nullable().optional(),
+  hero_bg_url: z.string().nullable().optional(),
 });
 
 export default async function handler(req, res) {
