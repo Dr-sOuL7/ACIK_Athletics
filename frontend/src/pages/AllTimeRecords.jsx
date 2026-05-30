@@ -54,20 +54,29 @@ const parseTime = (timeStr) => {
   if (!cleanStr) return Infinity;
   
   const parts = cleanStr.split(":");
-  let hours = 0, minutes = 0, seconds = 0;
+  let ms = 0;
   
-  if (parts.length === 3) {
-    hours = parseFloat(parts[0]) || 0;
-    minutes = parseFloat(parts[1]) || 0;
-    seconds = parseFloat(parts[2]) || 0;
+  if (parts.length === 4) {
+    // Format like HH:MM:SS:MS or HH:MM:SS:CS (e.g., 00:00:12:80)
+    const hours = parseFloat(parts[0]) || 0;
+    const minutes = parseFloat(parts[1]) || 0;
+    const seconds = parseFloat(parts[2] + "." + parts[3]) || 0;
+    ms = (hours * 3600000) + (minutes * 60000) + (seconds * 1000);
+  } else if (parts.length === 3) {
+    const hours = parseFloat(parts[0]) || 0;
+    const minutes = parseFloat(parts[1]) || 0;
+    const seconds = parseFloat(parts[2]) || 0;
+    ms = (hours * 3600000) + (minutes * 60000) + (seconds * 1000);
   } else if (parts.length === 2) {
-    minutes = parseFloat(parts[0]) || 0;
-    seconds = parseFloat(parts[1]) || 0;
+    const minutes = parseFloat(parts[0]) || 0;
+    const seconds = parseFloat(parts[1]) || 0;
+    ms = (minutes * 60000) + (seconds * 1000);
   } else if (parts.length === 1) {
-    seconds = parseFloat(parts[0]) || 0;
+    const seconds = parseFloat(parts[0]) || 0;
+    ms = (seconds * 1000);
   }
   
-  return (hours * 3600000) + (minutes * 60000) + (seconds * 1000);
+  return ms;
 };
 
 // Helper to parse distance strings into numbers for sorting
