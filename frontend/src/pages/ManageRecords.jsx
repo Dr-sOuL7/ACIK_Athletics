@@ -55,10 +55,9 @@ const generateTeamId = () => Math.random().toString(36).substring(2, 15) + Math.
 
 const explodeRelayRecord = (row) => {
   const isRelay = EVENT_CATEGORIES.Relay.some(e => e.toLowerCase() === (row.event || '').toLowerCase());
-  if (!isRelay) return [row];
-
+  
   const splitField = (val) => {
-    if (!val) return Array(4).fill("");
+    if (!val) return ["", "", "", ""];
     const parts = val.toString().split(',').map(s => s.trim());
     if (parts.length === 4) return parts;
     return Array(4).fill(parts[0]);
@@ -68,6 +67,17 @@ const explodeRelayRecord = (row) => {
   const rolls = splitField(row.roll_number);
   const batches = splitField(row.batch);
   const genders = splitField(row.gender);
+
+  if (!isRelay) {
+    return [{
+      ...row,
+      name: formatTitleCase(names[0]),
+      roll_number: rolls[0].toUpperCase(),
+      batch: batches[0].toUpperCase(),
+      gender: formatTitleCase(genders[0])
+    }];
+  }
+
   const teamId = generateTeamId();
 
   return [0, 1, 2, 3].map(i => ({

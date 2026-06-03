@@ -16,7 +16,11 @@ const formatYear = (y) => {
 const isSameAthlete = (recordA, recordB) => {
   if (!recordA || !recordB) return false;
   if ((recordA.name || "").toLowerCase().trim() !== (recordB.name || "").toLowerCase().trim()) return false;
-  if ((recordA.batch || "").toLowerCase().trim() !== (recordB.batch || "").toLowerCase().trim()) return false;
+  
+  if (recordA.batch && recordB.batch && 
+      (recordA.batch || "").toLowerCase().trim() !== (recordB.batch || "").toLowerCase().trim()) {
+    return false;
+  }
   
   if (recordA.roll_number && recordB.roll_number && 
       recordA.roll_number.toLowerCase().trim() !== recordB.roll_number.toLowerCase().trim()) {
