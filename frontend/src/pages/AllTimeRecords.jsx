@@ -244,7 +244,7 @@ export default function AllTimeRecords() {
     "GANRAJYAM PRIDE RUN",
     "FREEDOM RUN",
     "FRESHERS",
-    "INTER BATCH"
+    "INTERBATCH"
   ];
 
   const PREDEFINED_GENDERS = ["Male", "Female"];
