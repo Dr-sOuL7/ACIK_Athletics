@@ -12,22 +12,31 @@ const formatYear = (y) => {
   return s;
 };
 
-// Athlete matching logic
+// Athlete matching logic:
+// Primary identity = name + batch (case-insensitive).
+// If BOTH records have a roll_number, it must also match.
+// If only one has a batch (the other is empty), we match on name only (incomplete data).
 const isSameAthlete = (recordA, recordB) => {
   if (!recordA || !recordB) return false;
-  if ((recordA.name || "").toLowerCase().trim() !== (recordB.name || "").toLowerCase().trim()) return false;
   
-  if (recordA.batch && recordB.batch && 
-      (recordA.batch || "").toLowerCase().trim() !== (recordB.batch || "").toLowerCase().trim()) {
-    return false;
-  }
+  const nameA = (recordA.name || "").toLowerCase().trim();
+  const nameB = (recordB.name || "").toLowerCase().trim();
+  if (nameA !== nameB) return false;
   
-  if (recordA.roll_number && recordB.roll_number && 
-      recordA.roll_number.toLowerCase().trim() !== recordB.roll_number.toLowerCase().trim()) {
-    return false;
-  }
+  const batchA = (recordA.batch || "").toLowerCase().trim();
+  const batchB = (recordB.batch || "").toLowerCase().trim();
+  
+  // If both have a batch, they must match
+  if (batchA && batchB && batchA !== batchB) return false;
+  
+  // If both have a roll number, it must match
+  const rollA = (recordA.roll_number || "").toLowerCase().trim();
+  const rollB = (recordB.roll_number || "").toLowerCase().trim();
+  if (rollA && rollB && rollA !== rollB) return false;
+  
   return true;
 };
+
 
 const EVENT_CATEGORIES = {
   "Track": ["100 m", "200 m", "400 m", "800 m", "1500 m", "3000 m", "5000 m", "10000 m"],
