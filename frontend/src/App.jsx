@@ -20,12 +20,14 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const AllTimeRecords = lazy(() => import("./pages/AllTimeRecords"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const Achievements = lazy(() => import("./pages/Achievements"));
+const Equipment = lazy(() => import("./pages/Equipment"));
 
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const EditHomepage = lazy(() => import("./pages/EditHomepage"));
 const ManageRecords = lazy(() => import("./pages/ManageRecords"));
 const ManageGallery = lazy(() => import("./pages/ManageGallery"));
 const ManageAchievements = lazy(() => import("./pages/ManageAchievements"));
+const ManageEquipment = lazy(() => import("./pages/ManageEquipment"));
 
 // A reusable loading fallback for Suspense
 const PageLoader = () => (
@@ -66,6 +68,7 @@ export default function App() {
               <Route path="/records" element={<MainLayout><AllTimeRecords /></MainLayout>} />
               <Route path="/gallery" element={<MainLayout><Gallery /></MainLayout>} />
               <Route path="/achievements" element={<MainLayout><Achievements /></MainLayout>} />
+              <Route path="/equipment" element={<MainLayout><Equipment /></MainLayout>} />
 
               {/* ================= ADMIN ROUTES ================= */}
               <Route path="/admin" element={<AdminRoute><AdminLayout><AdminDashboard /></AdminLayout></AdminRoute>} />
@@ -73,6 +76,7 @@ export default function App() {
               <Route path="/admin/homepage" element={<AdminRoute><AdminLayout><EditHomepage /></AdminLayout></AdminRoute>} />
               <Route path="/admin/records" element={<AdminRoute><AdminLayout><ManageRecords /></AdminLayout></AdminRoute>} />
               <Route path="/admin/gallery" element={<AdminRoute><AdminLayout><ManageGallery /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/equipment" element={<AdminRoute><AdminLayout><ManageEquipment /></AdminLayout></AdminRoute>} />
 
               <Route path="*" element={
                 <MainLayout>

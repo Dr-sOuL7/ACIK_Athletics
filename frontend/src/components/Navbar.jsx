@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, LogOut, LayoutDashboard, Shield, Trophy, Medal, Image as ImageIcon } from "lucide-react";
+import { Menu, X, LogOut, LayoutDashboard, Shield, Trophy, Medal, Image as ImageIcon, Archive } from "lucide-react";
 import { cn } from "../utils/cn";
 import { Button } from "./ui/Button";
 import { AuthContext } from "../context/auth";
@@ -24,6 +24,7 @@ export default function Navbar() {
     { name: "Records", path: "/records", icon: Trophy },
     { name: "Achievements", path: "/achievements", icon: Medal },
     { name: "Gallery", path: "/gallery", icon: ImageIcon },
+    { name: "Equipment", path: "/equipment", icon: Archive },
   ];
 
   return (
