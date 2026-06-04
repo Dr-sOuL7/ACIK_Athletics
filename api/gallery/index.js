@@ -3,6 +3,7 @@ import { supabaseAdmin, authenticateAdmin } from '../utils/supabase.js';
 
 const photoSchema = z.object({
   image_url: z.string().url(),
+  tournament: z.string().min(1),
   category: z.string().min(1),
   caption: z.string().optional(),
   width: z.number().int().positive().optional(),
@@ -10,6 +11,7 @@ const photoSchema = z.object({
 });
 
 const photoUpdateSchema = z.object({
+  tournament: z.string().min(1).optional(),
   category: z.string().min(1).optional(),
   caption: z.string().optional(),
 });

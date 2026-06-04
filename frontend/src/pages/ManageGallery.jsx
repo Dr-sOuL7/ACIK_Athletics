@@ -1,15 +1,30 @@
-/* eslint-disable */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getErrorMessage } from "../utils/errorHelper";
 import API from "../api/axios";
 import AddPhotoForm from "../forms/AddPhotoForm";
-import { Loader2, Trash2, Image as ImageIcon } from "lucide-react";
+import { Loader2, Trash2, Image as ImageIcon, Filter } from "lucide-react";
 import { Button } from "../components/ui/Button";
+
+const TOURNAMENTS = [
+  "ALL",
+  "IISM",
+  "PRATAP",
+  "FREEDOM RUN",
+  "GANRAJYAM PRIDE RUN",
+  "FRESHERS",
+  "INTERBATCH",
+  "OTHERS",
+];
+
+const CATEGORIES = ["ALL", "Track Events", "Field Events", "Relay Events", "Others"];
 
 export default function ManageGallery() {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState([]);
+  
+  const [filterTournament, setFilterTournament] = useState("ALL");
+  const [filterCategory, setFilterCategory] = useState("ALL");
 
   const fetchPhotos = async () => {
     setLoading(true);
@@ -54,20 +69,28 @@ export default function ManageGallery() {
     }
   };
 
+  const filteredPhotos = useMemo(() => {
+    return photos.filter(p => {
+      const matchTournament = filterTournament === "ALL" || p.tournament === filterTournament;
+      const matchCategory = filterCategory === "ALL" || p.category === filterCategory;
+      return matchTournament && matchCategory;
+    });
+  }, [photos, filterTournament, filterCategory]);
+
   const toggleSelect = (id) => {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
   const toggleSelectAll = () => {
-    if (selectedIds.length === photos.length) {
+    if (selectedIds.length === filteredPhotos.length && filteredPhotos.length > 0) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(photos.map(p => p.id));
+      setSelectedIds(filteredPhotos.map(p => p.id));
     }
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
         <h1 className="text-4xl font-heading text-primary font-bold">
           Manage Gallery
@@ -78,7 +101,7 @@ export default function ManageGallery() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Upload Form */}
         <div className="lg:col-span-1">
-          <div className="glass p-6 rounded-2xl border border-white/5 sticky top-8">
+          <div className="glass p-6 rounded-2xl border border-white/5 lg:sticky lg:top-8">
             <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
               <ImageIcon className="w-6 h-6 text-primary" />
               Upload Photo
@@ -90,23 +113,50 @@ export default function ManageGallery() {
         {/* Existing Photos Grid */}
         <div className="lg:col-span-2">
           <div className="glass p-6 rounded-2xl border border-white/5 min-h-[500px]">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 border-b border-white/5 pb-6">
               <h2 className="text-2xl font-bold">Existing Photos</h2>
               {selectedIds.length > 0 && (
-                <Button variant="outline" onClick={handleBulkDelete} className="text-red-500 hover:text-red-400 border-red-500/20 hover:bg-red-500/10 gap-2">
+                <Button variant="outline" onClick={handleBulkDelete} className="text-red-500 hover:text-red-400 border-red-500/20 hover:bg-red-500/10 gap-2 shrink-0">
                   <Trash2 className="w-4 h-4" /> Delete Selected ({selectedIds.length})
                 </Button>
               )}
             </div>
             
+            {/* Filters */}
+            <div className="flex flex-wrap items-center gap-4 mb-6">
+              <div className="flex items-center gap-2 text-text-muted text-sm font-medium">
+                <Filter className="w-4 h-4" /> Filters:
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-xs text-text-muted">Tournament:</label>
+                <select 
+                  value={filterTournament}
+                  onChange={(e) => setFilterTournament(e.target.value)}
+                  className="bg-black/20 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-primary"
+                >
+                  {TOURNAMENTS.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-xs text-text-muted">Category:</label>
+                <select 
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                  className="bg-black/20 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-primary"
+                >
+                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+            </div>
+
             <div className="mb-6">
               <label className="flex items-center gap-2 text-sm text-text-muted cursor-pointer hover:text-white transition-colors w-fit">
                 <input 
                   type="checkbox" 
                   className="rounded border-white/20 bg-surface text-primary focus:ring-primary focus:ring-offset-surface cursor-pointer"
-                  checked={photos.length > 0 && selectedIds.length === photos.length}
+                  checked={filteredPhotos.length > 0 && selectedIds.length === filteredPhotos.length}
                   onChange={toggleSelectAll}
-                  disabled={photos.length === 0}
+                  disabled={filteredPhotos.length === 0}
                 />
                 Select All
               </label>
@@ -116,14 +166,14 @@ export default function ManageGallery() {
               <div className="flex items-center gap-2 text-text-muted">
                 <Loader2 className="w-5 h-5 animate-spin" /> Loading photos...
               </div>
-            ) : photos.length === 0 ? (
+            ) : filteredPhotos.length === 0 ? (
               <div className="text-center p-12 border-2 border-dashed border-white/10 rounded-xl">
                 <ImageIcon className="w-12 h-12 text-text-muted mx-auto mb-4" />
-                <p className="text-text-muted">No photos found. Upload one to get started.</p>
+                <p className="text-text-muted">No photos match your filters.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {photos.map(photo => {
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4">
+                {filteredPhotos.map(photo => {
                   const isSelected = selectedIds.includes(photo.id);
                   return (
                   <div 
@@ -137,9 +187,14 @@ export default function ManageGallery() {
                       className="w-full h-48 object-cover"
                     />
                     <div className="p-3">
-                      <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded mb-2 inline-block">
-                        {photo.category}
-                      </span>
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded uppercase">
+                          {photo.tournament || "UNSET"}
+                        </span>
+                        <span className="text-[10px] font-medium text-text-muted bg-white/5 border border-white/5 px-1.5 py-0.5 rounded uppercase">
+                          {photo.category}
+                        </span>
+                      </div>
                       {photo.caption && (
                         <p className="text-sm text-white truncate" title={photo.caption}>{photo.caption}</p>
                       )}

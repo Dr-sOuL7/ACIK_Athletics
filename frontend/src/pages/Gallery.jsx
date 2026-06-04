@@ -1,12 +1,12 @@
 /* eslint-disable */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import API from "../api/axios";
-import { Image as ImageIcon, Loader2, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Image as ImageIcon, Loader2, X, ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import { EmptyState } from "../components/ui/EmptyState";
 import { cn } from "../utils/cn";
 
-const categories = [
+const TOURNAMENTS = [
   "ALL",
   "IISM",
   "PRATAP",
@@ -17,10 +17,15 @@ const categories = [
   "OTHERS",
 ];
 
+const CATEGORIES = ["ALL", "Track Events", "Field Events", "Relay Events", "Others"];
+
 export default function Gallery() {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("ALL");
+  
+  const [activeTournament, setActiveTournament] = useState("ALL");
+  const [activeCategory, setActiveCategory] = useState("ALL");
+  
   const [lightboxIndex, setLightboxIndex] = useState(null); // index into filteredPhotos
 
   const fetchPhotos = async () => {
@@ -38,8 +43,13 @@ export default function Gallery() {
     fetchPhotos();
   }, []);
 
-  const filteredPhotos =
-    activeTab === "ALL" ? photos : photos.filter((p) => p.category === activeTab);
+  const filteredPhotos = useMemo(() => {
+    return photos.filter(p => {
+      const matchTournament = activeTournament === "ALL" || p.tournament === activeTournament;
+      const matchCategory = activeCategory === "ALL" || p.category === activeCategory;
+      return matchTournament && matchCategory;
+    });
+  }, [photos, activeTournament, activeCategory]);
 
   // ── Lightbox helpers ──────────────────────────────────────────────────────
 
@@ -96,22 +106,53 @@ export default function Gallery() {
         </p>
       </div>
 
-      {/* Category Tabs */}
-      <div className="flex flex-wrap justify-center gap-2 mb-8">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveTab(cat)}
-            className={cn(
-              "px-4 py-2 rounded-full text-sm font-semibold transition-all",
-              activeTab === cat
-                ? "bg-primary text-background shadow-lg shadow-black/30"
-                : "bg-surface border border-white/10 text-text-muted hover:text-white hover:border-white/30"
-            )}
-          >
-            {cat}
-          </button>
-        ))}
+      {/* Dual Filters */}
+      <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-8 bg-surface-elevated/30 border border-white/5 p-4 rounded-2xl mx-auto max-w-4xl">
+        
+        {/* Tournament Filter */}
+        <div className="flex flex-col items-center w-full">
+          <span className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Tournament</span>
+          <div className="flex flex-wrap justify-center gap-2">
+            {TOURNAMENTS.map((t) => (
+              <button
+                key={t}
+                onClick={() => setActiveTournament(t)}
+                className={cn(
+                  "px-3 py-1.5 rounded-full text-xs font-semibold transition-all border",
+                  activeTournament === t
+                    ? "bg-primary text-background border-primary shadow-lg shadow-primary/20"
+                    : "bg-surface border-white/10 text-text-muted hover:text-white hover:border-white/30"
+                )}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="hidden md:block w-px h-12 bg-white/10"></div>
+
+        {/* Event Category Filter */}
+        <div className="flex flex-col items-center w-full">
+          <span className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Event Category</span>
+          <div className="flex flex-wrap justify-center gap-2">
+            {CATEGORIES.map((c) => (
+              <button
+                key={c}
+                onClick={() => setActiveCategory(c)}
+                className={cn(
+                  "px-3 py-1.5 rounded-full text-xs font-semibold transition-all border",
+                  activeCategory === c
+                    ? "bg-secondary text-background border-secondary shadow-lg shadow-secondary/20"
+                    : "bg-surface border-white/10 text-text-muted hover:text-white hover:border-white/30"
+                )}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Grid */}
@@ -123,7 +164,7 @@ export default function Gallery() {
         <EmptyState
           icon={ImageIcon}
           title="No Photos Found"
-          description="There are no photos in this category yet."
+          description="There are no photos matching your selected filters."
         />
       ) : (
         <motion.div
@@ -133,7 +174,6 @@ export default function Gallery() {
           <AnimatePresence>
             {filteredPhotos.map((photo, index) => {
               // Use stored dimensions for aspect-ratio placeholder to prevent CLS.
-              // If not stored (legacy photos), fall back gracefully with a min-height.
               const hasRatio = photo.width && photo.height;
               const aspectRatio = hasRatio
                 ? `${photo.width} / ${photo.height}`
@@ -153,19 +193,15 @@ export default function Gallery() {
                 >
                   <img
                     src={photo.image_url}
-                    alt={photo.caption || photo.category}
+                    alt={photo.caption || photo.tournament}
                     width={photo.width || undefined}
                     height={photo.height || undefined}
                     loading="lazy"
                     decoding="async"
                     className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  {photo.caption && (
-                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <p className="text-white text-sm font-medium line-clamp-2">{photo.caption}</p>
-                      <span className="text-xs text-primary">{photo.category}</span>
-                    </div>
-                  )}
+                  {/* Subtle overlay indicator so user knows it's clickable, without cluttering image */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                 </motion.div>
               );
             })}
@@ -173,7 +209,7 @@ export default function Gallery() {
         </motion.div>
       )}
 
-      {/* ── Lightbox ────────────────────────────────────────────────────── */}
+      {/* ── Premium Lightbox ──────────────────────────────────────────────── */}
       <AnimatePresence>
         {selectedPhoto && (
           <motion.div
@@ -182,12 +218,12 @@ export default function Gallery() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/98 backdrop-blur-xl p-4 md:p-8"
             onClick={closeLightbox}
           >
             {/* Close */}
             <button
-              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              className="absolute top-4 right-4 z-10 p-3 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors border border-white/10"
               onClick={closeLightbox}
               aria-label="Close"
             >
@@ -197,7 +233,7 @@ export default function Gallery() {
             {/* Prev */}
             {filteredPhotos.length > 1 && (
               <button
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors border border-white/10 hidden md:block"
                 onClick={goPrev}
                 aria-label="Previous photo"
               >
@@ -208,7 +244,7 @@ export default function Gallery() {
             {/* Next */}
             {filteredPhotos.length > 1 && (
               <button
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors border border-white/10 hidden md:block"
                 onClick={goNext}
                 aria-label="Next photo"
               >
@@ -216,36 +252,70 @@ export default function Gallery() {
               </button>
             )}
 
-            {/* Image container */}
+            {/* Content Container */}
             <motion.div
               key={selectedPhoto.id}
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.2 }}
-              className="relative flex flex-col items-center gap-4 max-w-5xl w-full"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="relative flex flex-col items-center gap-6 max-w-6xl w-full h-full justify-center pt-8 md:pt-0"
               onClick={(e) => e.stopPropagation()}
             >
-              <img
-                src={selectedPhoto.image_url}
-                alt={selectedPhoto.caption || selectedPhoto.category}
-                width={selectedPhoto.width || undefined}
-                height={selectedPhoto.height || undefined}
-                className="max-h-[82vh] w-auto object-contain rounded-lg shadow-2xl border border-white/10"
-              />
-              {(selectedPhoto.caption || selectedPhoto.category) && (
-                <div className="text-center">
-                  {selectedPhoto.caption && (
-                    <h3 className="text-lg font-bold text-white">{selectedPhoto.caption}</h3>
+              {/* Image */}
+              <div className="relative max-h-[75vh] w-full flex justify-center">
+                <img
+                  src={selectedPhoto.image_url}
+                  alt={selectedPhoto.caption || "Gallery Photo"}
+                  width={selectedPhoto.width || undefined}
+                  height={selectedPhoto.height || undefined}
+                  className="max-h-[75vh] w-auto object-contain rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10"
+                />
+              </div>
+
+              {/* Metadata */}
+              <div className="text-center w-full max-w-3xl space-y-3 px-4">
+                {selectedPhoto.caption ? (
+                  <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight leading-snug">
+                    {selectedPhoto.caption}
+                  </h3>
+                ) : (
+                  <div className="h-4"></div> /* Spacer if no caption */
+                )}
+                
+                <div className="flex items-center justify-center gap-3">
+                  {selectedPhoto.tournament && selectedPhoto.tournament !== "OTHERS" && (
+                    <span className="text-sm font-semibold text-primary uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                      {selectedPhoto.tournament}
+                    </span>
                   )}
-                  <p className="text-primary text-sm font-medium">{selectedPhoto.category}</p>
+                  {selectedPhoto.category && selectedPhoto.category !== "Others" && (
+                    <span className="text-sm font-semibold text-text-muted bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                      {selectedPhoto.category}
+                    </span>
+                  )}
                 </div>
-              )}
-              {filteredPhotos.length > 1 && (
-                <p className="text-text-muted text-xs">
-                  {lightboxIndex + 1} / {filteredPhotos.length}
-                </p>
-              )}
+
+                {/* Mobile controls (visible only on small screens) */}
+                <div className="flex items-center justify-center gap-4 mt-6 md:hidden">
+                  <button onClick={goPrev} className="p-3 rounded-full bg-white/5 border border-white/10">
+                    <ChevronLeft className="w-5 h-5 text-white" />
+                  </button>
+                  <p className="text-text-muted text-sm font-medium min-w-[3rem] text-center">
+                    {lightboxIndex + 1} / {filteredPhotos.length}
+                  </p>
+                  <button onClick={goNext} className="p-3 rounded-full bg-white/5 border border-white/10">
+                    <ChevronRight className="w-5 h-5 text-white" />
+                  </button>
+                </div>
+
+                {/* Desktop indicator */}
+                <div className="hidden md:block absolute bottom-4 right-4">
+                  <p className="text-text-muted/50 text-sm font-medium">
+                    {lightboxIndex + 1} of {filteredPhotos.length}
+                  </p>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}
