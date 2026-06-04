@@ -11,6 +11,8 @@ export default function EditHomepage() {
   const [formData, setFormData] = useState({
     title: "",
     subtitle: "",
+    about_title: "",
+    about_content: "",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -19,7 +21,13 @@ export default function EditHomepage() {
     async function fetchData() {
       try {
         const res = await API.get("/homepage");
-        setFormData(res.data);
+        const data = res.data || {};
+        setFormData({
+          title: data.title || "",
+          subtitle: data.subtitle || "",
+          about_title: data.about_title || "",
+          about_content: data.about_content || ""
+        });
       } catch (err) {
         console.error(err);
       } finally {
@@ -77,6 +85,25 @@ export default function EditHomepage() {
             <div>
               <label htmlFor="subtitle" className="block text-sm font-medium text-text-muted mb-1">Hero Subtitle</label>
               <Input id="subtitle" name="subtitle" value={formData.subtitle} onChange={handleChange} placeholder="Subtitle or tagline" />
+            </div>
+
+            <hr className="border-white/10 my-2" />
+
+            <div>
+              <label htmlFor="about_title" className="block text-sm font-medium text-text-muted mb-1">About Us Title</label>
+              <Input id="about_title" name="about_title" value={formData.about_title} onChange={handleChange} placeholder="e.g. About ACIK Athletics" />
+            </div>
+
+            <div>
+              <label htmlFor="about_content" className="block text-sm font-medium text-text-muted mb-1">About Us Content</label>
+              <textarea 
+                id="about_content"
+                name="about_content"
+                value={formData.about_content}
+                onChange={handleChange}
+                placeholder="Write the about us narrative here..."
+                className="w-full bg-surface-elevated border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-white/30 resize-y min-h-[120px]"
+              />
             </div>
 
             

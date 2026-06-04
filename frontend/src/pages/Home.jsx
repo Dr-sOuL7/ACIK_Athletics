@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Megaphone, FileDown, X, Calendar } from "lucide-react";
+import { ChevronRight, Megaphone, FileDown, X, Calendar, Copy, CheckCircle2, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import API from "../api/axios";
 import { Card, CardHeader, CardTitle } from "../components/ui/Card";
 import { Skeleton } from "../components/ui/Skeleton";
@@ -29,6 +30,7 @@ const itemVariants = {
 export default function Home() {
   const [content, setContent] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
+  const [team, setTeam] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Modals state
@@ -38,13 +40,15 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [homepageRes, announcementRes] = await Promise.all([
+        const [homepageRes, announcementRes, teamRes] = await Promise.all([
           API.get("/homepage").catch(() => ({ data: { title: "ACIK Athletics", subtitle: "Athletics Club of IISER Kolkata", announcement: "Welcome" }})),
-          API.get("/announcements").catch(() => ({ data: [] }))
+          API.get("/announcements").catch(() => ({ data: [] })),
+          API.get("/team").catch(() => ({ data: [] }))
         ]);
         
         setContent(homepageRes.data);
-        setAnnouncements(announcementRes.data); // Keep all announcements
+        setAnnouncements(announcementRes.data);
+        setTeam(teamRes.data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -116,6 +120,11 @@ export default function Home() {
         )}
       </div>
     );
+  };
+
+  const handleCopyEmail = (email) => {
+    navigator.clipboard.writeText(email);
+    toast.success("Email copied to clipboard!", { icon: <CheckCircle2 className="w-5 h-5 text-success" /> });
   };
 
   return (
@@ -283,18 +292,102 @@ export default function Home() {
         )}
       </section>
 
-      {/* About Us Section */}
+      {/* Our Team Section */}
       <section className="w-full">
-        <div className="glass p-8 md:p-12 rounded-3xl border border-white/5 space-y-6">
-          <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-6">About Us</h2>
-          <div className="space-y-4 text-lg text-text-muted leading-relaxed">
-            <p>The ACIK – Athletics Club of IISER Kolkata is the official track and field club of the Indian Institute of Science Education and Research Kolkata, established in 2006. The club brings together students with a shared passion for athletics, fostering both competitive excellence and a culture of fitness and discipline.</p>
-            <p>ACIK actively engages in a wide range of track and field events, including sprints (100m, 200m, 400m), middle and long-distance races (800m to 10000m), as well as field events such as shot put, discus throw, javelin throw, long jump, triple jump, and relays. The club provides a platform for athletes of all levels—from beginners to experienced competitors—to train, improve, and perform.</p>
-            <p>We proudly represent IISER Kolkata in major competitions such as <strong className="text-white">Pratap (Inter-College Athletics Meet)</strong>, <strong className="text-white">Open Athletics Meets</strong>, and <strong className="text-white">IISM (Inter IISER-NISER-CEBS Sports Meet)</strong>. Alongside these, we organize internal competitions like <strong className="text-white">Inter-Batch Meets</strong>, encouraging participation and healthy competition within the campus.</p>
-            <p>Beyond competition, ACIK is committed to building a strong athletic community—promoting teamwork, resilience, and the spirit of pushing limits. Whether aiming for podium finishes or personal fitness goals, the club welcomes everyone to be a part of the journey.</p>
-          </div>
+        <div className="flex justify-between items-end mb-8 border-b border-white/10 pb-4">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-white flex items-center gap-3">
+            <Users className="w-8 h-8 text-primary" />
+            OUR TEAM
+          </h2>
         </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map(i => (
+              <Card key={i} className="h-64">
+                <Skeleton className="w-full aspect-square rounded-t-2xl" />
+                <Skeleton className="w-2/3 h-4 mt-4 mx-4" />
+                <Skeleton className="w-1/2 h-3 mt-2 mx-4 mb-4" />
+              </Card>
+            ))}
+          </div>
+        ) : team.length > 0 ? (
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+          >
+            {team.map((member) => (
+              <motion.div key={member.id} variants={itemVariants}>
+                <div className="bg-surface-elevated rounded-2xl overflow-hidden border border-white/5 shadow-lg group hover:border-primary/30 transition-all hover:-translate-y-1">
+                  <div className="aspect-square relative overflow-hidden bg-black/20 flex items-center justify-center">
+                    {member.photo_url ? (
+                      <img 
+                        src={member.photo_url} 
+                        alt={member.name} 
+                        width={member.photo_width}
+                        height={member.photo_height}
+                        loading="lazy"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    ) : (
+                      <Users className="w-16 h-16 text-white/10" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60" />
+                  </div>
+                  
+                  <div className="p-5 flex flex-col items-center text-center -mt-8 relative z-10">
+                    <h3 className="text-lg font-bold text-white drop-shadow-md mb-1">{member.name}</h3>
+                    <div className="text-primary font-black uppercase tracking-wider text-xs mb-3">{member.post}</div>
+                    
+                    <button 
+                      onClick={() => handleCopyEmail(member.email)}
+                      className="flex items-center gap-1.5 text-xs font-medium text-text-muted hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-full transition-colors"
+                    >
+                      <Copy className="w-3 h-3" />
+                      {member.email}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <EmptyState 
+            icon={Users}
+            title="Team Not Found"
+            description="The team directory is currently being updated."
+          />
+        )}
       </section>
+
+      {/* About Us Section */}
+      {(content?.about_title || content?.about_content) ? (
+        <section className="w-full">
+          <div className="glass p-8 md:p-12 rounded-3xl border border-white/5 space-y-6 bg-gradient-to-br from-surface/80 to-surface-elevated/40">
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-6">
+              {content.about_title || "About Us"}
+            </h2>
+            <div className="space-y-4 text-lg text-text-muted leading-relaxed whitespace-pre-wrap">
+              {content.about_content}
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section className="w-full">
+          <div className="glass p-8 md:p-12 rounded-3xl border border-white/5 space-y-6">
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-6">About Us</h2>
+            <div className="space-y-4 text-lg text-text-muted leading-relaxed">
+              <p>The ACIK – Athletics Club of IISER Kolkata is the official track and field club of the Indian Institute of Science Education and Research Kolkata, established in 2006. The club brings together students with a shared passion for athletics, fostering both competitive excellence and a culture of fitness and discipline.</p>
+              <p>ACIK actively engages in a wide range of track and field events, including sprints (100m, 200m, 400m), middle and long-distance races (800m to 10000m), as well as field events such as shot put, discus throw, javelin throw, long jump, triple jump, and relays. The club provides a platform for athletes of all levels—from beginners to experienced competitors—to train, improve, and perform.</p>
+              <p>We proudly represent IISER Kolkata in major competitions such as <strong className="text-white">Pratap (Inter-College Athletics Meet)</strong>, <strong className="text-white">Open Athletics Meets</strong>, and <strong className="text-white">IISM (Inter IISER-NISER-CEBS Sports Meet)</strong>. Alongside these, we organize internal competitions like <strong className="text-white">Inter-Batch Meets</strong>, encouraging participation and healthy competition within the campus.</p>
+              <p>Beyond competition, ACIK is committed to building a strong athletic community—promoting teamwork, resilience, and the spirit of pushing limits. Whether aiming for podium finishes or personal fitness goals, the club welcomes everyone to be a part of the journey.</p>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Single Announcement Modal */}
       <AnimatePresence>

@@ -28,6 +28,7 @@ const ManageRecords = lazy(() => import("./pages/ManageRecords"));
 const ManageGallery = lazy(() => import("./pages/ManageGallery"));
 const ManageAchievements = lazy(() => import("./pages/ManageAchievements"));
 const ManageEquipment = lazy(() => import("./pages/ManageEquipment"));
+const ManageTeam = lazy(() => import("./pages/ManageTeam"));
 
 // A reusable loading fallback for Suspense
 const PageLoader = () => (
@@ -77,6 +78,7 @@ export default function App() {
               <Route path="/admin/records" element={<AdminRoute><AdminLayout><ManageRecords /></AdminLayout></AdminRoute>} />
               <Route path="/admin/gallery" element={<AdminRoute><AdminLayout><ManageGallery /></AdminLayout></AdminRoute>} />
               <Route path="/admin/equipment" element={<AdminRoute><AdminLayout><ManageEquipment /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/team" element={<AdminRoute><AdminLayout><ManageTeam /></AdminLayout></AdminRoute>} />
 
               <Route path="*" element={
                 <MainLayout>
