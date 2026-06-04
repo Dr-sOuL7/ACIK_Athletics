@@ -5,6 +5,8 @@ const photoSchema = z.object({
   image_url: z.string().url(),
   category: z.string().min(1),
   caption: z.string().optional(),
+  width: z.number().int().positive().optional(),
+  height: z.number().int().positive().optional(),
 });
 
 const photoUpdateSchema = z.object({
