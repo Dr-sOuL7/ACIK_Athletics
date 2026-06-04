@@ -4,6 +4,8 @@ import { supabase, supabaseAdmin, authenticateAdmin } from '../utils/supabase.js
 const homepageSchema = z.object({
   title: z.string().optional(),
   subtitle: z.string().optional(),
+  about_title: z.string().optional(),
+  about_content: z.string().optional(),
   announcement: z.string().optional(),
   banner_url: z.string().nullable().optional(),
   banner_width: z.number().nullable().optional(),
