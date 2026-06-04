@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Megaphone, FileDown, X, Calendar, Copy, CheckCircle2, Users } from "lucide-react";
+import { ChevronRight, Megaphone, FileDown, X, Calendar, Copy, CheckCircle2, Users, Trophy, Medal, Image as ImageIcon, Archive } from "lucide-react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../api/axios";
@@ -214,6 +214,85 @@ export default function Home() {
             </motion.div>
           )}
         </div>
+      </section>
+
+      {/* Explore ACIK Section */}
+      <section className="w-full">
+        <div className="mb-8 border-b border-white/10 pb-4">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-3">Explore ACIK</h2>
+          <p className="text-text-muted text-lg max-w-2xl">
+            Discover records, achievements, memories, and resources from the Athletics Club of IISER Kolkata.
+          </p>
+        </div>
+
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
+          {/* Records */}
+          <motion.div variants={itemVariants} className="h-full">
+            <Link to="/records" className="block group h-full">
+              <div className="bg-surface-elevated rounded-3xl p-6 border border-white/5 shadow-lg hover:border-primary/40 hover:bg-white/[0.03] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-primary/10 h-full flex flex-col">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-background transition-all duration-500 text-primary">
+                  <Trophy className="w-7 h-7" />
+                </div>
+                <h3 className="text-2xl font-heading font-bold text-white mb-3 group-hover:text-primary transition-colors">Records</h3>
+                <p className="text-text-muted text-sm leading-relaxed flex-grow group-hover:text-text-main transition-colors">
+                  Explore all-time records, rankings, and athletic performances.
+                </p>
+              </div>
+            </Link>
+          </motion.div>
+
+          {/* Hall of Fame */}
+          <motion.div variants={itemVariants} className="h-full">
+            <Link to="/achievements" className="block group h-full">
+              <div className="bg-surface-elevated rounded-3xl p-6 border border-white/5 shadow-lg hover:border-primary/40 hover:bg-white/[0.03] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-primary/10 h-full flex flex-col">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-background transition-all duration-500 text-primary">
+                  <Medal className="w-7 h-7" />
+                </div>
+                <h3 className="text-2xl font-heading font-bold text-white mb-3 group-hover:text-primary transition-colors">Hall of Fame</h3>
+                <p className="text-text-muted text-sm leading-relaxed flex-grow group-hover:text-text-main transition-colors">
+                  Celebrate outstanding achievements and championship milestones.
+                </p>
+              </div>
+            </Link>
+          </motion.div>
+
+          {/* Gallery */}
+          <motion.div variants={itemVariants} className="h-full">
+            <Link to="/gallery" className="block group h-full">
+              <div className="bg-surface-elevated rounded-3xl p-6 border border-white/5 shadow-lg hover:border-primary/40 hover:bg-white/[0.03] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-primary/10 h-full flex flex-col">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-background transition-all duration-500 text-primary">
+                  <ImageIcon className="w-7 h-7" />
+                </div>
+                <h3 className="text-2xl font-heading font-bold text-white mb-3 group-hover:text-primary transition-colors">Gallery</h3>
+                <p className="text-text-muted text-sm leading-relaxed flex-grow group-hover:text-text-main transition-colors">
+                  Browse moments from competitions, training sessions, and club events.
+                </p>
+              </div>
+            </Link>
+          </motion.div>
+
+          {/* Equipment */}
+          <motion.div variants={itemVariants} className="h-full">
+            <Link to="/equipment" className="block group h-full">
+              <div className="bg-surface-elevated rounded-3xl p-6 border border-white/5 shadow-lg hover:border-primary/40 hover:bg-white/[0.03] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-primary/10 h-full flex flex-col">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-background transition-all duration-500 text-primary">
+                  <Archive className="w-7 h-7" />
+                </div>
+                <h3 className="text-2xl font-heading font-bold text-white mb-3 group-hover:text-primary transition-colors">Equipment</h3>
+                <p className="text-text-muted text-sm leading-relaxed flex-grow group-hover:text-text-main transition-colors">
+                  View available equipment and request usage when needed.
+                </p>
+              </div>
+            </Link>
+          </motion.div>
+
+        </motion.div>
       </section>
 
       {/* Announcements Section */}
