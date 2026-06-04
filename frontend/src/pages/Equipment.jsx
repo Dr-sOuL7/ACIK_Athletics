@@ -21,7 +21,6 @@ const itemVariants = {
 };
 
 const CATEGORIES = ["Track Events", "Field Events", "Relay Events", "Others"];
-const BATCHES = ["BS-MS", "IPhD", "PhD", "PB", "IntPB", "Staff", "Faculty", "Alumni", "Others"];
 
 function SearchableEquipmentSelect({ options, value, onChange, error }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -116,7 +115,6 @@ export default function Equipment() {
   const [submitting, setSubmitting] = useState(false);
   const [issueForm, setIssueForm] = useState({
     name: "",
-    batch: "BS-MS",
     roll_number: "",
     equipment_id: "",
     issue_quantity: 1,
@@ -174,7 +172,6 @@ export default function Equipment() {
       setIsModalOpen(false);
       setIssueForm({
         name: "",
-        batch: "BS-MS",
         roll_number: "",
         equipment_id: "",
         issue_quantity: 1,
@@ -374,31 +371,15 @@ export default function Equipment() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-text-muted">Batch *</label>
-              <select 
-                name="batch"
-                value={issueForm.batch}
-                onChange={handleFormChange}
-                className="w-full bg-surface-elevated border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-white/30"
-                required
-              >
-                {BATCHES.map(b => (
-                  <option key={b} value={b}>{b}</option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-text-muted">Roll Number *</label>
-              <Input 
-                name="roll_number"
-                value={issueForm.roll_number}
-                onChange={handleFormChange}
-                placeholder="e.g. 23MS123"
-                required
-              />
-            </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-text-muted">Roll Number *</label>
+            <Input 
+              name="roll_number"
+              value={issueForm.roll_number}
+              onChange={handleFormChange}
+              placeholder="e.g. 23MS123"
+              required
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

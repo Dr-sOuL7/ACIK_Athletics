@@ -4,8 +4,7 @@ import { supabase } from '../utils/supabase.js';
 const issueSchema = z.object({
   equipment_id: z.string().uuid(),
   name: z.string().min(1),
-  batch: z.string().min(1),
-  roll_number: z.string().min(1),
+  roll_number: z.string().min(4, "Roll number must be at least 4 characters"),
   issue_quantity: z.number().int().min(1),
   issue_date: z.string().min(1), // format YYYY-MM-DD
   from_time: z.string().min(1), // format HH:MM
@@ -24,10 +23,12 @@ export default async function handler(req, res) {
     const validatedData = issueSchema.parse(req.body);
 
     // Call the RPC function to atomically update inventory and insert issue record
+    const derivedBatch = validatedData.roll_number.substring(0, 4).toUpperCase();
+    
     const { data, error } = await supabase.rpc('issue_equipment', {
       p_equipment_id: validatedData.equipment_id,
       p_name: validatedData.name,
-      p_batch: validatedData.batch,
+      p_batch: derivedBatch,
       p_roll_number: validatedData.roll_number,
       p_quantity: validatedData.issue_quantity,
       p_date: validatedData.issue_date,
