@@ -73,31 +73,60 @@ export default function AddPhotoForm({ refresh }) {
     setImporting(true);
     setError(null);
 
+    const isFolder = driveUrl.includes("/folders/");
+
     try {
-      const res = await API.post("/gallery/import", { driveUrl }, { responseType: 'blob' });
-      const blob = res.data;
-      
-      // Attempt to guess filename from headers if possible, otherwise use a generic name
-      let filename = "gdrive_import.jpg";
-      const disposition = res.headers['content-disposition'];
-      if (disposition && disposition.indexOf('filename=') !== -1) {
-          const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-          const matches = filenameRegex.exec(disposition);
-          if (matches != null && matches[1]) { 
-            filename = matches[1].replace(/['"]/g, '');
+      if (isFolder) {
+        setProcessingProgress({ done: 0, total: 0 }); 
+        const folderRes = await API.post("/gallery/import-folder", { driveUrl });
+        const files = folderRes.data.files;
+        
+        if (!files || files.length === 0) {
+          throw new Error("No images found in folder");
+        }
+
+        setProcessing(true);
+        setProcessingProgress({ done: 0, total: files.length });
+
+        for (let i = 0; i < files.length; i++) {
+          const fileInfo = files[i];
+          const fileImportUrl = `https://drive.google.com/uc?id=${fileInfo.id}`;
+          try {
+            const res = await API.post("/gallery/import", { driveUrl: fileImportUrl }, { responseType: 'blob' });
+            const blob = res.data;
+            const file = new File([blob], fileInfo.name, { type: blob.type || "image/jpeg" });
+            await processAndAddFile(file);
+          } catch (err) {
+            console.error(`Failed to import ${fileInfo.name}`, err);
           }
+          setProcessingProgress({ done: i + 1, total: files.length });
+        }
+      } else {
+        const res = await API.post("/gallery/import", { driveUrl }, { responseType: 'blob' });
+        const blob = res.data;
+        
+        let filename = "gdrive_import.jpg";
+        const disposition = res.headers['content-disposition'];
+        if (disposition && disposition.indexOf('filename=') !== -1) {
+            const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+            const matches = filenameRegex.exec(disposition);
+            if (matches != null && matches[1]) { 
+              filename = matches[1].replace(/['"]/g, '');
+            }
+        }
+
+        const file = new File([blob], filename, { type: blob.type || "image/jpeg" });
+        
+        setProcessing(true);
+        setProcessingProgress({ done: 0, total: 1 });
+        await processAndAddFile(file);
+        setProcessingProgress({ done: 1, total: 1 });
       }
 
-      const file = new File([blob], filename, { type: blob.type || "image/jpeg" });
-      
-      setProcessing(true);
-      setProcessingProgress({ done: 0, total: 1 });
-      await processAndAddFile(file);
-      setProcessingProgress({ done: 1, total: 1 });
       setDriveUrl("");
     } catch (err) {
       console.error(err);
-      setError("Failed to import from Google Drive: " + getErrorMessage(err));
+      setError("Failed to import from Google Drive: " + (err.response?.data?.error || getErrorMessage(err)));
     } finally {
       setImporting(false);
       setProcessing(false);
@@ -242,7 +271,7 @@ export default function AddPhotoForm({ refresh }) {
                   required
                 />
               </div>
-              <p className="text-[10px] text-text-muted">Link must be set to "Anyone with the link".</p>
+              <p className="text-[10px] text-text-muted">Paste a file or folder link. Must be set to "Anyone with the link".</p>
             </div>
             <Button type="submit" variant="secondary" className="w-full text-xs py-2 h-auto" disabled={importing || processing || !driveUrl}>
               {importing ? <><Loader2 className="w-3 h-3 animate-spin mr-1.5"/> Fetching...</> : <><Download className="w-3 h-3 mr-1.5"/> Import Image</>}
