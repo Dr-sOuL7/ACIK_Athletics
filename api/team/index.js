@@ -8,6 +8,7 @@ const teamSchema = z.object({
   photo_url: z.string().url().optional().nullable(),
   photo_width: z.number().int().optional().nullable(),
   photo_height: z.number().int().optional().nullable(),
+  order_index: z.number().int().optional().default(0),
 });
 
 const teamUpdateSchema = z.object({
@@ -17,6 +18,7 @@ const teamUpdateSchema = z.object({
   photo_url: z.string().url().optional().nullable(),
   photo_width: z.number().int().optional().nullable(),
   photo_height: z.number().int().optional().nullable(),
+  order_index: z.number().int().optional(),
 });
 
 export default async function handler(req, res) {
@@ -27,7 +29,8 @@ export default async function handler(req, res) {
     const { data, error } = await supabase
       .from('team_members')
       .select('*')
-      .order('created_at', { ascending: true }); // Ordered by creation or could add order field later
+      .order('order_index', { ascending: true })
+      .order('created_at', { ascending: true });
 
     if (error) return res.status(500).json({ error: error.message });
     return res.status(200).json(data);
