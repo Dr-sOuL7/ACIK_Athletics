@@ -13,6 +13,7 @@ export default function TeamForm({ initialData = null, onSave, onCancel }) {
     name: initialData?.name || "",
     email: initialData?.email || "",
     post: initialData?.post || "",
+    order_index: initialData?.order_index || 0,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -66,6 +67,7 @@ export default function TeamForm({ initialData = null, onSave, onCancel }) {
         name: formData.name,
         email: formData.email,
         post: formData.post,
+        order_index: parseInt(formData.order_index, 10) || 0,
         ...(publicUrl && { photo_url: publicUrl, photo_width: width, photo_height: height })
       };
 
@@ -78,7 +80,7 @@ export default function TeamForm({ initialData = null, onSave, onCancel }) {
       // Cleanup
       if (!isEdit) {
         setFile(null);
-        setFormData({ name: "", email: "", post: "" });
+        setFormData({ name: "", email: "", post: "", order_index: 0 });
       }
 
       if (onSave) onSave();
@@ -130,6 +132,17 @@ export default function TeamForm({ initialData = null, onSave, onCancel }) {
             onChange={handleChange}
             placeholder="e.g. Club Secretary"
             required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-text-muted mb-1">Display Order</label>
+          <Input 
+            type="number"
+            name="order_index"
+            value={formData.order_index}
+            onChange={handleChange}
+            placeholder="0"
           />
         </div>
 

@@ -92,7 +92,10 @@ export default function ManageTeam() {
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
-                          <h4 className="font-bold text-white mb-0.5 truncate pr-2 text-sm">{member.name}</h4>
+                          <h4 className="font-bold text-white mb-0.5 pr-2 text-sm flex items-center gap-2">
+                            <span className="truncate">{member.name}</span>
+                            <span className="shrink-0 bg-white/10 text-white/50 px-1.5 py-0.5 rounded text-[10px] font-medium border border-white/5">Order: {member.order_index || 0}</span>
+                          </h4>
                           <div className="flex gap-1 shrink-0">
                             <button 
                               onClick={() => {
