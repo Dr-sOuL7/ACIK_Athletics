@@ -110,6 +110,9 @@ export default function Equipment() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [expandedItems, setExpandedItems] = useState({});
+  
+  const toggleExpand = (id) => setExpandedItems(prev => ({...prev, [id]: !prev[id]}));
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -336,9 +339,19 @@ export default function Equipment() {
                       {item.name}
                     </h3>
                     {item.description && (
-                      <p className="text-sm text-text-muted line-clamp-3 mt-auto">
-                        {item.description}
-                      </p>
+                      <div className="mt-auto pt-2">
+                        <p className={`text-sm text-text-muted transition-all duration-300 ${expandedItems[item.id] ? '' : 'line-clamp-3'}`}>
+                          {item.description}
+                        </p>
+                        {item.description.length > 100 && (
+                          <button 
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleExpand(item.id); }}
+                            className="text-[10px] text-primary mt-2 uppercase tracking-wider font-bold hover:text-white transition-colors"
+                          >
+                            {expandedItems[item.id] ? "Show Less" : "Read More"}
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 </motion.div>
