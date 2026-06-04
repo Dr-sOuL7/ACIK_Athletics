@@ -6,6 +6,7 @@ import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { Card, CardContent } from "../components/ui/Card";
 import { UploadCloud, File as FileIcon, X, Loader2 } from "lucide-react";
+import { processImage } from "../utils/imageProcessor";
 
 export default function AddAnnouncementForm({ refresh }) {
   const [formData, setFormData] = useState({
@@ -37,22 +38,35 @@ export default function AddAnnouncementForm({ refresh }) {
 
       // Upload all files concurrently
       if (files.length > 0) {
-        const uploadPromises = files.map(async (file) => {
-          const fileExt = file.name.split('.').pop();
+        const uploadPromises = files.map(async (rawFile) => {
+          let fileToUpload = rawFile;
+          let width = undefined;
+          let height = undefined;
+
+          // Only process valid images
+          const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+          if (validTypes.includes(rawFile.type)) {
+            const { file: processed, width: w, height: h } = await processImage(rawFile, { maxWidth: 1600, quality: 0.85, outputFormat: 'image/webp' });
+            fileToUpload = processed;
+            width = w;
+            height = h;
+          }
+
+          const fileExt = fileToUpload.name.split('.').pop();
           const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
           const filePath = `${fileName}`;
 
           const { error: uploadError } = await supabase.storage
             .from("announcement_files")
-            .upload(filePath, file);
+            .upload(filePath, fileToUpload, { contentType: fileToUpload.type || undefined });
 
-          if (uploadError) throw new Error(`Failed to upload ${file.name}: ` + uploadError.message);
+          if (uploadError) throw new Error(`Failed to upload ${fileToUpload.name}: ` + uploadError.message);
 
           const { data: { publicUrl } } = supabase.storage
             .from("announcement_files")
             .getPublicUrl(filePath);
 
-          return { url: publicUrl, name: file.name };
+          return { url: publicUrl, name: fileToUpload.name, width, height };
         });
 
         const uploadedFiles = await Promise.all(uploadPromises);

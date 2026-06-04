@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle } from "../components/ui/Card";
 import { Skeleton } from "../components/ui/Skeleton";
 import { EmptyState } from "../components/ui/EmptyState";
 
-import heroImg from "../assets/hero.png"; // We'll move the generated image here
+import heroImg from "../assets/hero.webp"; // We'll move the generated image here
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -87,7 +87,11 @@ export default function Home() {
                 <img 
                   src={img.url} 
                   alt={img.name} 
-                  className={`w-full ${isModal ? 'max-h-96' : 'h-32'} object-cover rounded-lg border border-white/5 hover:opacity-90 transition-opacity`}
+                  width={img.width}
+                  height={img.height}
+                  loading="lazy"
+                  className={`w-full ${isModal ? 'h-auto max-h-96 object-contain' : 'h-32 object-cover'} rounded-lg border border-white/5 hover:opacity-90 transition-opacity`}
+                  style={img.width && img.height ? { aspectRatio: `${img.width} / ${img.height}` } : undefined}
                 />
               </a>
             ))}
@@ -124,6 +128,8 @@ export default function Home() {
             <img 
               src={content.banner_url} 
               alt="Homepage Banner" 
+              width={content.banner_width}
+              height={content.banner_height}
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (
@@ -136,7 +142,7 @@ export default function Home() {
           {content.logo_url && (
             <div className="relative z-10 flex items-center justify-center">
               <div className="h-36 w-36 md:h-52 md:w-52 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl bg-white/10 backdrop-blur-md flex items-center justify-center hover:scale-105 transition-transform duration-500 p-4">
-                <img src={content.logo_url} alt="Homepage Logo" className="w-full h-full object-contain drop-shadow-lg" />
+                <img src={content.logo_url} width={content.logo_width} height={content.logo_height} alt="Homepage Logo" className="w-full h-full object-contain drop-shadow-lg" />
               </div>
             </div>
           )}
@@ -150,6 +156,8 @@ export default function Home() {
             src={content?.hero_bg_url || heroImg} 
             alt="Track at night" 
             fetchpriority="high"
+            width={content?.hero_bg_width}
+            height={content?.hero_bg_height}
             className="w-full h-full object-cover opacity-80"
           />
           {/* Subtle Gradient Overlays for text readability */}

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import authBg from "../assets/auth-bg.png";
+import authBg from "../assets/auth-bg.webp";
 
 export default function AuthLayout({ children, title, subtitle }) {
   return (

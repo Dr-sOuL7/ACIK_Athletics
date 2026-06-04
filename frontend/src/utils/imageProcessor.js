@@ -10,8 +10,8 @@
  * No external dependencies. Works in all modern browsers.
  */
 
-const MAX_WIDTH = 1920;
-const WEBP_QUALITY = 0.83;
+const DEFAULT_MAX_WIDTH = 1920;
+const DEFAULT_WEBP_QUALITY = 0.83;
 
 /**
  * Load a File/Blob as an HTMLImageElement.
@@ -37,14 +37,19 @@ function loadImage(file) {
 /**
  * Process an image file:
  *  1. Decode it via an <img> element
- *  2. Resize if width > MAX_WIDTH
+ *  2. Resize if width > maxWidth
  *  3. Draw onto an offscreen canvas
- *  4. Export as WebP at WEBP_QUALITY
+ *  4. Export as WebP/PNG
  *
  * @param {File} file - Original image file (JPG/PNG/WebP)
+ * @param {Object} options - { maxWidth, quality, outputFormat }
  * @returns {Promise<{ file: File, width: number, height: number, originalSize: number, processedSize: number }>}
  */
-export async function processImage(file) {
+export async function processImage(file, options = {}) {
+  const maxWidth = options.maxWidth || DEFAULT_MAX_WIDTH;
+  const quality = options.quality || DEFAULT_WEBP_QUALITY;
+  const outputFormat = options.outputFormat || 'image/webp';
+
   // Validate type
   const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
   if (!validTypes.includes(file.type)) {
@@ -57,9 +62,9 @@ export async function processImage(file) {
   let outWidth = img.naturalWidth;
   let outHeight = img.naturalHeight;
 
-  if (outWidth > MAX_WIDTH) {
-    outHeight = Math.round((MAX_WIDTH / outWidth) * outHeight);
-    outWidth = MAX_WIDTH;
+  if (outWidth > maxWidth) {
+    outHeight = Math.round((maxWidth / outWidth) * outHeight);
+    outWidth = maxWidth;
   }
 
   // Draw onto offscreen canvas
@@ -73,28 +78,30 @@ export async function processImage(file) {
   ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(img, 0, 0, outWidth, outHeight);
 
-  // Export as WebP blob
+  // Export blob
   const blob = await new Promise((resolve, reject) => {
     canvas.toBlob(
       (b) => {
         if (b) resolve(b);
-        else reject(new Error('Canvas toBlob failed — browser may not support WebP export.'));
+        else reject(new Error('Canvas toBlob failed.'));
       },
-      'image/webp',
-      WEBP_QUALITY
+      outputFormat,
+      quality
     );
   });
 
-  // Build new File with .webp extension
+  // Build new File with appropriate extension
   const baseName = file.name.replace(/\.[^/.]+$/, ''); // strip original extension
-  const webpFile = new File([blob], `${baseName}.webp`, { type: 'image/webp' });
+  const ext = outputFormat === 'image/png' ? 'png' : 'webp';
+  const outFileType = outputFormat;
+  const newFile = new File([blob], `${baseName}.${ext}`, { type: outFileType });
 
   return {
-    file: webpFile,
+    file: newFile,
     width: outWidth,
     height: outHeight,
     originalSize: file.size,
-    processedSize: webpFile.size,
+    processedSize: newFile.size,
   };
 }
 

@@ -5,12 +5,16 @@ const achievementSchema = z.object({
   caption: z.string().min(1),
   tournament: z.string().min(1),
   file_url: z.string().url(),
+  width: z.number().int().optional(),
+  height: z.number().int().optional(),
 });
 
 const achievementUpdateSchema = z.object({
   caption: z.string().min(1).optional(),
   tournament: z.string().min(1).optional(),
   file_url: z.string().url().optional(),
+  width: z.number().int().optional(),
+  height: z.number().int().optional(),
 });
 
 export default async function handler(req, res) {

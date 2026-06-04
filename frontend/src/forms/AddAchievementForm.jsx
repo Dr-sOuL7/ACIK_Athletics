@@ -4,6 +4,7 @@ import { supabase } from "../api/supabase";
 import API from "../api/axios";
 import { UploadCloud, Loader2, Trophy } from "lucide-react";
 import { Button } from "../components/ui/Button";
+import { processImage } from "../utils/imageProcessor";
 
 export default function AddAchievementForm({ refresh }) {
   const [file, setFile] = useState(null);
@@ -27,13 +28,15 @@ export default function AddAchievementForm({ refresh }) {
     setError(null);
 
     try {
-      const fileExt = file.name.split('.').pop();
+      const { file: processedFile, width, height } = await processImage(file, { maxWidth: 1920, quality: 0.85, outputFormat: 'image/webp' });
+
+      const fileExt = processedFile.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
       const filePath = `achievements/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("gallery_images")
-        .upload(filePath, file);
+        .upload(filePath, processedFile, { contentType: processedFile.type });
 
       if (uploadError) throw new Error("Failed to upload image: " + uploadError.message);
 
@@ -43,6 +46,8 @@ export default function AddAchievementForm({ refresh }) {
 
       await API.post("/achievements", {
         file_url: publicUrl,
+        width,
+        height,
         tournament: tournament,
         caption: caption,
       });

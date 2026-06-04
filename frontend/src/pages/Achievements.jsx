@@ -93,8 +93,12 @@ export default function Achievements() {
                 <img 
                   src={item.file_url} 
                   alt={item.caption} 
+                  width={item.width}
+                  height={item.height}
                   className="w-full h-auto max-h-[600px] object-cover object-center transform group-hover:scale-105 transition-transform duration-1000 ease-out"
+                  style={item.width && item.height ? { aspectRatio: `${item.width} / ${item.height}` } : undefined}
                   loading="lazy"
+                  decoding="async"
                 />
                 {/* Image Overlay for dramatic effect */}
                 <div className="absolute inset-0 bg-gradient-to-t from-surface-elevated via-transparent to-transparent opacity-60" />

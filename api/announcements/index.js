@@ -6,9 +6,13 @@ const announcementSchema = z.object({
   message: z.string().min(1),
   file_url: z.string().url().optional(),
   file_name: z.string().optional(),
+  width: z.number().int().optional(),
+  height: z.number().int().optional(),
   attachments: z.array(z.object({
     url: z.string().url(),
-    name: z.string()
+    name: z.string(),
+    width: z.number().int().optional(),
+    height: z.number().int().optional()
   })).optional()
 });
 

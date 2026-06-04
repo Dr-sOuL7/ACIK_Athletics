@@ -5,6 +5,7 @@ import API from "../api/axios";
 import { Button } from "../components/ui/Button";
 import { Card, CardContent } from "../components/ui/Card";
 import { UploadCloud, File as FileIcon, X, Loader2 } from "lucide-react";
+import { processImage } from "../utils/imageProcessor";
 
 export default function UpdateHomepageForm() {
   const [bannerFile, setBannerFile] = useState(null);
@@ -25,14 +26,16 @@ export default function UpdateHomepageForm() {
     fetchCurrentBranding();
   }, []);
 
-  const uploadFile = async (file) => {
-    const fileExt = file.name.split('.').pop();
+  const uploadFile = async (file, options) => {
+    const { file: processedFile, width, height } = await processImage(file, options);
+    
+    const fileExt = processedFile.name.split('.').pop();
     const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
     const filePath = `${fileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from("homepage_assets")
-      .upload(filePath, file);
+      .upload(filePath, processedFile, { contentType: processedFile.type });
 
     if (uploadError) throw new Error("Upload failed: " + uploadError.message);
 
@@ -40,7 +43,7 @@ export default function UpdateHomepageForm() {
       .from("homepage_assets")
       .getPublicUrl(filePath);
 
-    return publicUrl;
+    return { publicUrl, width, height };
   };
 
   const handleSubmit = async (e) => {
@@ -52,27 +55,30 @@ export default function UpdateHomepageForm() {
     
     setLoading(true);
     try {
-      let banner_url = undefined;
-      let logo_url = undefined;
-      let hero_bg_url = undefined;
+      let payload = {};
 
       if (bannerFile) {
-        banner_url = await uploadFile(bannerFile);
+        const res = await uploadFile(bannerFile, { maxWidth: 2560, quality: 0.85, outputFormat: 'image/webp' });
+        payload.banner_url = res.publicUrl;
+        payload.banner_width = res.width;
+        payload.banner_height = res.height;
       }
       
       if (logoFile) {
-        logo_url = await uploadFile(logoFile);
+        const res = await uploadFile(logoFile, { maxWidth: 1000, outputFormat: 'image/png' });
+        payload.logo_url = res.publicUrl;
+        payload.logo_width = res.width;
+        payload.logo_height = res.height;
       }
       
       if (heroBgFile) {
-        hero_bg_url = await uploadFile(heroBgFile);
+        const res = await uploadFile(heroBgFile, { maxWidth: 2560, quality: 0.85, outputFormat: 'image/webp' });
+        payload.hero_bg_url = res.publicUrl;
+        payload.hero_bg_width = res.width;
+        payload.hero_bg_height = res.height;
       }
 
-      await API.put("/homepage", {
-        ...(banner_url && { banner_url }),
-        ...(logo_url && { logo_url }),
-        ...(hero_bg_url && { hero_bg_url })
-      });
+      await API.put("/homepage", payload);
       
       alert("Homepage branding updated successfully!");
       setBannerFile(null);

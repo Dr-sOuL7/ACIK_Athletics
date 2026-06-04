@@ -145,7 +145,7 @@ const EventSection = ({ eventName, records, onCardClick, onTeamClick }) => {
                   
                   {/* Small Profile Pic */}
                   {record.profile_pic ? (
-                    <img src={record.profile_pic} alt={record.name} className="w-14 h-14 rounded-full object-cover border-2 border-white/10 shrink-0 shadow-lg" />
+                    <img src={record.profile_pic} loading="lazy" decoding="async" alt={record.name} className="w-14 h-14 rounded-full object-cover border-2 border-white/10 shrink-0 shadow-lg" />
                   ) : (
                     <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center shrink-0 border border-white/10 shadow-lg">
                        <User className="w-6 h-6 text-white/40" />
@@ -643,7 +643,7 @@ export default function AllTimeRecords() {
                   >
                     {profilePic ? (
                       <>
-                        <img src={profilePic} alt={selectedAthlete.name} className="w-full h-full object-cover" />
+                        <img src={profilePic} loading="lazy" decoding="async" alt={selectedAthlete.name} className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                            <Search className="w-8 h-8 text-white drop-shadow-md" />
                         </div>
@@ -820,7 +820,7 @@ export default function AllTimeRecords() {
                   <div key={player.id || idx} className="bg-white/5 border border-white/5 rounded-2xl p-4 flex items-center justify-between hover:bg-white/10 hover:border-primary/30 transition-colors cursor-pointer" onClick={() => { setSelectedAthlete(player); setSelectedTeamId(null); }}>
                     <div className="flex items-center gap-4">
                       {player.profile_pic ? (
-                        <img src={player.profile_pic} alt={player.name} className="w-12 h-12 rounded-full object-cover border border-white/10" />
+                        <img src={player.profile_pic} loading="lazy" decoding="async" alt={player.name} className="w-16 h-16 rounded-full object-cover border-2 border-white/10 shadow-lg" />
                       ) : (
                         <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
                            <User className="w-5 h-5 text-white/40" />

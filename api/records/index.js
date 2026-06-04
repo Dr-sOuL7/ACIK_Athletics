@@ -14,6 +14,8 @@ const recordSchema = z.object({
   gender: emptyToNull,
   record: emptyToNull,
   profile_pic: emptyToNull,
+  profile_pic_width: z.number().int().optional().nullable(),
+  profile_pic_height: z.number().int().optional().nullable(),
   team_id: emptyToNull,
 });
 

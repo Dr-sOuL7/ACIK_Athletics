@@ -122,13 +122,16 @@ export default function ManageRecords() {
   const handleUploadPic = async (file, setUrlCallback) => {
     if (!file) return;
     try {
-      const fileExt = file.name.split('.').pop();
+      const { processImage } = await import("../utils/imageProcessor");
+      const { file: processedFile, width, height } = await processImage(file, { maxWidth: 1200, quality: 0.85, outputFormat: 'image/webp' });
+
+      const fileExt = processedFile.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
       const filePath = `profiles/${fileName}`;
-      const { error: uploadError } = await supabase.storage.from("gallery_images").upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from("gallery_images").upload(filePath, processedFile, { contentType: processedFile.type });
       if (uploadError) throw uploadError;
       const { data: { publicUrl } } = supabase.storage.from("gallery_images").getPublicUrl(filePath);
-      setUrlCallback(publicUrl);
+      setUrlCallback(publicUrl, width, height);
     } catch (err) {
       console.error(err);
       alert("Failed to upload image: " + getErrorMessage(err));
@@ -136,10 +139,10 @@ export default function ManageRecords() {
   };
 
   const handleDirectPicUpload = async (record, file) => {
-    handleUploadPic(file, async (url) => {
+    handleUploadPic(file, async (url, width, height) => {
       try {
         const { id, created_at, ...rest } = record;
-        const dataToSave = { ...rest, profile_pic: url };
+        const dataToSave = { ...rest, profile_pic: url, profile_pic_width: width, profile_pic_height: height };
         await API.put(`/records?id=${id}`, dataToSave);
         fetchRecords();
       } catch (err) {
@@ -518,7 +521,11 @@ export default function ManageRecords() {
                         className="w-[80px] text-[10px] text-text-muted file:bg-surface-elevated file:text-white file:border-0 file:rounded file:px-2 file:py-1 file:cursor-pointer" 
                         onChange={(e) => {
                           if (e.target.files[0]) {
-                            handleUploadPic(e.target.files[0], (url) => handleRowChange(index, "profile_pic", url));
+                            handleUploadPic(e.target.files[0], (url, width, height) => {
+                              handleRowChange(index, "profile_pic", url);
+                              handleRowChange(index, "profile_pic_width", width);
+                              handleRowChange(index, "profile_pic_height", height);
+                            });
                           }
                         }} 
                       />
@@ -789,7 +796,11 @@ export default function ManageRecords() {
                                   className="w-[60px] text-[10px] text-text-muted file:bg-surface-elevated file:text-white file:border-0 file:rounded file:px-1 file:py-1 file:cursor-pointer" 
                                   onChange={(e) => {
                                     if (e.target.files[0]) {
-                                      handleUploadPic(e.target.files[0], (url) => handleEditChange("profile_pic", url));
+                                      handleUploadPic(e.target.files[0], (url, width, height) => {
+                                        handleEditChange("profile_pic", url);
+                                        handleEditChange("profile_pic_width", width);
+                                        handleEditChange("profile_pic_height", height);
+                                      });
                                     }
                                   }} 
                                 />
