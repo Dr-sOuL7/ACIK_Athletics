@@ -79,12 +79,26 @@ export default function EditHomepage() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-text-muted mb-1">Hero Title</label>
-              <Input id="title" name="title" value={formData.title} onChange={handleChange} placeholder="Main title" />
+              <textarea 
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="Main title"
+                className="w-full bg-surface-elevated border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-white/30 resize-y min-h-[80px]"
+              />
             </div>
             
             <div>
               <label htmlFor="subtitle" className="block text-sm font-medium text-text-muted mb-1">Hero Subtitle</label>
-              <Input id="subtitle" name="subtitle" value={formData.subtitle} onChange={handleChange} placeholder="Subtitle or tagline" />
+              <textarea 
+                id="subtitle"
+                name="subtitle"
+                value={formData.subtitle}
+                onChange={handleChange}
+                placeholder="Subtitle or tagline"
+                className="w-full bg-surface-elevated border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-white/30 resize-y min-h-[80px]"
+              />
             </div>
 
             <hr className="border-white/10 my-2" />

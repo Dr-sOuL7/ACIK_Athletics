@@ -190,10 +190,10 @@ export default function Home() {
               {!content?.logo_url && (
                 <img src="/acik-logo.png" alt="ACIK Logo" className="h-24 md:h-32 mb-6 object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700" />
               )}
-              <h1 className="text-5xl md:text-7xl font-bold text-white font-heading tracking-wider mb-6 leading-tight drop-shadow-xl uppercase">
+              <h1 className="text-5xl md:text-7xl font-bold text-white font-heading tracking-wider mb-6 leading-tight drop-shadow-xl uppercase whitespace-pre-wrap">
                 {content?.title || "ACIK Athletics"}
               </h1>
-              <p className="text-lg md:text-2xl text-primary max-w-2xl mx-auto font-medium leading-relaxed tracking-widest uppercase text-opacity-90 mb-10">
+              <p className="text-lg md:text-2xl text-primary max-w-2xl mx-auto font-medium leading-relaxed tracking-widest uppercase text-opacity-90 mb-10 whitespace-pre-wrap">
                 {content?.subtitle || "Where Records Are Made. Where Legends Begin."}
               </p>
               
