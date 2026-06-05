@@ -159,28 +159,30 @@ export default function Home() {
       )}
 
       {/* Cinematic Hero Section */}
-      <section className={`relative w-full h-[60vh] min-h-[500px] max-h-[700px] rounded-3xl overflow-hidden shadow-2xl shadow-black/50 border border-white/5 ${(!content?.banner_url && !content?.logo_url) ? '-mt-4' : ''}`}>
-        <div className="absolute inset-0 bg-background">
-          <img 
-            src={content?.hero_bg_url || heroImg} 
-            alt="Track at night" 
-            fetchpriority="high"
-            width={content?.hero_bg_width}
-            height={content?.hero_bg_height}
-            className="w-full h-full object-cover opacity-80"
-          />
-          {/* Subtle Gradient Overlays for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-          <div className="absolute inset-0 bg-black/30" />
-        </div>
+      {loading ? (
+        <section className="relative w-full h-[60vh] min-h-[500px] max-h-[700px] rounded-3xl overflow-hidden shadow-2xl shadow-black/50 border border-white/5 -mt-4 bg-background">
+          <div className="h-full flex flex-col justify-center items-center text-center px-8">
+            <Skeleton className="w-3/4 max-w-2xl h-16 md:h-24 rounded-xl" />
+            <Skeleton className="w-1/2 max-w-md h-8 rounded-lg mt-4" />
+          </div>
+        </section>
+      ) : (
+        <section className={`relative w-full h-[60vh] min-h-[500px] max-h-[700px] rounded-3xl overflow-hidden shadow-2xl shadow-black/50 border border-white/5 ${(!content?.banner_url && !content?.logo_url) ? '-mt-4' : ''}`}>
+          <div className="absolute inset-0 bg-background">
+            <img 
+              src={content?.hero_bg_url || heroImg} 
+              alt="Track at night" 
+              fetchpriority="high"
+              width={content?.hero_bg_width}
+              height={content?.hero_bg_height}
+              className="w-full h-full object-cover opacity-80"
+            />
+            {/* Subtle Gradient Overlays for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+            <div className="absolute inset-0 bg-black/30" />
+          </div>
         
-        <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-8 md:px-16 w-full mx-auto">
-          {loading ? (
-            <div className="space-y-4 flex flex-col items-center">
-              <Skeleton className="w-3/4 max-w-2xl h-16 md:h-24 rounded-xl" />
-              <Skeleton className="w-1/2 max-w-md h-8 rounded-lg" />
-            </div>
-          ) : (
+          <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-8 md:px-16 w-full mx-auto">
             <motion.div 
               initial={{ opacity: 0, y: 30 }} 
               animate={{ opacity: 1, y: 0 }} 
@@ -196,12 +198,10 @@ export default function Home() {
               <p className="text-lg md:text-2xl text-primary max-w-2xl mx-auto font-medium leading-relaxed tracking-widest uppercase text-opacity-90 mb-10 whitespace-pre-wrap">
                 {content?.subtitle || "Where Records Are Made. Where Legends Begin."}
               </p>
-              
-
             </motion.div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       {/* Explore ACIK Section */}
       <section className="w-full">
