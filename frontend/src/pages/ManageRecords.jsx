@@ -131,7 +131,7 @@ export default function ManageRecords() {
       const { error: uploadError } = await supabase.storage.from("gallery_images").upload(filePath, processedFile, { contentType: processedFile.type });
       if (uploadError) throw uploadError;
       const { data: { publicUrl } } = supabase.storage.from("gallery_images").getPublicUrl(filePath);
-      setUrlCallback(publicUrl, width, height);
+      await setUrlCallback(publicUrl, width, height);
     } catch (err) {
       console.error(err);
       alert("Failed to upload image: " + getErrorMessage(err));
@@ -141,9 +141,22 @@ export default function ManageRecords() {
   const handleDirectPicUpload = async (record, file) => {
     handleUploadPic(file, async (url, width, height) => {
       try {
-        const { id, created_at, ...rest } = record;
-        const dataToSave = { ...rest, profile_pic: url, profile_pic_width: width, profile_pic_height: height };
-        await API.put(`/records?id=${id}`, dataToSave);
+        // Find ALL records for the same athlete and update them all
+        const matchingRecords = records.filter(r => {
+          const nameMatch = (r.name || "").toLowerCase().trim() === (record.name || "").toLowerCase().trim();
+          const batchMatch = (r.batch || "").toLowerCase().trim() === (record.batch || "").toLowerCase().trim();
+          const rollMatch = r.roll_number && record.roll_number 
+            ? (r.roll_number || "").toLowerCase().trim() === (record.roll_number || "").toLowerCase().trim()
+            : true;
+          return nameMatch && batchMatch && rollMatch;
+        });
+
+        await Promise.all(matchingRecords.map(r => {
+          const { id, created_at, ...rest } = r;
+          const dataToSave = { ...rest, profile_pic: url, profile_pic_width: width, profile_pic_height: height };
+          return API.put(`/records?id=${id}`, dataToSave);
+        }));
+
         fetchRecords();
       } catch (err) {
         alert("Failed to save picture: " + getErrorMessage(err));
@@ -827,22 +840,27 @@ export default function ManageRecords() {
                             <td className="p-2 text-sm">{r.place}</td>
                             <td className="p-2 text-sm">{r.year ? `'${r.year}` : ""}</td>
                             <td className="p-2 text-sm text-center">
-                              {r.profile_pic ? (
-                                <div className="flex items-center justify-center gap-1">
-                                  <span className="text-green-400 text-xs font-bold">Yes</span>
+                              <div className="flex items-center justify-center gap-1">
+                                {r.profile_pic && (
                                   <button onClick={() => {
-                                    if(window.confirm("Remove profile picture?")) {
-                                      const { id, created_at, ...rest } = r;
-                                      API.put(`/records?id=${id}`, { ...rest, profile_pic: null }).then(fetchRecords);
+                                    if(window.confirm("Remove profile picture from all records of this athlete?")) {
+                                      const matchingRecords = records.filter(rec => {
+                                        const nameMatch = (rec.name || "").toLowerCase().trim() === (r.name || "").toLowerCase().trim();
+                                        const batchMatch = (rec.batch || "").toLowerCase().trim() === (r.batch || "").toLowerCase().trim();
+                                        return nameMatch && batchMatch;
+                                      });
+                                      Promise.all(matchingRecords.map(rec => {
+                                        const { id, created_at, ...rest } = rec;
+                                        return API.put(`/records?id=${id}`, { ...rest, profile_pic: null, profile_pic_width: null, profile_pic_height: null });
+                                      })).then(fetchRecords);
                                     }
-                                  }} className="text-red-400 hover:text-red-300 ml-1">
+                                  }} className="text-red-400 hover:text-red-300" title="Remove pic">
                                     <X className="w-3 h-3" />
                                   </button>
-                                </div>
-                              ) : (
-                                <label className="cursor-pointer text-primary hover:text-primary-hover flex items-center justify-center bg-primary/10 rounded px-2 py-1 transition-colors" title="Upload Profile Pic">
+                                )}
+                                <label className="cursor-pointer text-primary hover:text-primary-hover flex items-center justify-center bg-primary/10 rounded px-2 py-1 transition-colors" title={r.profile_pic ? "Replace Profile Pic" : "Upload Profile Pic"}>
                                   <UploadCloud className="w-4 h-4 mr-1" />
-                                  <span className="text-xs font-medium">Upload</span>
+                                  <span className="text-xs font-medium">{r.profile_pic ? "Replace" : "Upload"}</span>
                                   <input 
                                     type="file" 
                                     accept="image/*, .webp" 
@@ -854,7 +872,7 @@ export default function ManageRecords() {
                                     }} 
                                   />
                                 </label>
-                              )}
+                              </div>
                             </td>
                             <td className="p-2 flex items-center justify-center gap-1">
                               <button onClick={() => handleEditClick(r)} className="text-blue-400 hover:text-blue-300 p-1.5 rounded-lg hover:bg-blue-500/10 transition-colors" title="Edit record">

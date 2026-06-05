@@ -270,25 +270,48 @@ export default function AllTimeRecords() {
   const otherTournaments = uniqueTournaments.filter(t => !PREDEFINED_TOURNAMENTS.includes(t));
 
   // Enhance records to ensure all records of the same athlete share the profile pic
+  // Uses a composite key of name+batch, with roll_number as a secondary qualifier.
+  // When multiple records of the same athlete have different photos, prefer the one
+  // from the most recently created record (which reflects the latest upload).
   const enhancedRecords = useMemo(() => {
+    // Build a map of athlete key -> { pic, created_at }
     const picMap = {};
+    
+    const getAthleteKey = (r) => {
+      const name = (r.name || "").toLowerCase().trim();
+      const batch = (r.batch || "").toLowerCase().trim();
+      const roll = (r.roll_number || "").toLowerCase().trim();
+      // Use roll_number if available for precision, else name+batch
+      return roll ? `roll:${roll}` : `name:${name}_batch:${batch}`;
+    };
+
+    // First pass: collect all photos, keeping only the most recently created one per athlete
     records.forEach(r => {
-      if (r.profile_pic) {
-        const key = r.roll_number 
-          ? String(r.roll_number).toLowerCase().trim() 
-          : `${(r.name || "").toLowerCase().trim()}_${(r.batch || "").toLowerCase().trim()}`;
-        if (!picMap[key]) picMap[key] = r.profile_pic;
+      if (!r.profile_pic) return;
+      const key = getAthleteKey(r);
+      const existing = picMap[key];
+      const createdAt = r.created_at ? new Date(r.created_at).getTime() : 0;
+      
+      if (!existing || createdAt > existing.createdAt) {
+        picMap[key] = { 
+          pic: r.profile_pic, 
+          width: r.profile_pic_width, 
+          height: r.profile_pic_height,
+          createdAt 
+        };
       }
     });
 
     return records.map(r => {
-      if (r.profile_pic) return r;
-      const key = r.roll_number 
-        ? String(r.roll_number).toLowerCase().trim() 
-        : `${(r.name || "").toLowerCase().trim()}_${(r.batch || "").toLowerCase().trim()}`;
+      const key = getAthleteKey(r);
+      const entry = picMap[key];
+      if (!entry) return r;
+      // Always use the latest photo for this athlete
       return {
         ...r,
-        profile_pic: picMap[key] || ""
+        profile_pic: entry.pic,
+        profile_pic_width: entry.width,
+        profile_pic_height: entry.height
       };
     });
   }, [records]);
