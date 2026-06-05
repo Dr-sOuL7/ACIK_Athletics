@@ -197,20 +197,7 @@ export default function Home() {
                 {content?.subtitle || "Where Records Are Made. Where Legends Begin."}
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link 
-                  to="/records" 
-                  className="px-8 py-4 bg-primary text-background font-bold rounded-full hover:bg-primary-hover hover:scale-105 transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)]"
-                >
-                  Explore Records
-                </Link>
-                <Link 
-                  to="/achievements" 
-                  className="px-8 py-4 bg-surface-elevated/80 backdrop-blur-md text-white font-bold rounded-full border border-white/10 hover:bg-white/10 hover:border-white/30 hover:scale-105 transition-all"
-                >
-                  Hall of Fame
-                </Link>
-              </div>
+
             </motion.div>
           )}
         </div>
