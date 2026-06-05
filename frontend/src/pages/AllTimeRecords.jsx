@@ -269,20 +269,16 @@ export default function AllTimeRecords() {
 
   const otherTournaments = uniqueTournaments.filter(t => !PREDEFINED_TOURNAMENTS.includes(t));
 
-  // Enhance records to ensure all records of the same athlete share the profile pic
-  // Uses a composite key of name+batch, with roll_number as a secondary qualifier.
-  // When multiple records of the same athlete have different photos, prefer the one
-  // from the most recently created record (which reflects the latest upload).
+  // Enhance records to ensure all records of the same athlete share the profile pic.
+  // Always uses name+batch as the key so relay records (which often lack roll_number)
+  // and individual records (which have roll_number) still match the same athlete.
   const enhancedRecords = useMemo(() => {
-    // Build a map of athlete key -> { pic, created_at }
     const picMap = {};
-    
+
     const getAthleteKey = (r) => {
       const name = (r.name || "").toLowerCase().trim();
       const batch = (r.batch || "").toLowerCase().trim();
-      const roll = (r.roll_number || "").toLowerCase().trim();
-      // Use roll_number if available for precision, else name+batch
-      return roll ? `roll:${roll}` : `name:${name}_batch:${batch}`;
+      return `${name}_${batch}`;
     };
 
     // First pass: collect all photos, keeping only the most recently created one per athlete
@@ -306,7 +302,6 @@ export default function AllTimeRecords() {
       const key = getAthleteKey(r);
       const entry = picMap[key];
       if (!entry) return r;
-      // Always use the latest photo for this athlete
       return {
         ...r,
         profile_pic: entry.pic,
