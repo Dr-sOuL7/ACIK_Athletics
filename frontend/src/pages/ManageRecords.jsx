@@ -114,6 +114,7 @@ export default function ManageRecords() {
 
   const [selectedRecords, setSelectedRecords] = useState(new Set());
   const [deletingBulk, setDeletingBulk] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(null);
 
   const emptyRow = { name: "", roll_number: "", batch: "", gender: "Male", event: "100 m", tournament_select: "PRATAP", tournament_other: "", record: "", place: "", year: "24", profile_pic: "" };
   const [manualRecords, setManualRecords] = useState([{ ...emptyRow }]);
@@ -256,7 +257,14 @@ export default function ManageRecords() {
     if (!file) return;
 
     setUploading(true);
+    setUploadProgress(null);
     setError(null);
+
+    const extractDriveId = (url) => {
+      if (!url || typeof url !== 'string') return null;
+      const match = url.match(/(?:id=|\/d\/)([a-zA-Z0-9_-]{10,})/);
+      return match ? match[1] : null;
+    };
 
     try {
       const data = await file.arrayBuffer();
@@ -290,7 +298,7 @@ export default function ManageRecords() {
           event: formatEvent(lowerRow["event"]?.toString().trim() || lowerRow["category"]?.toString().trim() || ""),
           gender: formatTitleCase(lowerRow["gender"]?.toString().trim() || lowerRow["sex"]?.toString().trim() || ""),
           record: lowerRow["record"]?.toString().trim() || lowerRow["timing/distance"]?.toString().trim() || lowerRow["time"]?.toString().trim() || "",
-          profile_pic: lowerRow["profile pic"]?.toString().trim() || lowerRow["profile_pic"]?.toString().trim() || ""
+          profile_pic: lowerRow["profile"]?.toString().trim() || lowerRow["profile pic"]?.toString().trim() || lowerRow["profile_pic"]?.toString().trim() || ""
         };
 
         // Check if row is completely empty
@@ -317,6 +325,62 @@ export default function ManageRecords() {
         throw new Error(`Please fix the following issues before uploading:\n${validationErrors.join('\n')}`);
       }
 
+      // Process Google Drive images sequentially
+      const uniqueDriveIds = new Set();
+      parsedData.forEach(row => {
+        const id = extractDriveId(row.profile_pic);
+        if (id) uniqueDriveIds.add(id);
+      });
+
+      if (uniqueDriveIds.size > 0) {
+        const idArray = Array.from(uniqueDriveIds);
+        const idToUrlMap = {};
+        
+        for (let i = 0; i < idArray.length; i++) {
+          const fileId = idArray[i];
+          setUploadProgress(`Processing profile photo ${i + 1} of ${idArray.length}...`);
+          try {
+            const response = await fetch(`/api/proxy-image?fileId=${fileId}`);
+            if (!response.ok) {
+              console.warn(`Failed to fetch image for drive ID ${fileId}`);
+              continue;
+            }
+            const blob = await response.blob();
+            const imageFile = new File([blob], `${fileId}.jpg`, { type: blob.type || 'image/jpeg' });
+            
+            const { processImage } = await import("../utils/imageProcessor");
+            const { file: processedFile, width, height } = await processImage(imageFile, { maxWidth: 1200, quality: 0.85, outputFormat: 'image/webp' });
+
+            const fileExt = processedFile.name.split('.').pop();
+            const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+            const filePath = `profiles/${fileName}`;
+            
+            const { error: uploadError } = await supabase.storage.from("gallery_images").upload(filePath, processedFile, { contentType: processedFile.type });
+            if (uploadError) throw uploadError;
+            
+            const { data: { publicUrl } } = supabase.storage.from("gallery_images").getPublicUrl(filePath);
+            idToUrlMap[fileId] = { publicUrl, width, height };
+          } catch (err) {
+            console.error("Error processing drive image", fileId, err);
+          }
+        }
+
+        // Apply new URLs
+        parsedData.forEach(row => {
+          const id = extractDriveId(row.profile_pic);
+          if (id) {
+            if (idToUrlMap[id]) {
+              row.profile_pic = idToUrlMap[id].publicUrl;
+              row.profile_pic_width = idToUrlMap[id].width;
+              row.profile_pic_height = idToUrlMap[id].height;
+            } else {
+              row.profile_pic = ""; // Clear failing drive URLs
+            }
+          }
+        });
+      }
+
+      setUploadProgress("Saving records...");
       await API.post("/records?action=bulk", parsedData);
       alert(`${parsedData.length} records uploaded successfully.`);
       fetchRecords();
@@ -325,6 +389,7 @@ export default function ManageRecords() {
       setError("Failed to upload bulk records: " + getErrorMessage(err));
     } finally {
       setUploading(false);
+      setUploadProgress(null);
       e.target.value = null;
     }
   };
@@ -594,7 +659,7 @@ export default function ManageRecords() {
         </div>
         {uploading && (
           <div className="flex items-center gap-2 text-primary font-medium">
-            <Loader2 className="w-4 h-4 animate-spin" /> Uploading and processing...
+            <Loader2 className="w-4 h-4 animate-spin" /> {uploadProgress || "Uploading and processing..."}
           </div>
         )}
       </div>
