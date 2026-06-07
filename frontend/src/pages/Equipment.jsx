@@ -22,88 +22,6 @@ const itemVariants = {
 
 const CATEGORIES = ["Track Events", "Field Events", "Relay Events", "Others"];
 
-function SearchableEquipmentSelect({ options, value, onChange, error }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const filteredOptions = useMemo(() => {
-    return options.filter(opt => opt.name.toLowerCase().includes(search.toLowerCase()));
-  }, [options, search]);
-
-  const selectedOption = options.find(opt => opt.id === value);
-
-  return (
-    <div className="relative" ref={dropdownRef}>
-      <div 
-        className={`flex items-center justify-between w-full bg-surface-elevated border ${error ? 'border-red-500' : 'border-white/10'} rounded-lg px-4 py-2 cursor-pointer text-white`}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <span className={selectedOption ? "text-white truncate" : "text-white/30 truncate"}>
-          {selectedOption ? `${selectedOption.name} (Avail: ${selectedOption.available_quantity})` : "Select Equipment..."}
-        </span>
-        <ChevronDown className="w-4 h-4 text-text-muted shrink-0 ml-2" />
-      </div>
-
-      {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-surface-elevated border border-white/10 rounded-lg shadow-xl max-h-60 overflow-hidden flex flex-col">
-          <div className="p-2 border-b border-white/5 shrink-0">
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-              <input
-                type="text"
-                className="w-full bg-black/20 border border-white/5 rounded-md pl-8 pr-3 py-1.5 text-sm text-white focus:outline-none focus:border-primary/50"
-                placeholder="Search equipment..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onClick={(e) => e.stopPropagation()}
-                autoFocus
-              />
-            </div>
-          </div>
-          <div className="overflow-y-auto custom-scrollbar flex-1 p-1">
-            {filteredOptions.length === 0 ? (
-              <div className="p-3 text-sm text-text-muted text-center">No matches found.</div>
-            ) : (
-              filteredOptions.map(opt => (
-                <div
-                  key={opt.id}
-                  className={`flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors ${
-                    opt.available_quantity === 0 
-                      ? 'opacity-50 cursor-not-allowed' 
-                      : 'hover:bg-white/5'
-                  } ${value === opt.id ? 'bg-primary/10 text-primary' : 'text-white'}`}
-                  onClick={() => {
-                    if (opt.available_quantity > 0) {
-                      onChange(opt.id);
-                      setIsOpen(false);
-                      setSearch("");
-                    }
-                  }}
-                >
-                  <span className="truncate">{opt.name}</span>
-                  <span className="text-xs shrink-0 ml-2 font-medium bg-black/40 px-2 py-0.5 rounded text-text-muted">
-                    Avail: {opt.available_quantity}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function Equipment() {
   const [equipmentList, setEquipmentList] = useState([]);
@@ -113,18 +31,6 @@ export default function Equipment() {
   const [expandedItems, setExpandedItems] = useState({});
   
   const toggleExpand = (id) => setExpandedItems(prev => ({...prev, [id]: !prev[id]}));
-  
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [issueForm, setIssueForm] = useState({
-    name: "",
-    roll_number: "",
-    equipment_id: "",
-    issue_quantity: 1,
-    issue_date: new Date().toISOString().split('T')[0],
-    from_time: "",
-    till_time: ""
-  });
 
   const fetchData = async () => {
     try {
@@ -155,50 +61,6 @@ export default function Equipment() {
     });
   }, [equipmentList, searchQuery, selectedCategories]);
 
-  const handleIssueSubmit = async (e) => {
-    e.preventDefault();
-    if (!issueForm.equipment_id) {
-      toast.error("Please select equipment to issue");
-      return;
-    }
-
-    const selectedEq = equipmentList.find(e => e.id === issueForm.equipment_id);
-    if (issueForm.issue_quantity > (selectedEq?.available_quantity || 0)) {
-      toast.error(`Cannot issue more than available (${selectedEq?.available_quantity})`);
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      await API.post("/equipment/issue", issueForm);
-      toast.success("Equipment issued successfully!");
-      setIsModalOpen(false);
-      setIssueForm({
-        name: "",
-        roll_number: "",
-        equipment_id: "",
-        issue_quantity: 1,
-        issue_date: new Date().toISOString().split('T')[0],
-        from_time: "",
-        till_time: ""
-      });
-      // Refresh the equipment list to get updated available quantities
-      fetchData();
-    } catch (err) {
-      console.error(err);
-      toast.error(getErrorMessage(err) || "Failed to issue equipment");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setIssueForm(prev => ({
-      ...prev,
-      [name]: name === "issue_quantity" ? parseInt(value) || 1 : value
-    }));
-  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700 w-full max-w-7xl mx-auto">
@@ -257,9 +119,6 @@ export default function Equipment() {
         </div>
 
         <div className="shrink-0 w-full md:w-auto">
-          <Button onClick={() => setIsModalOpen(true)} variant="primary" className="w-full md:w-auto gap-2 shadow-lg shadow-primary/20">
-            <Plus className="w-4 h-4" /> Issue Equipment
-          </Button>
         </div>
       </div>
 
@@ -321,11 +180,7 @@ export default function Equipment() {
                     )}
                     <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
                       <div className="bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 flex items-center gap-1.5 shadow-xl">
-                        <div className={`w-2 h-2 rounded-full ${avail > 0 ? 'bg-success' : 'bg-red-500'}`} />
-                        <span className="text-xs font-bold text-white">Avail: {avail}</span>
-                      </div>
-                      <div className="bg-black/40 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/5">
-                        <span className="text-[10px] font-medium text-white/70">Total: {item.quantity}</span>
+                        <span className="text-xs font-bold text-white">Quantity: {item.quantity}</span>
                       </div>
                     </div>
                   </div>
@@ -361,97 +216,7 @@ export default function Equipment() {
         </motion.div>
       )}
 
-      {/* Issue Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Issue Equipment">
-        <form onSubmit={handleIssueSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-text-muted">Equipment *</label>
-            <SearchableEquipmentSelect 
-              options={equipmentList}
-              value={issueForm.equipment_id}
-              onChange={(val) => setIssueForm(prev => ({...prev, equipment_id: val}))}
-            />
-          </div>
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-text-muted">Name *</label>
-            <Input 
-              name="name"
-              value={issueForm.name}
-              onChange={handleFormChange}
-              placeholder="e.g. John Doe"
-              required
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-text-muted">Roll Number *</label>
-            <Input 
-              name="roll_number"
-              value={issueForm.roll_number}
-              onChange={handleFormChange}
-              placeholder="e.g. 23MS123"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-text-muted">Date *</label>
-              <Input 
-                type="date"
-                name="issue_date"
-                value={issueForm.issue_date}
-                onChange={handleFormChange}
-                required
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-text-muted">Quantity *</label>
-              <Input 
-                type="number"
-                name="issue_quantity"
-                value={issueForm.issue_quantity}
-                onChange={handleFormChange}
-                min="1"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-text-muted">From Time *</label>
-              <Input 
-                type="time"
-                name="from_time"
-                value={issueForm.from_time}
-                onChange={handleFormChange}
-                required
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-text-muted">Till Time *</label>
-              <Input 
-                type="time"
-                name="till_time"
-                value={issueForm.till_time}
-                onChange={handleFormChange}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="pt-4 flex gap-3">
-            <Button type="button" variant="surface" onClick={() => setIsModalOpen(false)} className="flex-1">
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" className="flex-1" disabled={submitting}>
-              {submitting ? "Submitting..." : "Issue Now"}
-            </Button>
-          </div>
-        </form>
-      </Modal>
 
     </div>
   );

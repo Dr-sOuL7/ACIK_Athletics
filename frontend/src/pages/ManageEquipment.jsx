@@ -11,9 +11,7 @@ import API from "../api/axios";
 
 export default function ManageEquipment() {
   const [equipmentList, setEquipmentList] = useState([]);
-  const [issuesList, setIssuesList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [issuesLoading, setIssuesLoading] = useState(true);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,21 +43,8 @@ export default function ManageEquipment() {
     }
   };
 
-  const fetchIssues = async (showLoader = false) => {
-    if (showLoader) setIssuesLoading(true);
-    try {
-      const res = await API.get("/equipment/issues");
-      setIssuesList(res.data);
-    } catch (err) {
-      console.error("Failed to load issues", err);
-    } finally {
-      setIssuesLoading(false);
-    }
-  };
-
   useEffect(() => {
     fetchEquipment();
-    fetchIssues();
   }, []);
 
   const handleDelete = async (id) => {
@@ -67,7 +52,6 @@ export default function ManageEquipment() {
     try {
       await API.delete(`/equipment?id=${id}`);
       fetchEquipment(true);
-      fetchIssues(true);
     } catch (err) {
       console.error(err);
       alert("Failed to delete equipment: " + getErrorMessage(err));
@@ -98,7 +82,7 @@ export default function ManageEquipment() {
           </Card>
         </div>
 
-        {/* Right Column - Inventory & History */}
+        {/* Right Column - Inventory */}
         <div className="lg:col-span-2 space-y-8">
           {/* Inventory List */}
           <Card className="border-white/5">
@@ -138,7 +122,6 @@ export default function ManageEquipment() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {filteredEquipment.map(item => {
-                    const avail = item.available_quantity ?? item.quantity;
                     return (
                       <div key={item.id} className="flex items-start gap-4 bg-surface-elevated p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
                         {item.image_url ? (
@@ -180,11 +163,8 @@ export default function ManageEquipment() {
                             </span>
                           </div>
                           <div className="flex gap-2 text-xs">
-                            <span className={`px-1.5 py-0.5 rounded font-medium ${avail > 0 ? 'bg-success/20 text-success' : 'bg-red-500/20 text-red-400'}`}>
-                              Avail: {avail}
-                            </span>
                             <span className="text-text-muted bg-white/5 px-1.5 py-0.5 rounded border border-white/5">
-                              Total: {item.quantity}
+                              Quantity: {item.quantity}
                             </span>
                           </div>
                         </div>
@@ -196,61 +176,7 @@ export default function ManageEquipment() {
             </CardContent>
           </Card>
 
-          {/* Issuance History */}
-          <Card className="border-white/5">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ClipboardList className="w-5 h-5 text-secondary" />
-                Issuance History
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {issuesLoading ? (
-                <div className="flex items-center gap-2 text-text-muted"><Loader2 className="w-4 h-4 animate-spin" /> Loading history...</div>
-              ) : issuesList.length === 0 ? (
-                <div className="text-text-muted bg-white/5 rounded-lg p-6 text-center border border-white/10">No equipment has been issued yet.</div>
-              ) : (
-                <div className="overflow-x-auto rounded-lg border border-white/5">
-                  <table className="w-full text-sm text-left whitespace-nowrap">
-                    <thead className="text-xs uppercase bg-white/5 text-text-muted border-b border-white/5">
-                      <tr>
-                        <th className="px-4 py-3 font-medium">Issued To</th>
-                        <th className="px-4 py-3 font-medium">Equipment</th>
-                        <th className="px-4 py-3 font-medium">Qty</th>
-                        <th className="px-4 py-3 font-medium">Date & Time</th>
-                        <th className="px-4 py-3 font-medium">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {issuesList.map((issue) => (
-                        <tr key={issue.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                          <td className="px-4 py-3">
-                            <div className="font-medium text-white">{issue.name}</div>
-                            <div className="text-xs text-text-muted">{issue.batch} • {issue.roll_number}</div>
-                          </td>
-                          <td className="px-4 py-3 text-white">
-                            {issue.equipment?.name || <span className="text-red-400 italic">Deleted Equipment</span>}
-                          </td>
-                          <td className="px-4 py-3 text-white font-medium">
-                            {issue.issue_quantity}
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="text-white">{new Date(issue.issue_date).toLocaleDateString()}</div>
-                            <div className="text-xs text-text-muted">{issue.from_time.substring(0,5)} - {issue.till_time.substring(0,5)}</div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="bg-primary/20 text-primary px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">
-                              {issue.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+
         </div>
       </div>
 
