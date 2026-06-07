@@ -59,7 +59,9 @@ export default function Footer() {
         
         <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-text-muted">
           <div className="flex flex-col md:flex-row items-center gap-4">
-            <img src="/iiser-logo.png" alt="IISER Kolkata Logo" className="h-10 md:h-12 object-contain opacity-80 hover:opacity-100 transition-opacity drop-shadow-lg" />
+            <a href="https://www.iiserkol.ac.in/web/" target="_blank" rel="noopener noreferrer" aria-label="Visit IISER Kolkata Website">
+              <img src="/iiser-logo.png" alt="IISER Kolkata Logo" className="h-10 md:h-12 object-contain opacity-80 hover:opacity-100 transition-opacity drop-shadow-lg" />
+            </a>
             <p>© {new Date().getFullYear()} Athletics Club of IISER Kolkata. All rights reserved.</p>
           </div>
           <div className="flex items-center gap-4">
