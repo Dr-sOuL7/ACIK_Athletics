@@ -643,7 +643,7 @@ export default function ManageRecords() {
           Bulk Upload via Spreadsheet
         </h2>
         <p className="text-text-muted text-sm mt-2">
-          Upload a CSV, TSV, or Excel (.xlsx) file. Columns do not need to be in any specific order and are not case-sensitive. Expected columns: <b>Name, Roll Number, Batch, Gender, Event, Tournament, Record, Venue, Year</b>.
+          Upload a CSV, TSV, or Excel (.xlsx) file. Columns do not need to be in any specific order and are not case-sensitive. Expected columns: <b>Name, Roll Number, Batch, Gender, Event, Tournament, Record, Venue, Year, Profile</b>.
         </p>
         <div className="flex items-center justify-center w-full">
           <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-40 border-2 border-white/10 border-dashed rounded-xl cursor-pointer bg-surface-elevated hover:bg-surface-hover transition-colors">
